@@ -2,11 +2,15 @@ version: 2.1
 
 orbs:
   node: circleci/node@5.2.0
+executors:
+  pw-jammy-development:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.45.1-jammy
 
 jobs:
   test:
     executor:
-      name: node/default
+      name: pw-jammy-development
     steps:
       - checkout
       - node/install-packages
