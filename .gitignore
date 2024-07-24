@@ -1,28 +1,33 @@
-# build output
-dist/
-
-# generated types
-.astro/
-
-# dependencies
-node_modules/
-
-# logs
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-# environment variables
-.env
-.env.production
-
-# macOS-specific files
+node_modules
 .DS_Store
+dist
+dist-ssr
+coverage
+*.local
 
-# jetbrains setting folder
-.idea/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+/cypress/videos/
+/cypress/screenshots/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
+
+test-results/
+playwright-report/
