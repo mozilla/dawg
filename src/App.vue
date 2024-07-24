@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
-import DawgTable from './components/DawgTable.vue'
+import PolyAssetLoader from './components/PolyAssetLoader.vue'
 </script>
 
 <template>
@@ -10,7 +10,7 @@ import DawgTable from './components/DawgTable.vue'
   </header>
 
   <main>
-    <DawgTable :source="['mock.json']"/>
+    <PolyAssetLoader :sources="['mock.json']"/>
   </main>
 </template>
 
