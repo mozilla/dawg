@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed, ref } from 'vue'
+import DataFilter from './DataFilter.vue'
 
 const props = defineProps<{
     sources: string[], 
@@ -18,9 +19,8 @@ Promise.all(props.sources.map(src => {
 </script>
 
 <template>
-    <h1>DAWG</h1>
     <h1 v-if="loaded == false">Loading ...</h1>
     <div v-else>
-       <slot />
+       <DataFilter :data="data" />
     </div>
 </template>

@@ -2,35 +2,21 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import PolyAssetLoader from './components/PolyAssetLoader.vue'
+
+import DAWGTable from './components/DAWGTable.vue'
 </script>
 
 <template>
   <header>
-
+    <h1>Our super cool DAWG Dashboard, some imagination required</h1>
   </header>
-
   <main>
-    <PolyAssetLoader :sources="['mock.json']"/>
+    <PolyAssetLoader :sources="['mock.json']" />
   </main>
 </template>
 
 <style scoped>
 header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+  margin: 3rem auto;
 }
 </style>
