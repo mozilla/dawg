@@ -7,28 +7,18 @@ const props = defineProps<{
     data: any, 
 }>()
 
+const normalized = computed(() => {
+    const workgroups = 
+    return {}
+})
+// unused temporarily
 const searchstring = defineModel<string>()
-
-// These will be generated from real data in the end
-const headers = ref([
-    "Name",
-    "Favorite Editor",
-    "Favorite Food",
-    "Mouse Aware?"
-])
-
-
-const projection = ref([
-    ["Mikael", "Nano", "Smoked Things", "Yes"],
-    ["Wesley", "Emacs", "Cost effective Brisket", "Unlikely"],
-    ["Corban", "VSCode", "Pizza", "Somewhat"],
-])
-
 </script>
 
 <template>
     <input type="text" v-model="searchstring" placeholder="Search"/>
-    <DAWGTable :headers="headers" :data="projection"/>
+    <span>{{ searchstring }}</span>
+    <DAWGTable :headers="normalized.headers" :data="normalized.data"/>
 </template>
 
 <style>
