@@ -3,9 +3,6 @@ import { ref, Ref, computed, Computed } from 'vue'
 import { WorkGroup, fromDataSource } from '../workgroup.ts'
 import DAWGTable from './DAWGTable.vue'
 
-type CellContent = string | Map | Set;
-type SearchFunc = (contents: CellContent) => boolean;
-
 const props = defineProps<{
     data: any, 
 }>()
@@ -21,9 +18,13 @@ const normalized: Computed<WorkGroup[]> = computed(() => {
     return result
 })
 
+// The state of the "Use Regex" toggle
+const isRegex = defineModel<boolean>('isRegex');
+
+// The user input string 
 const searchstring = defineModel<string>('searchstring');
 
-const isRegex = defineModel<boolean>('isRegex');
+// A compiled RegExp from the user input string, or the error if one was encountered
 const searchregexp  = computed<RegExp | Error>((): RegExp => {
     let regexp: Regexp;
 
@@ -35,30 +36,16 @@ const searchregexp  = computed<RegExp | Error>((): RegExp => {
     }
 
     return regexp;
-     
 })
-
-
-// Match plain strings
-const regularFilter: SearchFunc = (contents: string ): boolean => {
-    if (contents.toLowerCase == undefined) {
-        console.log(contents)
-        return false
-    }
-    return contents.toLowerCase().includes(searchstring.value.toLowerCase())
-}
-
-// match against regex
-// regex is pre-compiled via computed value so ignore first param
-const regexFilter: SearchFunc = (contents: string): boolean => {
-    return (searchregexp.value instanceof Error == false) && searchregexp.value.test(contents)
-}
 
 // Returns the correct filter func based on the toggle state
 const filterFunc: Computed<SearchFunc> = computed(() => {
-    return isRegex.value ? regexFilter : regularFilter;
+    return isRegex.value
+        ? (searchregexp.value instanceof Error == false) && searchregexp.value.test(contents)
+        : contents.toLowerCase().includes(searchstring.value.toLowerCase())
 })
 
+// Returns the data set filtered by the seach term or regex
 const filtered = computed(() => {
     if (!searchstring.value) {
         return normalized.value
@@ -74,10 +61,8 @@ const filtered = computed(() => {
     })
 })
 
-const headers = ref((() => {
-    // get a null-ish workgroup and dump the keys
-    return Object.keys(fromDataSource("none", "placeholder", {}))
-})())
+// Takes a null-ish workgroup and dumps the keys for the table headers
+const headers = ref(((struct) => Object.keys(struct))(fromDataSource("none", "placeholder", {})))
 
 </script>
 
