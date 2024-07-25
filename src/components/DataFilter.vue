@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, Ref, computed, Computed } from 'vue'
+import { ref, Ref, computed } from 'vue'
 import { WorkGroup, fromDataSource } from '../workgroup.ts'
 import DAWGTable from './DAWGTable.vue'
 
@@ -29,10 +29,10 @@ const searchregexp  = computed<RegExp | Error>((): RegExp => {
 })
 
 // Returns the correct filter func based on the toggle state
-const filterFunc: Computed<SearchFunc> = computed(() => {
+const filterFunc = computed(() => {
     return isRegex.value
-        ? (searchregexp.value instanceof Error == false) && searchregexp.value.test(contents)
-        : contents.toLowerCase().includes(searchstring.value.toLowerCase())
+        ? (c) => (searchregexp.value instanceof Error == false) && searchregexp.value.test(c)
+        : (c) => c.toLowerCase().includes(searchstring.value.toLowerCase());
 })
 
 // Returns the data set filtered by the seach term or regex
