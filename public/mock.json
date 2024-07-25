@@ -37,5 +37,44 @@
     "team_projects": [
       "madeup-project-id"
     ]
+  },
+  "madeup-workgroup-two": {
+    "default_mozilla_confidential": true,
+    "members": {
+      "_default": [],
+      "analysis-writer-asdf": [],
+      "default": [
+        "groupasdf:da-wg-contextual-services@mozilla.com",
+        "serviceAccountasdf:bigquery-ctxsvc-redash-viewer@mozdata.iam.gserviceaccount.com",
+        "serviceAccountasdf:task-ctxsvc@moz-fx-mfouterbounds-prod-f98d.iam.gserviceaccount.com"
+      ],
+      "external-outerbounds-task-ctxsvc": [
+        "serviceAccountasdf:task-ctxsvc@moz-fx-mfouterbounds-prod-f98d.iam.gserviceaccount.com"
+      ],
+      "redash": [
+        "serviceAccountasdf:bigquery-ctxsvc-redash-viewer@mozdata.iam.gserviceaccount.com"
+      ],
+      "team": [
+        "groupasdf:da-wg-contextual-services@mozilla.com"
+      ],
+      "udf": [
+        "serviceAccountasdf:bigquery-ctxsvc-redash-viewer@mozdata.iam.gserviceaccount.com"
+      ]
+    },
+    "notebooks_config": {
+      "madeup/cat1": {
+        "account_id": "madeup-cat1",
+        "display_name": "Notebooks access for workgroup:madeup/cat1",
+        "subgroup": "cat1",
+        "workgroup": "revenue"
+      }
+    },
+    "redash_config": {
+      "account_id": "bigquery-madeup-redash-viewer",
+      "display_name": "Big Query Viewer - Madeup Datasets - Redash"
+    },
+    "team_projects": [
+      "madeup-project-id"
+    ]
   }
 }
