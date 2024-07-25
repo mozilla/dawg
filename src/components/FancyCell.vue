@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps<{
-    contents: String | Set | Array | Map, 
+    contents: String | Set<any> | Array<any> | Map<any, any>, 
 }>()
 
 // computing this ahead of time to keep template 
@@ -13,10 +13,8 @@ const type = computed(() => {
         case (props.contents instanceof Array):
         case (props.contents instanceof Map):
             return "list"
-            break
         default:
             return "plain"
-            break
     }
 })
 </script>
@@ -26,7 +24,7 @@ const type = computed(() => {
         {{ props.contents }}
     </span>
     <ul v-else-if="type === 'list'">
-        <li v-for="line in props.contents">
+        <li v-for="(line, index) in props.contents" :key="index">
             {{ line }}
         </li>
     </ul>

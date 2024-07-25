@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
 import PolyAssetLoader from './components/PolyAssetLoader.vue'
 
-import DAWGTable from './components/DAWGTable.vue'
 </script>
 
 <template>

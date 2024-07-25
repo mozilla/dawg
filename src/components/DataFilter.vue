@@ -48,12 +48,12 @@ const filtered = computed(() => {
 </script>
 
 <template>
-    <input type="text" v-model="searchstring" placeholder="Search"/>
+    <input type="text" v-model="searchstring" placeholder="Search All Fields"/>
     <DAWGTable :headers="headers" :rows="filtered"/>
 </template>
 
 <style>
-input[type="text"] {
+input {
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #444;
@@ -63,7 +63,8 @@ input[type="text"] {
     font-family: Arial, sans-serif;
 }
 
-input[type="text"]::placeholder {
-    color: #bbb;
+input::placeholder {
+    color: #e7efe8;
+    opacity: 0.9;
 }
 </style>
