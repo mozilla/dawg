@@ -16,7 +16,17 @@ jobs:
       - node/install-packages
       - run:
           command: npm run lint
+  build:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run build
+
 workflows:
   ci:
     jobs:
       - lint
+      - build
