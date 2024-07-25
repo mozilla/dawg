@@ -21,13 +21,21 @@ const normalized: Computed<WorkGroup[]> = computed(() => {
     return result
 })
 
-const isRegex = defineModel<boolean>('isRegex')
+const searchstring = defineModel<string>('searchstring');
 
-const searchstring = defineModel<string>('searchstring')
-const searchregexp  = computed<RegExp>((): RegExp => {
-    if (!isRegex) return undefined
+const isRegex = defineModel<boolean>('isRegex');
+const searchregexp  = computed<RegExp | Error>((): RegExp => {
+    let regexp: Regexp;
 
-    return new RegExp(searchstring.value)
+    try {
+        regexp = RegExp(searchstring.value)
+    } catch (error) {
+        console.warn(`Error compiling regex ${searchstring.value} got ${error}`)
+        return error
+    }
+
+    return regexp;
+     
 })
 
 
@@ -43,7 +51,7 @@ const regularFilter: SearchFunc = (contents: string ): boolean => {
 // match against regex
 // regex is pre-compiled via computed value so ignore first param
 const regexFilter: SearchFunc = (contents: string): boolean => {
-    return searchregexp.value.test(contents)
+    return (searchregexp.value instanceof Error == false) && searchregexp.value.test(contents)
 }
 
 // Returns the correct filter func based on the toggle state
@@ -85,6 +93,7 @@ const headers = ref((() => {
             />
             <label for="regex"> .*</label>
         </div>
+        <span class="regex-err" v-if="isRegex && searchregexp instanceof Error == true">⚠️ {{ searchregexp }}</span>
     </div>
     <DAWGTable :headers="headers" :rows="filtered"/>
 </template>
@@ -92,7 +101,7 @@ const headers = ref((() => {
 <style scoped>
 input[type=text] {
     padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     border: 1px solid #444;
     border-radius:  var(--border-radius) 0 0 var(--border-radius);
     background-color: #333;
@@ -113,6 +122,7 @@ input[type=text]::placeholder {
     width: 600px;
     vertical-align: top;
     padding: 0;
+    margin-bottom: 0px;
 }
 .search-wrapper [type=text] {
     width: calc(100% - 60px);
@@ -131,5 +141,14 @@ input[type=text]::placeholder {
 }
 .regex-toggle label {
     font-family: monospace;
+}
+.regex-err {
+    display: block;
+    width: 100%;
+    background-color: #ffe674;
+    color: #8e8a17;
+    text-align: center;
+    padding: 12px;
+
 }
 </style>
