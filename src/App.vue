@@ -11,7 +11,7 @@ onMounted(() => {
 
 <template>
   <header>
-    <h1>Our super cool DAWG Dashboard, some imagination required</h1>
+    <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore data access workgroups - Compiled from aggregated Terraform State data.</p>
   </header>
   <main>
     <PolyAssetLoader :sources="['mock.json']" />
@@ -20,6 +20,6 @@ onMounted(() => {
 
 <style scoped>
 header {
-  margin: 3rem auto;
+  margin: 80px auto 2rem;
 }
 </style>
