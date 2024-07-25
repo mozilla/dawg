@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FancyCell from './FancyCell.vue'
 const props = defineProps<{
     headers: string[], // the headers for the table which probably won't change?
     rows: string[][], // an array of arrays of string, where each string[] is one row, data filter will mutate this when users search 
@@ -15,7 +16,9 @@ const props = defineProps<{
             </thead>
             <tbody>
                 <tr v-for="(row, rowIndex) in props.rows" :key="rowIndex">
-                    <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
+                    <td v-for="(cell, cellIndex) in row" :key="cellIndex">
+                        <FancyCell :contents="cell" />
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -56,5 +59,7 @@ tr:hover {
 
 td {
     white-space: nowrap;
+    vertical-align: top;
+
 }
 </style>
