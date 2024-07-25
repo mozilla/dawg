@@ -12,9 +12,15 @@ onMounted(() => {
 <template>
   <header>
     <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore data access workgroups - Compiled from aggregated Terraform State data.</p>
+    <!-- FIXME move to navbar or something -->
+    <h1>Our super cool DAWG Dashboard, some imagination required</h1>
+    <h1><a href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/27924789/Data+Access+Workgroups">Data Access Workgroups Documentation</a></h1>
+    <h1><a href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/27919274/Using+workgroups">GCPv2 Documentation</a></h1>
+    <h1><a href="https://wiki.mozilla.org/Security/Data_Classification">Data Classification at Mozilla</a></h1>
+    <h1><a href="https://wiki.mozilla.org/Data_Collection#Data_Collection_Categories">Data Collection at Mozilla</a></h1>
   </header>
   <main>
-    <PolyAssetLoader :sources="['mock.json']" />
+    <PolyAssetLoader :sources="['gcpv1.json','gcpv2_merged.json']" />
   </main>
 </template>
 
