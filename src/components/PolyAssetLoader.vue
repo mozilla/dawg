@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { WorkGroup, fromDataSource } from '../workgroup.ts'
 import DataFilter from './DataFilter.vue'
 
 const props = defineProps<{
@@ -13,6 +14,17 @@ const loaded = computed(() => {
     return Object.keys(data.value).length == props.sources.length
 })
 
+const normalized: Computed<WorkGroup[]> = computed(() => {
+    const result = [];
+    for (const sourcename in data.value) {
+        for (const groupname in data.value[sourcename]) {
+            result.push(fromDataSource(sourcename, groupname, data.value[sourcename][groupname]))
+        }
+    }
+
+    return result
+})
+
 Promise.all(props.sources.map(src => {
     return fetch(src).then(async (res) => { data.value[src] = await res.json()})
 }))
@@ -21,6 +33,6 @@ Promise.all(props.sources.map(src => {
 <template>
     <h1 v-if="loaded == false">Loading ...</h1>
     <div v-else>
-       <DataFilter :data="data" />
+       <DataFilter :data="normalized" />
     </div>
 </template>

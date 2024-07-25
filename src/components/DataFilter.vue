@@ -4,19 +4,9 @@ import { WorkGroup, fromDataSource } from '../workgroup.ts'
 import DAWGTable from './DAWGTable.vue'
 
 const props = defineProps<{
-    data: any, 
+    data: WorkGroup[], 
 }>()
 
-const normalized: Computed<WorkGroup[]> = computed(() => {
-    const result = [];
-    for (const sourcename in props.data) {
-        for (const groupname in props.data[sourcename]) {
-            result.push(fromDataSource(sourcename, groupname, props.data[sourcename][groupname]))
-        }
-    }
-
-    return result
-})
 
 // The state of the "Use Regex" toggle
 const isRegex = defineModel<boolean>('isRegex');
@@ -48,9 +38,9 @@ const filterFunc: Computed<SearchFunc> = computed(() => {
 // Returns the data set filtered by the seach term or regex
 const filtered = computed(() => {
     if (!searchstring.value) {
-        return normalized.value
+        return props.data
     }
-    return normalized.value.filter(row => {       
+    return props.data.filter(row => {       
         return Object.values(row).some(contents => {
             if (contents instanceof Set) {
                 console.log("found a set")
@@ -78,7 +68,7 @@ const headers = ref(((struct) => Object.keys(struct))(fromDataSource("none", "pl
             <input :class="{ monospace: isRegex }" type="search" v-model="searchstring" id="search" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required />
         </div>
         <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert" v-if="isRegex && searchregexp instanceof Error == true">
-          <span class="font-medium" v-if="isRegex && searchregexp instanceof Error == true">⚠️ {{ searchregexp }}</span>
+          <span class="font-medium">⚠️ {{ searchregexp }}</span>
         </div>
     </div>
     <div class="relative mb-2">
