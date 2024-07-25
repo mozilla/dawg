@@ -1,4 +1,4 @@
-# dawg
+![Data Access Workgroups](./src/assets/dawg_logo.png)
 
 This template should help get you started developing with Vue 3 in Vite.
 
