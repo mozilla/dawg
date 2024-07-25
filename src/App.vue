@@ -20,6 +20,6 @@ onMounted(() => {
 
 <style scoped>
 header {
-  margin: 3rem auto;
+  margin: 80px auto 2rem;
 }
 </style>
