@@ -21,11 +21,11 @@ const normalized: Computed<WorkGroup[]> = computed(() => {
     return result
 })
 
-const isregex = defineModel<boolean>('isregex')
+const isRegex = defineModel<boolean>('isRegex')
 
 const searchstring = defineModel<string>('searchstring')
 const searchregexp  = computed<RegExp>((): RegExp => {
-    if (!isregex) return undefined
+    if (!isRegex) return undefined
 
     return new RegExp(searchstring.value)
 })
@@ -48,7 +48,7 @@ const regexFilter: SearchFunc = (contents: string): boolean => {
 
 // Returns the correct filter func based on the toggle state
 const filterFunc: Computed<SearchFunc> = computed(() => {
-    return isregex.value ? regexFilter : regularFilter;
+    return isRegex.value ? regexFilter : regularFilter;
 })
 
 const filtered = computed(() => {
@@ -75,10 +75,10 @@ const headers = ref((() => {
 
 <template>
     <div class="search-wrapper">
-        <input type="text" v-model="searchstring" placeholder="Search All Fields"/>
+        <input :class="{ monospace: isRegex }" type="text" v-model="searchstring" placeholder="Search All Fields"/>
 
         <div class="regex-toggle">
-            <input v-model="isregex"
+            <input v-model="isRegex"
                 type="checkbox"
                 name="regex"
                 value="regex"
@@ -98,6 +98,9 @@ input[type=text] {
     background-color: #333;
     color: #f1f1f1;
     font-family: Arial, sans-serif;
+}
+input[type=text].monospace {
+    font-family: monospace;
 }
 
 input[type=text]::placeholder {
