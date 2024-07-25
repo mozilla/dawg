@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref, Ref, computed } from 'vue'
-import { WorkGroup, fromDataSource } from '../workgroup.ts'
+
+import { ref, computed } from 'vue'
+import type { WorkGroup } from '../workgroup'
+import { fromDataSource } from '../workgroup'
 import DAWGTable from './DAWGTable.vue'
 
 const props = defineProps<{
@@ -15,14 +17,18 @@ const isRegex = defineModel<boolean>('isRegex');
 const searchstring = defineModel<string>('searchstring');
 
 // A compiled RegExp from the user input string, or the error if one was encountered
-const searchregexp  = computed<RegExp | Error>((): RegExp => {
-    let regexp: Regexp;
+const searchregexp  = computed((): RegExp | Error => {
+    let regexp: RegExp;
+
+    if (!searchstring.value) {
+        return RegExp("")
+    }
 
     try {
         regexp = RegExp(searchstring.value)
-    } catch (error) {
-        console.warn(`Error compiling regex ${searchstring.value} got ${error}`)
-        return error
+    } catch (err) {
+        console.warn(`Error compiling regex ${searchstring.value} got ${err}`)
+        return err as Error
     }
 
     return regexp;
@@ -31,8 +37,8 @@ const searchregexp  = computed<RegExp | Error>((): RegExp => {
 // Returns the correct filter func based on the toggle state
 const filterFunc = computed(() => {
     return isRegex.value
-        ? (c) => (searchregexp.value instanceof Error == false) && searchregexp.value.test(c)
-        : (c) => c.toLowerCase().includes(searchstring.value.toLowerCase());
+        ? (c: string): boolean => searchregexp.value instanceof Error == false && searchregexp.value.test(c)
+        : (c: string): boolean => !!searchstring.value && c.toLowerCase().includes(searchstring.value.toLowerCase());
 })
 
 // Returns the data set filtered by the seach term or regex
@@ -43,7 +49,6 @@ const filtered = computed(() => {
     return props.data.filter(row => {       
         return Object.values(row).some(contents => {
             if (contents instanceof Set) {
-                console.log("found a set")
                 return Array.from(contents).some((item) => filterFunc.value(item))
             }
             return filterFunc.value(contents)
