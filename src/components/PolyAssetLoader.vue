@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { WorkGroup, fromDataSource } from '../workgroup.ts'
+import type { WorkGroup } from '../workgroup'
+import { fromDataSource } from '../workgroup'
 import DataFilter from './DataFilter.vue'
 
 const props = defineProps<{
     sources: string[], 
 }>()
 
-const data = ref({});
+const data = ref<Record<string, Record<string, WorkGroup>>>({});
 
 const loaded = computed(() => {
     // When we have an entry in data for each source, we are loaded
     return Object.keys(data.value).length == props.sources.length
 })
 
-const normalized: Computed<WorkGroup[]> = computed(() => {
+const normalized = computed((): WorkGroup[] => {
     const result = [];
     for (const sourcename in data.value) {
         for (const groupname in data.value[sourcename]) {

@@ -1,4 +1,4 @@
-type WorkGroup = {
+export type WorkGroup = {
     name: string,
     id: string,
     type?: string,

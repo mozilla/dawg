@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { WorkGroup } from '../workgroup'
+
 import FancyCell from './FancyCell.vue'
 const props = defineProps<{
-    headers: string[], // the headers for the table which probably won't change?
-    rows: string[][], // an array of arrays of string, where each string[] is one row, data filter will mutate this when users search 
+    headers: string[],
+    rows: WorkGroup[],
 }>()
 </script>
 

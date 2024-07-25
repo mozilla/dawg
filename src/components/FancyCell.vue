@@ -3,7 +3,7 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
-    contents: String | Set<any> | Array<any> | Map<any, any>, 
+    contents: undefined | string | Set<any> | Array<any> | Map<any, any>, 
 }>()
 
 // computing this ahead of time to keep template 
@@ -13,6 +13,9 @@ const type = computed(() => {
         case (props.contents instanceof Array):
         case (props.contents instanceof Map):
             return "list"
+        case (props.contents == null):
+        case (props.contents === undefined):
+            return "none"
         default:
             return "plain"
     }
@@ -22,6 +25,9 @@ const type = computed(() => {
 <template>
     <span v-if="type === 'plain'">
         {{ props.contents }}
+    </span>
+    <span v-else-if="type === 'none'">
+        (no data)
     </span>
     <ul v-else-if="type === 'list'">
         <li v-for="(line, index) in props.contents" :key="index">
