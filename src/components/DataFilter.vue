@@ -84,5 +84,7 @@ const headers = ref(((struct) => Object.keys(struct))(fromDataSource("none", "pl
 
 <style scoped>
 
-
+.monospace {
+    font-family: monospace;
+}
 </style>
