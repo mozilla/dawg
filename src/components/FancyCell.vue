@@ -1,6 +1,13 @@
 <script setup lang="ts">
 
 import { computed } from 'vue'
+// thank to https://www.freecodecamp.org/news/check-if-a-javascript-string-is-a-url/
+const urlPattern =  new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+	    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+	    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+	    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+	    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+	    '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
 
 const props = defineProps<{
     contents: undefined | string | Set<any> | Array<any> | Map<any, any>, 
@@ -9,6 +16,8 @@ const props = defineProps<{
 // computing this ahead of time to keep template 
 const type = computed(() => {
     switch (true) {
+        case (urlPattern.test(props?.contents[0] || "") == true):
+            return "link"
         case (props.contents instanceof Set):
         case (props.contents instanceof Array):
         case (props.contents instanceof Map):
@@ -23,12 +32,23 @@ const type = computed(() => {
 </script>
 
 <template>
-    <span v-if="type === 'plain'">
+    <template v-if="type === 'plain'">
         {{ props.contents }}
-    </span>
-    <span v-else-if="type === 'none'">
+    </template>
+    <!-- All links are lists so handled accordingly -->
+    <template v-if="type === 'link'">
+        <a v-for="(link, _) in props.contents" :href="link">
+            <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+            <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="Interface / External_Link">
+            <path id="Vector" d="M10.0002 5H8.2002C7.08009 5 6.51962 5 6.0918 5.21799C5.71547 5.40973 5.40973 5.71547 5.21799 6.0918C5 6.51962 5 7.08009 5 8.2002V15.8002C5 16.9203 5 17.4801 5.21799 17.9079C5.40973 18.2842 5.71547 18.5905 6.0918 18.7822C6.5192 19 7.07899 19 8.19691 19H15.8031C16.921 19 17.48 19 17.9074 18.7822C18.2837 18.5905 18.5905 18.2839 18.7822 17.9076C19 17.4802 19 16.921 19 15.8031V14M20 9V4M20 4H15M20 4L13 11" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            </svg>
+        </a>
+    </template>
+    <template v-else-if="type === 'none'">
         (no data)
-    </span>
+    </template>
     <ul v-else-if="type === 'list'">
         <li v-for="(line, index) in props.contents" :key="index">
             {{ line }}
