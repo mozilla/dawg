@@ -22,7 +22,7 @@ export const fromDataSource = (sourcename: string, groupname: string, data: any)
 
     for (const subgroup in data.members) {
     // skip a couple of internal groups
-    if (!["_default", "analysis-writer", "udf", "team"].includes(subgroup)) {
+    if (!["_default", "analysis-writer", "udf", "udf-writer", "team", "default-compute", "syndicate", "syndicated", "unmanaged", "client-managed"].includes(subgroup)) {
         subgroups.push(subgroup)
         members.push(...data.members[subgroup])
        }
