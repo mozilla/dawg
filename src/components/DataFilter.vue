@@ -51,6 +51,9 @@ const filtered = computed(() => {
             if (contents instanceof Set) {
                 return Array.from(contents).some((item) => filterFunc.value(item))
             }
+            if (contents instanceof Array) {
+                return contents.some((item) => filterFunc.value(item))
+            }
             return filterFunc.value(contents)
         })
     })
