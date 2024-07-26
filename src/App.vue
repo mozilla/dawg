@@ -20,7 +20,7 @@ onMounted(() => {
     <h1><a href="https://wiki.mozilla.org/Data_Collection#Data_Collection_Categories">Data Collection at Mozilla</a></h1>
   </header>
   <main>
-    <PolyAssetLoader :sources="['gcpv1.json','gcpv2_merged.json']" />
+    <PolyAssetLoader :sources="['gcpv1_enriched.json','gcpv2_merged.json']" />
   </main>
 </template>
 
