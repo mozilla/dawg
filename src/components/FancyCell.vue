@@ -39,7 +39,7 @@ const type = computed(() => {
     </template>
     <!-- All links are lists so handled accordingly -->
     <template v-if="type === 'link'">
-      <a v-for="(link, _) in props.contents" :href="link">
+      <a v-for="(link) in props.contents" :key="link.id">
           <template v-if="link.includes('github.com')">
               <!-- GitHub SVG -->
               <svg width="23px" height="23px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
