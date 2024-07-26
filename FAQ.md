@@ -38,5 +38,7 @@ search for your workgroup, and propose a change adding yourself.
 
 # Is this workgroup abandoned/deprecated?
 If the Sponsor is "None" for a workgroup, that is a pretty good sign the
-workgroup is deprecated. [Consult DSRE](https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/27921246/Contacting+Data+SRE)
+workgroup is deprecated. If you follow the github search link and don't see any
+results, that's also a pretty good sign the workgroup is not actively used. 
+[Consult DSRE](https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/27921246/Contacting+Data+SRE)
 if you think you should be a member of a workgroup that doesn't have a Sponsor.
