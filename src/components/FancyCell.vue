@@ -16,7 +16,7 @@ const props = defineProps<{
 // computing this ahead of time to keep template 
 const type = computed(() => {
     switch (true) {
-        case (urlPattern.test(props?.contents[0] || "") == true):
+        case (props.contents instanceof Array && urlPattern.test(props?.contents[0] || "") == true):
             return "link"
         case (props.contents instanceof Set):
         case (props.contents instanceof Array):
