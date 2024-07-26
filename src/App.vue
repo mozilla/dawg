@@ -17,6 +17,7 @@ onMounted(() => {
       <a href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/27919274/Using+workgroups">GCPv2 Documentation</a>
       <a href="https://wiki.mozilla.org/Security/Data_Classification">Data Classification at Mozilla</a>
       <a href="https://wiki.mozilla.org/Data_Collection#Data_Collection_Categories">Data Collection at Mozilla</a>
+      <a href="https://groups.google.com/my-groups">Search for "da-wg" here to see your Data Access Workgroups</a>
     </nav>
   </header>
   <main>
