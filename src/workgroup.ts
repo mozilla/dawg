@@ -11,7 +11,8 @@ export type WorkGroup = {
 }
 
 const SourceTypeMap: Map<string, string> = new Map(Object.entries({
-    'mock.json' : 'mock-data'
+    'gcpv1_enriched.json' : 'Data Access Workgroup',
+    'gcpv2_merged.json' : 'GCPv2 Workgroup'
 }))
 
 //todo types
