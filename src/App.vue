@@ -10,7 +10,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <header>
+  <header class="text-center">
     <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore data access workgroups - Compiled from aggregated Terraform State data.</p>
   </header>
   <main>
@@ -21,5 +21,15 @@ onMounted(() => {
 <style scoped>
 header {
   margin: 80px auto 2rem;
+}
+.whd-links {
+  margin: 2rem 0;
+}
+.whd-links a {
+  display: inline-block;
+  margin: 0 2rem;
+}
+.whd-links a:hover {
+  text-decoration: underline;
 }
 </style>
