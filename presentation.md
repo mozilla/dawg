@@ -1,3 +1,5 @@
+See the presentation [here](https://mozilla.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=c518d3d5-2500-46f4-9a81-b1b9010f545b&query=hack%20week) (starts at 17:38).
+
 For our hackweek project we worked on a web interface to Data Access Workgroups and GCPv2 workgroups.
 
 For those of you who don't know what Data Access Workgroups are: consider yourself lucky. Workgroups are the abstraction SRE uses on top of GCP IAM to reason about and grant access to resources in GCP.
