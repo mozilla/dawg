@@ -14,7 +14,7 @@ onMounted(() => {
     <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore data access workgroups - Compiled from aggregated Terraform State data.</p>
   </header>
   <main>
-    <PolyAssetLoader :sources="['mock.json']" />
+    <PolyAssetLoader :sources="['gcpv1_enriched.json', 'gcpv2_merged.json']" />
   </main>
 </template>
 

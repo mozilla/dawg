@@ -50,7 +50,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gcloud storage cp -r ~/project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static
+            gsutil rsync -r -x "gcpv.*\.json" ~/project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static
 
 workflows:
   ci:
