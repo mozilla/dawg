@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   node: circleci/node@5.2.0
+  gcp-cli: circleci/gcp-cli@3.1.1
 executors:
   pw-jammy-development:
     docker:
@@ -24,9 +25,40 @@ jobs:
       - node/install-packages
       - run:
           command: npm run build
+  artifact-deployment:
+    executor: gcp-cli/google
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run build
+      - run:
+          name: Prepare environment variables for OIDC authentication
+          command: |
+            echo 'export GOOGLE_PROJECT_ID="moz-fx-data-prot-nonprod-c3a1"' >> "$BASH_ENV"
+            echo "export OIDC_WIP_ID=$GCPV2_WORKLOAD_IDENTITY_POOL_ID" >> "$BASH_ENV"
+            echo "export OIDC_WIP_PROVIDER_ID=$GCPV2_CIRCLECI_WORKLOAD_IDENTITY_PROVIDER" >> "$BASH_ENV"
+            echo "export GOOGLE_PROJECT_NUMBER=$GCPV2_WORKLOAD_IDENTITY_POOL_PROJECT_NUMBER" >> "$BASH_ENV"
+            echo "export OIDC_SERVICE_ACCOUNT_EMAIL=$GCP_SERVICE_ACCOUNT_EMAIL" >> "$BASH_ENV"
+      - gcp-cli/setup:
+          use_oidc: true
+      - run:
+          name: Upload artifacts
+          command: |
+            gcloud storage cp -r ./project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/test/abc
 
 workflows:
   ci:
     jobs:
       - lint
       - build
+  deploy:
+    jobs:
+      - artifact-deployment:
+          name: Deploy static website
+          context: gcpv2-workload-identity
+          # TODO uncomment before merging
+#          filters:
+#            branches:
+#              only:
+#                - main
