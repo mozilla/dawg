@@ -67,9 +67,9 @@ workflows:
       - artifact-deployment:
           name: Deploy static website
           context: gcpv2-workload-identity
+          requires:
+            - build
           # TODO uncomment before merging
-#          requires:
-#            - build
 #          filters:
 #            branches:
 #              only:
