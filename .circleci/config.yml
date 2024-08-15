@@ -50,8 +50,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            cd ~/project/dist
-            find . -type f ! -name "gcpv1_enriched.json" ! -name "gcpv2_enriched.json" -print0 | xargs -0 -I {} gcloud storage cp {} gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/{}
+            gsutil rsync -r -x "gcpv.*\.json" ~/project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static
 
 workflows:
   ci:
