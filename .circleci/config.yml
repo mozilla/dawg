@@ -25,10 +25,8 @@ jobs:
       - node/install-packages
       - run:
           name: Build assets
-          command: npm run build
-      - run:
-          name: Prepare workspace
           command: |
+            npm run build
             mkdir -p workspace
             cp -r /project/dist /workspace/dist
       - persist_to_workspace:
