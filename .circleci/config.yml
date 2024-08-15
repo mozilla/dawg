@@ -50,7 +50,8 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gcloud storage cp -r ~/project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static
+            cd ~/project/dist
+            find . -type f ! -name "gcpv1_enriched.json" ! -name "gcpv2_enriched.json" -print0 | xargs -0 -I {} gcloud storage cp {} gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/{}
 
 workflows:
   ci:
@@ -59,17 +60,18 @@ workflows:
       - build
   deploy:
     jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - main
+      - build
+#      - build:
+#          filters:
+#            branches:
+#              only:
+#                - main
       - artifact-deployment:
           name: Deploy static website
           context: gcpv2-workload-identity
           requires:
             - build
-          filters:
-            branches:
-              only:
-                - main
+#          filters:
+#            branches:
+#              only:
+#                - main
