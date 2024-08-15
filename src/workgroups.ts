@@ -10,7 +10,7 @@ export type WorkGroup = {
     team_projects: Set<string>
 }
 
-const SourceTypeMap: Map<string, string> = new Map(Object.entries({
+export const Sources: Map<string, string> = new Map(Object.entries({
     'gcpv1_enriched.json' : 'Data Access Workgroup',
     'gcpv2_merged.json' : 'GCPv2 Workgroup'
 }))
@@ -32,7 +32,7 @@ export const fromDataSource = (sourcename: string, groupname: string, data: any)
         name: groupname,
         id: `workgroup:${groupname}`,
         // fixme: link to github code search e.g. https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+%22workgroup%3Acontextual-services%22&type=code
-        type: SourceTypeMap.get(sourcename),
+        type: Sources.get(sourcename),
         links: data?.metadata?.links || [],
         sponsor: data?.metadata?.sponsor || "not listed",
         managers: data?.metadata?.managers || [],
