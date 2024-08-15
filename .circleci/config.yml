@@ -30,7 +30,7 @@ jobs:
           name: Prepare workspace
           command: |
             mkdir -p workspace
-            cp -r project/dist workspace/dist
+            cp -r /project/dist /workspace/dist
       - persist_to_workspace:
           root: workspace
           paths:
@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gcloud storage cp -r workspace/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/test/abc
+            gcloud storage cp -r /workspace/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/test/abc
 
 workflows:
   ci:
