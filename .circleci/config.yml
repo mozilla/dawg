@@ -27,10 +27,8 @@ jobs:
           name: Build assets
           command: |
             npm run build
-            mkdir -p workspace
-            cp -r /project/dist /workspace/dist
       - persist_to_workspace:
-          root: workspace
+          root: ~/project
           paths:
             - dist
 
@@ -38,7 +36,7 @@ jobs:
     executor: gcp-cli/google
     steps:
       - attach_workspace:
-          at: workspace
+          at: ~/project
       - run:
           name: Prepare environment variables for OIDC authentication
           command: |
