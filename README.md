@@ -32,18 +32,9 @@ npm run dev
 npm run build
 ```
 
-### Deploy to Production
-
-```sh
-git checkout prod
-npm run build
-gsutil -m rsync -r dist/ gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/
-```
-
 ### Use Production Assets in Dev Testing (`workgroup:mozilla-confidential` metadata)
-
+## ⚠️ Do not commit those files
 ```sh
-git checkout prod # or cherry pick this commit into your branch temporarily
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv2_merged.json public/
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv1_enriched.json public/
 npm run dev
