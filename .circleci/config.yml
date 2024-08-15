@@ -50,7 +50,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gcloud storage cp -r ~/project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/test/abc
+            gcloud storage cp -r ~/project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static
 
 workflows:
   ci:
@@ -65,8 +65,7 @@ workflows:
           context: gcpv2-workload-identity
           requires:
             - build
-          # TODO uncomment before merging
-#          filters:
-#            branches:
-#              only:
-#                - main
+          filters:
+            branches:
+              only:
+                - main
