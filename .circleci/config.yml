@@ -24,14 +24,23 @@ jobs:
       - checkout
       - node/install-packages
       - run:
+          name: Build assets
           command: npm run build
+      - run:
+          name: Prepare workspace
+          command: |
+            mkdir -p workspace
+            cp -r project/dist workspace/dist
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - dist
+
   artifact-deployment:
     executor: gcp-cli/google
     steps:
-      - checkout
-      - node/install-packages
-      - run:
-          command: npm run build
+      - attach_workspace:
+          at: workspace
       - run:
           name: Prepare environment variables for OIDC authentication
           command: |
@@ -45,7 +54,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gcloud storage cp -r ./project/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/test/abc
+            gcloud storage cp -r workspace/dist gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/test/abc
 
 workflows:
   ci:
@@ -54,10 +63,13 @@ workflows:
       - build
   deploy:
     jobs:
+      - build
       - artifact-deployment:
           name: Deploy static website
           context: gcpv2-workload-identity
           # TODO uncomment before merging
+#          requires:
+#            - build
 #          filters:
 #            branches:
 #              only:
