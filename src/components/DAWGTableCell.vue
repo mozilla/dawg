@@ -15,36 +15,43 @@ const props = defineProps<{
     contents: undefined | string | Set<any> | Array<any> | Map<any, any>,
 }>()
 
+enum Kinds {
+    DAWGLink,
+    ListOfLinks,
+    ListOfText,
+    Text,
+    NoData,
+}
+
 // computing this ahead of time to keep template 
-const type = computed(() => {
+const kind = computed<Kinds>((): Kinds => {
     switch (true) {
         case (props.contents instanceof Array && urlPattern.test(props?.contents[0] || "") == true):
-            return "link"
+            return Kinds.ListOfLinks
         case (props.contents instanceof Set):
         case (props.contents instanceof Array):
         case (props.contents instanceof Map):
-            return "list"
+            return Kinds.ListOfText
         case (props.contents == null):
         case (props.contents === undefined):
-            return "none"
+            return Kinds.NoData
         default:
-            return "plain"
+            return Kinds.Text
     }
 })
 </script>
 
 <template>
-    <template v-if="type === 'plain'">
+    <template v-if="kind === Kinds.Text">
         {{ props.contents }}
     </template>
-    <!-- All links are lists so handled accordingly -->
-    <template v-if="type === 'link'">
+    <template v-if="kind === Kinds.ListOfLinks">
         <IconLink v-for="(link) in props.contents" :key="link.id" :href="link" />
     </template>
-    <template v-else-if="type === 'none'">
+    <template v-else-if="kind === Kinds.NoData">
         (no data)
     </template>
-    <ul v-else-if="type === 'list'">
+    <ul v-else-if="kind === Kinds.ListOfText">
         <li v-for="(line, index) in props.contents" :key="index">
             {{ line }}
         </li>
