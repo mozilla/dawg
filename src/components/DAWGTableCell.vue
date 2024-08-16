@@ -25,15 +25,16 @@ enum Kinds {
 
 // computing this ahead of time to keep template 
 const kind = computed<Kinds>((): Kinds => {
+    let c = props.contents
     switch (true) {
-        case (props.contents instanceof Array && urlPattern.test(props?.contents[0] || "") == true):
+        case (c instanceof Array && urlPattern.test(c[0] || "") == true):
             return Kinds.ListOfLinks
-        case (props.contents instanceof Set):
-        case (props.contents instanceof Array):
-        case (props.contents instanceof Map):
+        case (c instanceof Set):
+        case (c instanceof Array):
+        case (c instanceof Map):
             return Kinds.ListOfText
-        case (props.contents == null):
-        case (props.contents === undefined):
+        case (c == null):
+        case (c === undefined):
             return Kinds.NoData
         default:
             return Kinds.Text
