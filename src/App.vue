@@ -6,7 +6,7 @@ import type { WorkGroup } from './workgroups'
 import { Sources } from './workgroups'
 
 
-import PolyAssetLoader from './components/PolyAssetLoader.vue'
+import DataLoader from './components/DataLoader.vue'
 import Nav from './components/Nav.vue'
 
 export type WorkGroupData = WorkGroup[]
@@ -32,7 +32,7 @@ const sourceFiles = Array.from(Sources.keys())
       access workgroups - Compiled from aggregated Terraform State data.</p>
   </header>
   <main>
-    <PolyAssetLoader v-if="data.length == 0" :sources="sourceFiles" @done="recieveData" />
+    <DataLoader v-if="data.length == 0" :sources="sourceFiles" @done="recieveData" />
     <RouterView v-else />
   </main>
 </template>
