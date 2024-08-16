@@ -17,11 +17,14 @@ const props = defineProps<{
                 </tr>
             </thead>
             <tbody>
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                    v-for="(row, rowIndex) in props.rows" :key="rowIndex">
-                    <td class="px-2 py-1" v-for="(cell, cellIndex) in row" :key="cellIndex">
-                        <DAWGTableCell :contents="cell" />
-                    </td>
+                <tr
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+
+                    <template v-for="(row, rowIndex) in props.rows" :key="rowIndex">
+                        <td class="px-2 py-1" v-for="(cell, cellIndex) in row" :key="cellIndex">
+                            <DAWGTableCell :contents="cell" />
+                        </td>
+                    </template>
                 </tr>
             </tbody>
         </table>
