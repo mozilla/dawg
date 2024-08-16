@@ -33,3 +33,13 @@ const props = defineProps<{
         </template>
     </a>
 </template>
+<style scoped>
+a {
+    display: inline-block;
+    margin: 0 0.3rem;
+}
+
+a:first-child {
+    margin-left: 0;
+}
+</style>
