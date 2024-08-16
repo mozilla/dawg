@@ -1,10 +1,11 @@
 <script setup lang="ts">
-const props = defineProps<{}>()
+
+import DataFilter from '../components/DataFilter.vue'
+
 </script>
 
 <template>
-    Find DAWGs
+    <DataFilter />
 </template>
 
-<style>
-</style>
+<style></style>

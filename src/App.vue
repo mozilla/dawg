@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, ref } from 'vue';
+import { ref, provide } from 'vue';
 
 import type { WorkGroup } from './workgroups'
 import { Sources } from './workgroups'
@@ -9,16 +9,20 @@ import { Sources } from './workgroups'
 import PolyAssetLoader from './components/PolyAssetLoader.vue'
 import Nav from './components/Nav.vue'
 
-export type WorkGroupData = Record<string, Record<string, WorkGroup>>
+export type WorkGroupData = WorkGroup[]
 
-const model = defineModel<WorkGroupData>({
-  default: []
-})
+const data = ref<WorkGroup[]>([])
 
-const loaded = computed(() => {
-  // When we have an entry in data for each source, we are loaded
-  return Object.keys(model.value).length == Object.keys(Sources).length
-})
+// makes data reachable by nested child components
+provide('data', data)
+
+const recieveData = (d: WorkGroup[]) => {
+  console.info("data loaded")
+  data.value = d
+}
+
+const sourceFiles = Array.from(Sources.keys())
+
 </script>
 
 <template>
@@ -28,26 +32,13 @@ const loaded = computed(() => {
       access workgroups - Compiled from aggregated Terraform State data.</p>
   </header>
   <main>
-    <PolyAssetLoader :sources="['gcpv1_enriched.json', 'gcpv2_merged.json']" :data="model" />
-    <!-- <RouterView v-else /> -->
+    <PolyAssetLoader v-if="data.length == 0" :sources="sourceFiles" @done="recieveData" />
+    <RouterView v-else />
   </main>
 </template>
 
 <style scoped>
 header {
   margin: 80px auto 2rem;
-}
-
-.whd-links {
-  margin: 2rem 0;
-}
-
-.whd-links a {
-  display: inline-block;
-  margin: 0 2rem;
-}
-
-.whd-links a:hover {
-  text-decoration: underline;
 }
 </style>

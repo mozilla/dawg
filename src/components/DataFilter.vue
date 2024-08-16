@@ -1,13 +1,12 @@
 <script setup lang="ts">
 
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
+import type { Ref } from 'vue'
 import type { WorkGroup } from '../workgroups'
 import { fromDataSource } from '../workgroups'
 import DAWGTable from './DAWGTable.vue'
 
-const props = defineProps<{
-    data: WorkGroup[],
-}>()
+const data: Ref<WorkGroup[]> | undefined = inject('data')
 
 
 // The state of the "Use Regex" toggle
@@ -43,10 +42,13 @@ const filterFunc = computed(() => {
 
 // Returns the data set filtered by the seach term or regex
 const filtered = computed(() => {
-    if (!searchstring.value) {
-        return props.data
+    if (!data) {
+        return []
     }
-    return props.data.filter(row => {
+    if (!searchstring.value) {
+        return data.value
+    }
+    return data && data.value.filter(row => {
         return Object.values(row).some(contents => {
             if (contents instanceof Set) {
                 return Array.from(contents).some((item) => filterFunc.value(item))
