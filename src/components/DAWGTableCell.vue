@@ -1,60 +1,38 @@
 <script setup lang="ts">
 
-import { computed } from 'vue'
 import IconLink from './IconLink.vue';
-
-// thank to https://www.freecodecamp.org/news/check-if-a-javascript-string-is-a-url/
-const urlPattern = new RegExp('^(https?:\\/\\/)?' + // validate protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // validate domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // validate OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // validate port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // validate query string
-    '(\\#[-a-z\\d_]*)?$', 'i'); // validate fragment locator
+import { DisplayAs, WorkGroupFieldKinds } from '@/workgroups';
+import type { WorkGroup } from '@/workgroups'
 
 const props = defineProps<{
     contents: undefined | string | Set<any> | Array<any> | Map<any, any>,
+    fieldName: keyof WorkGroup,
 }>()
 
-enum Kinds {
-    DAWGLink,
-    ListOfLinks,
-    ListOfText,
-    Text,
-    NoData,
-}
+const display = WorkGroupFieldKinds.get(props.fieldName)
 
-// computing this ahead of time to keep template 
-const kind = computed<Kinds>((): Kinds => {
-    let c = props.contents
-    switch (true) {
-        case (c instanceof Array && urlPattern.test(c[0] || "") == true):
-            return Kinds.ListOfLinks
-        case (c instanceof Set):
-        case (c instanceof Array):
-        case (c instanceof Map):
-            return Kinds.ListOfText
-        case (c == null):
-        case (c === undefined):
-            return Kinds.NoData
-        default:
-            return Kinds.Text
-    }
-})
 </script>
 
 <template>
-    <template v-if="kind === Kinds.Text">
-        {{ props.contents }}
-    </template>
-    <template v-if="kind === Kinds.ListOfLinks">
-        <IconLink v-for="(link) in props.contents" :key="link.id" :href="link" />
-    </template>
-    <template v-else-if="kind === Kinds.NoData">
-        (no data)
-    </template>
-    <ul v-else-if="kind === Kinds.ListOfText">
-        <li v-for="(line, index) in props.contents" :key="index">
-            {{ line }}
-        </li>
-    </ul>
+    <td class="px-2 py-1">
+        <template v-if="!props.contents">
+            (no data)
+        </template>
+        <template v-if="display === DisplayAs.DAWGLink">
+            <RouterLink :to="`/dawg/${encodeURIComponent(props.contents as string)}`">
+                {{ props.contents }}
+            </RouterLink>
+        </template>
+        <template v-if="display === DisplayAs.PlainText">
+            {{ props.contents }}
+        </template>
+        <template v-if="display === DisplayAs.ListOfLinks">
+            <IconLink v-for="(link) in props.contents" :key="link.id" :href="link" />
+        </template>
+        <ul v-else-if="display === DisplayAs.ListOfText">
+            <li v-for="(line, index) in props.contents" :key="index">
+                {{ line }}
+            </li>
+        </ul>
+    </td>
 </template>

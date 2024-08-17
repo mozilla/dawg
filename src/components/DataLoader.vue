@@ -3,15 +3,17 @@
 import { ref } from 'vue';
 
 import { fromDataSource } from '../workgroups'
-import type { WorkGroup } from '../workgroups'
-
+import type { WorkGroupMap } from '../workgroups'
 
 const props = defineProps<{
     sources: string[],
 }>()
-const emit = defineEmits(['done'])
 
-const data: WorkGroup[] = [];
+const emit = defineEmits<{
+    done: [WorkGroupMap]
+}>()
+
+const data: WorkGroupMap = new Map();
 
 enum Status {
     Loading,
@@ -33,7 +35,7 @@ Promise
         return fetch(src).then(async (res) => {
             const tmp = await res.json()
             for (const groupname in tmp) {
-                data.push(fromDataSource(src, groupname, tmp[groupname]))
+                data.set(groupname, fromDataSource(src, groupname, tmp[groupname]))
             }
         })
     }))

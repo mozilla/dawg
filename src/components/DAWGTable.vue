@@ -21,9 +21,8 @@ const props = defineProps<{
                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
 
                     <template v-for="(row, rowIndex) in props.rows" :key="rowIndex">
-                        <td class="px-2 py-1" v-for="(cell, cellIndex) in row" :key="cellIndex">
-                            <DAWGTableCell :contents="cell" />
-                        </td>
+
+                        <DAWGTableCell v-for="(value, key) in row" :key="key" :field-name="key" :contents="value" />
                     </template>
                 </tr>
             </tbody>

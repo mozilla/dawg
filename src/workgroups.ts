@@ -2,13 +2,16 @@ export type WorkGroup = {
   name: string
   id: string
   type?: string
-  links: Set<string>
+  links: string[]
   sponsor: string
-  managers: Set<string>
-  subgroups: Set<string>
-  members: Set<string>
-  team_projects: Set<string>
+  managers: string[]
+  subgroups: string[]
+  members: string[]
+  team_projects: string[]
 }
+
+export type WorkGroupMap = Map<string, WorkGroup>
+export type WorkGroupSet = WorkGroup[]
 
 export enum DisplayAs {
   PlainText,
@@ -33,13 +36,32 @@ export const WorkGroupFieldKinds: Map<keyof WorkGroup, DisplayAs> = new Map([
   ['team_projects', DisplayAs.ListOfText]
 ])
 
+const DefaultWorkGroupIDs = [
+  '_default',
+  'analysis-writer',
+  'udf',
+  'udf-writer',
+  'team',
+  'default-compute',
+  'syndicate',
+  'syndicated',
+  'unmanaged',
+  'client-managed',
+  'application',
+  'application-noanalysis'
+]
+
 export const Sources: Map<string, string> = new Map(
   Object.entries({
     'gcpv1_enriched.json': 'Data Access Workgroup',
     'gcpv2_merged.json': 'GCPv2 Workgroup'
   })
 )
+export const workgroupSetFromMap = (wgm: WorkGroupMap): WorkGroupSet => {
+  console.warn('was called', Array.from(wgm.values()))
 
+  return Array.from(wgm.values())
+}
 //todo types
 export const fromDataSource = (sourcename: string, groupname: string, data: any): WorkGroup => {
   const subgroups: string[] = []
@@ -47,22 +69,7 @@ export const fromDataSource = (sourcename: string, groupname: string, data: any)
 
   for (const subgroup in data.members) {
     // skip a couple of internal groups
-    if (
-      ![
-        '_default',
-        'analysis-writer',
-        'udf',
-        'udf-writer',
-        'team',
-        'default-compute',
-        'syndicate',
-        'syndicated',
-        'unmanaged',
-        'client-managed',
-        'application',
-        'application-noanalysis'
-      ].includes(subgroup)
-    ) {
+    if (!DefaultWorkGroupIDs.includes(subgroup)) {
       subgroups.push(subgroup)
       members.push(...data.members[subgroup])
     }
@@ -76,9 +83,9 @@ export const fromDataSource = (sourcename: string, groupname: string, data: any)
     links: data?.metadata?.links || [],
     sponsor: data?.metadata?.sponsor || 'not listed',
     managers: data?.metadata?.managers || [],
-    subgroups: new Set(subgroups),
-    members: new Set(members),
+    subgroups: subgroups,
+    members: members,
     // fixme linkify e.g. https://console.cloud.google.com/home/dashboard?project=moz-fx-data-dataops
-    team_projects: new Set(data.team_projects)
+    team_projects: data.team_projects
   }
 }

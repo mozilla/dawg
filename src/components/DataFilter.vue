@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
 import { ref, computed, inject } from 'vue'
-import type { Ref } from 'vue'
-import type { WorkGroup } from '../workgroups'
-import { fromDataSource } from '../workgroups'
+import type { Ref, ComputedRef } from 'vue'
+import type { WorkGroup, WorkGroupMap, WorkGroupSet } from '../workgroups'
+import { fromDataSource, workgroupSetFromMap } from '../workgroups'
 import DAWGTable from './DAWGTable.vue'
 
-const data: Ref<WorkGroup[]> | undefined = inject('data')
 
+const dataset = inject('dataset')
 
 // The state of the "Use Regex" toggle
 const isRegex = defineModel<boolean>('isRegex');
@@ -41,18 +41,15 @@ const filterFunc = computed(() => {
 })
 
 // Returns the data set filtered by the seach term or regex
-const filtered = computed(() => {
-    if (!data) {
+const filteredSet: ComputedRef<WorkGroupSet> = computed(() => {
+    if (!dataset.value) {
         return []
     }
     if (!searchstring.value) {
-        return data.value
+        return dataset.value
     }
-    return data && data.value.filter(row => {
+    return dataset.value && Array.from(dataset.value).filter(row => {
         return Object.values(row).some(contents => {
-            if (contents instanceof Set) {
-                return Array.from(contents).some((item) => filterFunc.value(item))
-            }
             if (contents instanceof Array) {
                 return contents.some((item) => filterFunc.value(item))
             }
@@ -96,7 +93,7 @@ const headers = ref(((struct) => Object.keys(struct))(fromDataSource("none", "pl
         </label>
     </div>
 
-    <DAWGTable :headers="headers" :rows="filtered" />
+    <DAWGTable :headers="headers" :rows="filteredSet" />
 </template>
 
 <style scoped>

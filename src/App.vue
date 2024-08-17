@@ -1,24 +1,30 @@
 <script setup lang="ts">
 
-import { ref, provide } from 'vue';
+import { ref, provide, computed } from 'vue';
+import type { Ref, ComputedRef } from 'vue';
 
-import type { WorkGroup } from './workgroups'
-import { Sources } from './workgroups'
+import type { WorkGroupSet, WorkGroupMap } from './workgroups'
+import { Sources, workgroupSetFromMap } from './workgroups'
 
 
 import DataLoader from './components/DataLoader.vue'
 import Nav from './components/Nav.vue'
 
-export type WorkGroupData = WorkGroup[]
 
-const data = ref<WorkGroup[]>([])
+
+const datamap: Ref<WorkGroupMap> = ref(new Map())
+// TODO clarify naming
+const dataset: ComputedRef<WorkGroupSet> = computed(() => {
+  return workgroupSetFromMap(datamap.value)
+})
 
 // makes data reachable by nested child components
-provide('data', data)
+provide('dataset', dataset)
+provide('datamap', datamap)
 
-const recieveData = (d: WorkGroup[]) => {
+const recieveData = (d: WorkGroupMap) => {
   console.info("data loaded")
-  data.value = d
+  datamap.value = d
 }
 
 const sourceFiles = Array.from(Sources.keys())
@@ -32,7 +38,7 @@ const sourceFiles = Array.from(Sources.keys())
       access workgroups - Compiled from aggregated Terraform State data.</p>
   </header>
   <main>
-    <DataLoader v-if="data.length == 0" :sources="sourceFiles" @done="recieveData" />
+    <DataLoader v-if="dataset.length == 0" :sources="sourceFiles" @done="recieveData" />
     <RouterView v-else />
   </main>
 </template>
