@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { DisplayAs, WorkGroupFieldKinds } from '@/workgroups';
+import { DisplayMode, WorkGroupDisplayModes } from '@/workgroups';
 import type { WorkGroup } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
@@ -11,7 +11,7 @@ const props = defineProps<{
     fieldName: keyof WorkGroup,
 }>()
 
-const display = WorkGroupFieldKinds.get(props.fieldName)
+const display = WorkGroupDisplayModes.get(props.fieldName)
 
 </script>
 
@@ -20,18 +20,18 @@ const display = WorkGroupFieldKinds.get(props.fieldName)
         <template v-if="!props.contents">
             (no data)
         </template>
-        <template v-if="display === DisplayAs.DAWGLink">
+        <template v-if="display === DisplayMode.DAWGLink">
             <RouterLink :to="`/${encodeURIComponent(props.contents as string)}`">
                 {{ props.contents }}
             </RouterLink>
         </template>
-        <template v-if="display === DisplayAs.PlainText">
+        <template v-if="display === DisplayMode.PlainText">
             {{ props.contents }}
         </template>
-        <template v-if="display === DisplayAs.ListOfLinks">
+        <template v-if="display === DisplayMode.ListOfLinks">
             <IconLink v-for="(link) in props.contents" :key="link.id" :href="link" :auto-text="false" />
         </template>
-        <ul v-else-if="display === DisplayAs.ListOfText">
+        <ul v-else-if="display === DisplayMode.ListOfText">
             <li v-for="(line, index) in props.contents" :key="index">
                 {{ line }}
             </li>

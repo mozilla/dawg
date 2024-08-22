@@ -14,7 +14,7 @@ const showFields = [
     "managers",
     "sponsor",
     "subgroups",
-    "members",
+    "members_list",
 ] as const
 
 // Using Pick from WorkGroup prevents us from trying to showfields that dont exist. e.g. adding `foobar` to showFields will error here

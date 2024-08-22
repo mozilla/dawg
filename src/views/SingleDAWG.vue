@@ -1,30 +1,33 @@
 <script setup lang="ts">
-import type { Ref } from 'vue';
-import { inject, ref } from 'vue';
+import type { Ref, ComputedRef } from 'vue';
+import { inject, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
-import type { WorkGroup, WorkGroupMap } from '@/workgroups';
+import type { WorkGroup, WorkGroupMap, ListOfText, MapOfLists, PlainText, ListOfLinks } from '@/workgroups';
 import IconLink from '@/components/IconLink.vue';
-import { DisplayAs, WorkGroupFieldKinds } from '@/workgroups';
+import { DisplayMode, WorkGroupDisplayModes, } from '@/workgroups';
 
-
+const details = Array<keyof WorkGroup>('type', 'sponsor', 'managers', 'members')
+const noData = "(nodata)"
 
 const route = useRoute();
 
-const datamap: Ref<WorkGroupMap> | undefined = inject('datamap')
-const foundWorkgroup = ref(false)
-
-let workgroup: WorkGroup
-
 const id = decodeURIComponent(route.params.dawgid as string)
 
-if (datamap && datamap.value.get(id)) {
-    foundWorkgroup.value = true
-    workgroup = datamap.value.get(id) as WorkGroup
-}
+const datamap: Ref<WorkGroupMap> | undefined = inject('datamap')
 
-const details = Array<keyof WorkGroup>('type', 'sponsor', 'managers', 'members')
+const workgroup: ComputedRef<WorkGroup> = computed(() => {
 
+
+    if (datamap && datamap.value.get(id)) {
+        return datamap.value.get(id) as WorkGroup
+    }
+    return {} as WorkGroup
+})
+
+const foundWorkgroup: ComputedRef<boolean> = computed(() => {
+    return Object.prototype.hasOwnProperty.call(workgroup.value, 'name')
+})
 </script>
 
 <template>
@@ -35,23 +38,25 @@ const details = Array<keyof WorkGroup>('type', 'sponsor', 'managers', 'members')
     <template v-else>
         <h1>{{ workgroup.name }}</h1>
         <nav>
-            <IconLink v-for="link, key in workgroup.links" v-bind:key :href="link" :autoText="true" />
+            <IconLink v-for="link, key in workgroup.links as ListOfLinks" v-bind:key :href="link" :autoText="true" />
         </nav>
         <table>
             <tr v-for="(field, i) in details" :key="i">
                 <td> {{ field }}</td>
-                <td v-if="WorkGroupFieldKinds.get(field) == DisplayAs.PlainText"> {{ workgroup[field] }}</td>
-                <td v-if="WorkGroupFieldKinds.get(field) == DisplayAs.ListOfText">
-                    <ul v-for="item, i in workgroup[field]" :key="i">
-                        <li>{{ item }}</li>
+                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.PlainText">
+                    {{ (workgroup[field] as PlainText).length > 0 ? workgroup[field] : noData }}
+                </td>
+                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.ListOfText">
+                    <ul v-for="item, i in workgroup[field] as ListOfText" :key="i">
+                        <li>{{ item.length > 0 ? item : noData }}</li>
                     </ul>
                 </td>
-                <td v-if="WorkGroupFieldKinds.get(field) == DisplayAs.MapOfLists">
-                    <dl v-for="list, key in workgroup[field]" :key="key">
-                        <dt v-if="list.length > 0">{{ key }}</dt>
+                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.MapOfLists">
+                    <dl v-for="list, k in workgroup[field] as MapOfLists " :key="k">
+                        <dt v-if="list.length > 0">{{ k }}</dt>
                         <dd v-if="list.length > 0">
                             <ul v-for="item, i in list" :key="i">
-                                <li>{{ item }}</li>
+                                <li>{{ item.length > 0 ? item : noData }}</li>
                             </ul>
                         </dd>
                     </dl>

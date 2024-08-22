@@ -1,18 +1,23 @@
+export type MapOfLists = { [key: string]: string[] }
+export type ListOfText = string[]
+export type ListOfLinks = string[]
+export type PlainText = string
+
 export type WorkGroup = {
   name: string
-  type?: string
-  links: string[]
-  sponsor: string
-  managers: string[]
-  subgroups: string[]
-  members_list: string[]
-  members: { [key: string]: string[] }
+  type?: PlainText
+  links: ListOfLinks
+  sponsor: PlainText
+  managers: ListOfText
+  subgroups: ListOfText
+  members_list: ListOfText
+  members: MapOfLists
 }
 
 export type WorkGroupMap = Map<string, WorkGroup>
 export type WorkGroupSet = WorkGroup[]
 
-export enum DisplayAs {
+export enum DisplayMode {
   PlainText,
   ListOfText,
   ListOfLinks,
@@ -20,20 +25,25 @@ export enum DisplayAs {
   DAWGLink
 }
 /* A map of WorkGroup properties to intended display modes
-Creating this assignment here prevents the need for inferring it later
-which can be difficult for things such as PlainText vs DAWGLink which
-are both of type `string`
-*/
-export const WorkGroupFieldKinds: Map<keyof WorkGroup, DisplayAs> = new Map([
-  ['name', DisplayAs.DAWGLink],
-  ['type', DisplayAs.PlainText],
-  ['links', DisplayAs.ListOfLinks],
-  ['sponsor', DisplayAs.PlainText],
-  ['managers', DisplayAs.ListOfText],
-  ['subgroups', DisplayAs.ListOfText],
-  ['members_list', DisplayAs.ListOfText],
-  ['members', DisplayAs.MapOfLists]
+  Creating this assignment here prevents the need for inferring it later
+  which can be difficult for things such as PlainText vs DAWGLink which
+  are both of type `string`
+  */
+export const WorkGroupDisplayModes: Map<keyof WorkGroup, DisplayMode> = new Map([
+  ['name', DisplayMode.DAWGLink],
+  ['type', DisplayMode.PlainText],
+  ['links', DisplayMode.ListOfLinks],
+  ['sponsor', DisplayMode.PlainText],
+  ['managers', DisplayMode.ListOfText],
+  ['subgroups', DisplayMode.ListOfText],
+  ['members_list', DisplayMode.ListOfText],
+  ['members', DisplayMode.MapOfLists]
 ])
+
+export const getFieldDisplayMode = (f: keyof WorkGroup, w: WorkGroup): DisplayMode => {
+  console.log(typeof w[f])
+  return DisplayMode.PlainText
+}
 
 const DefaultWorkGroupIDs = [
   '_default',
