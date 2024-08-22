@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref, ComputedRef } from 'vue';
-import { inject, ref, computed } from 'vue';
+import { inject, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 import type { WorkGroup, WorkGroupMap, ListOfText, MapOfLists, PlainText, ListOfLinks } from '@/workgroups';
@@ -17,7 +17,6 @@ const id = decodeURIComponent(route.params.dawgid as string)
 const datamap: Ref<WorkGroupMap> | undefined = inject('datamap')
 
 const workgroup: ComputedRef<WorkGroup> = computed(() => {
-
 
     if (datamap && datamap.value.get(id)) {
         return datamap.value.get(id) as WorkGroup
@@ -36,7 +35,7 @@ const foundWorkgroup: ComputedRef<boolean> = computed(() => {
         <h2>Could not find a Data Access Work Group with the id: <span class="monospaced">{{ id }}</span></h2>
     </template>
     <template v-else>
-        <h1>{{ workgroup.name }}</h1>
+        <h1><span class="monospace">{{ workgroup.name }}</span></h1>
         <nav>
             <IconLink v-for="link, key in workgroup.links as ListOfLinks" v-bind:key :href="link" :autoText="true" />
         </nav>
@@ -66,13 +65,19 @@ const foundWorkgroup: ComputedRef<boolean> = computed(() => {
     </template>
 </template>
 
-<style>
+<style scoped>
 h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+nav {
+    text-align: center;
 }
 
 nav a {
     display: inline-block;
+
 }
 
 h1,
@@ -88,8 +93,14 @@ dd {
     margin-bottom: 1rem;
 }
 
+table {
+    margin: 0px auto;
+}
+
 td:first-child {
     text-transform: capitalize;
+    font-weight: bold;
+    text-align: right;
 }
 
 ul {

@@ -53,7 +53,7 @@ const text: ComputedRef<string> = computed(() => {
         case type.value == LinkTypes.GitHub:
             return "Search on Github"
         case URL.canParse(props.href):
-            return URL.parse(props.href).host
+            return new URL(props.href).host
         default:
             return props.href
     }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import { ref, computed, inject } from 'vue'
-import type { Ref, ComputedRef } from 'vue'
+import { computed, inject } from 'vue'
+import type { ComputedRef } from 'vue'
 import type { WorkGroupSet, WorkGroup } from '../workgroups'
 import { newWorkGroup } from '../workgroups'
 import DAWGTable from '../components/DAWGTable.vue'
