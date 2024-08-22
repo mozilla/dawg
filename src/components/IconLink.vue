@@ -63,8 +63,8 @@ const text: ComputedRef<string> = computed(() => {
     <a :href="props.href">
         <img v-if="type == LinkTypes.GCP" :src="gcpLogo" width="25px" height="25px" alt="GCP Logo" />
         <img v-else-if="type == LinkTypes.Jira" :src="jiraLogo" width="25px" height="25px" alt="Jira Logo" />
-        <img v-else-if="type == LinkTypes.GitHub" :src="gitHubLogo" width="23px" height="23px" />
-        <img v-else :src="externalLink" width="23px" height="23px" />
+        <img v-else-if="type == LinkTypes.GitHub" :src="gitHubLogo" width="23px" height="23px" alt="Github Logo" />
+        <img v-else :src="externalLink" width="23px" height="23px" alt="External Link" />
         <span>
             <slot v-if="hasSlot()"></slot>
             <template v-else-if="autoText">{{ text }}</template>
@@ -74,7 +74,7 @@ const text: ComputedRef<string> = computed(() => {
 <style scoped>
 a,
 a span,
-a svg {
+a img {
     display: inline-block;
 }
 

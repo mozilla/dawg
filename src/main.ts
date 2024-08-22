@@ -1,20 +1,20 @@
 import './index.css'
 
-import {  createApp } from 'vue'
+import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './App.vue'
-import Search from './views/Search.vue'
-import Single from './views/Single.vue'
+import SearchDAWG from './views/SearchDAWG.vue'
+import SingleDAWG from './views/SingleDAWG.vue'
 
 const routes = [
-  { path: '/', component: Search, name: "Search Page"},
-  { path: '/dawg', component: Single, name: "View DAWG" },
+  { path: '/', component: SearchDAWG, name: 'Search Page' },
+  { path: '/:dawgid', component: SingleDAWG, name: 'View DAWG' }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 })
 
 createApp(App).use(router).mount('#app')

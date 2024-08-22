@@ -2,7 +2,7 @@
 
 import { ref } from 'vue';
 
-import { fromDataSource } from '../workgroups'
+import { newWorkGroup } from '../workgroups'
 import type { WorkGroupMap } from '../workgroups'
 
 const props = defineProps<{
@@ -35,7 +35,7 @@ Promise
         return fetch(src).then(async (res) => {
             const tmp = await res.json()
             for (const groupname in tmp) {
-                data.set(groupname, fromDataSource(src, groupname, tmp[groupname]))
+                data.set(groupname, newWorkGroup(src, groupname, tmp[groupname]))
             }
         })
     }))

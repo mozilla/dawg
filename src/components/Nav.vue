@@ -20,9 +20,9 @@
                 <ul
                     class="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 bg-gray-800 md:bg-gray-900 border-gray-700">
                     <li>
-                        <a href="#"
+                        <RouterLink
                             class="block py-2 px-3 text-white rounded md:p-0 md:text-blue-500 bg-blue-600 md:bg-transparent"
-                            aria-current="page">Home</a>
+                            to="/">Home</RouterLink>
                     </li>
                     <li>
                         <a href="https://github.com/mozilla/dawg/blob/main/FAQ.md"

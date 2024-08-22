@@ -1,13 +1,12 @@
 export type WorkGroup = {
   name: string
-  id: string
   type?: string
   links: string[]
   sponsor: string
   managers: string[]
   subgroups: string[]
-  members: string[]
-  team_projects: string[]
+  members_list: string[]
+  members: { [key: string]: string[] }
 }
 
 export type WorkGroupMap = Map<string, WorkGroup>
@@ -17,6 +16,7 @@ export enum DisplayAs {
   PlainText,
   ListOfText,
   ListOfLinks,
+  MapOfLists,
   DAWGLink
 }
 /* A map of WorkGroup properties to intended display modes
@@ -26,14 +26,13 @@ are both of type `string`
 */
 export const WorkGroupFieldKinds: Map<keyof WorkGroup, DisplayAs> = new Map([
   ['name', DisplayAs.DAWGLink],
-  ['id', DisplayAs.PlainText],
   ['type', DisplayAs.PlainText],
   ['links', DisplayAs.ListOfLinks],
   ['sponsor', DisplayAs.PlainText],
   ['managers', DisplayAs.ListOfText],
   ['subgroups', DisplayAs.ListOfText],
-  ['members', DisplayAs.ListOfText],
-  ['team_projects', DisplayAs.ListOfText]
+  ['members_list', DisplayAs.ListOfText],
+  ['members', DisplayAs.MapOfLists]
 ])
 
 const DefaultWorkGroupIDs = [
@@ -58,34 +57,38 @@ export const Sources: Map<string, string> = new Map(
   })
 )
 export const workgroupSetFromMap = (wgm: WorkGroupMap): WorkGroupSet => {
-  console.warn('was called', Array.from(wgm.values()))
-
   return Array.from(wgm.values())
 }
 //todo types
-export const fromDataSource = (sourcename: string, groupname: string, data: any): WorkGroup => {
+export const newWorkGroup = (sourcename: string, groupname: string, data: any): WorkGroup => {
   const subgroups: string[] = []
-  const members: string[] = []
+  const members_list: string[] = []
 
   for (const subgroup in data.members) {
     // skip a couple of internal groups
     if (!DefaultWorkGroupIDs.includes(subgroup)) {
       subgroups.push(subgroup)
-      members.push(...data.members[subgroup])
+      members_list.push(...data.members[subgroup])
     }
+  }
+
+  const links: string[] = data?.metadata?.links || []
+  // This seems redundant from the GH link already provided?
+  // links.push(
+  //   `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+%22workgroup%3A${groupname}%22&type=code`
+  // )
+  for (const project in data.team_projects) {
+    links.push(`https://console.cloud.google.com/home/dashboard?project=${project}`)
   }
 
   return {
     name: groupname,
-    id: `workgroup:${groupname}`,
-    // fixme: link to github code search e.g. https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+%22workgroup%3Acontextual-services%22&type=code
     type: Sources.get(sourcename),
-    links: data?.metadata?.links || [],
+    links,
     sponsor: data?.metadata?.sponsor || 'not listed',
     managers: data?.metadata?.managers || [],
-    subgroups: subgroups,
-    members: members,
-    // fixme linkify e.g. https://console.cloud.google.com/home/dashboard?project=moz-fx-data-dataops
-    team_projects: data.team_projects
+    subgroups,
+    members_list,
+    members: data?.members || {}
   }
 }

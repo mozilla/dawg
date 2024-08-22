@@ -2,12 +2,37 @@
 
 import { ref, computed, inject } from 'vue'
 import type { Ref, ComputedRef } from 'vue'
-import type { WorkGroup, WorkGroupMap, WorkGroupSet } from '../workgroups'
-import { fromDataSource, workgroupSetFromMap } from '../workgroups'
-import DAWGTable from './DAWGTable.vue'
+import type { WorkGroupSet, WorkGroup } from '../workgroups'
+import { newWorkGroup } from '../workgroups'
+import DAWGTable from '../components/DAWGTable.vue'
 
+// Defines the subset of fields that are shown from the WorkGroup object
+// the 'as const' statement lets TS inspect the array values as types to avoid redundant definitions
+const showFields = [
+    "name",
+    "links",
+    "managers",
+    "sponsor",
+    "subgroups",
+    "members",
+] as const
 
-const dataset = inject('dataset')
+// Using Pick from WorkGroup prevents us from trying to showfields that dont exist. e.g. adding `foobar` to showFields will error here
+export type SimpleWorkGroup = Pick<WorkGroup, typeof showFields[number]>
+
+const simplifyWorkGroup = (wg: WorkGroup): SimpleWorkGroup => {
+
+    let simple: any = {}
+    showFields.forEach(key => {
+        simple[key] = wg[key]
+    })
+    return simple as SimpleWorkGroup
+}
+
+const dataset = computed(() => {
+    const ds = inject('dataset') as ComputedRef<WorkGroupSet>
+    return !ds ? [] : ds.value.map(wg => simplifyWorkGroup(wg))
+})
 
 // The state of the "Use Regex" toggle
 const isRegex = defineModel<boolean>('isRegex');
@@ -41,14 +66,14 @@ const filterFunc = computed(() => {
 })
 
 // Returns the data set filtered by the seach term or regex
-const filteredSet: ComputedRef<WorkGroupSet> = computed(() => {
-    if (!dataset.value) {
+const filteredSet: ComputedRef<SimpleWorkGroup[]> = computed(() => {
+    if (!dataset?.value) {
         return []
     }
     if (!searchstring.value) {
-        return dataset.value
+        return Array.from(dataset.value)
     }
-    return dataset.value && Array.from(dataset.value).filter(row => {
+    return Array.from(dataset.value).filter(row => {
         return Object.values(row).some(contents => {
             if (contents instanceof Array) {
                 return contents.some((item) => filterFunc.value(item))
@@ -59,7 +84,7 @@ const filteredSet: ComputedRef<WorkGroupSet> = computed(() => {
 })
 
 // Takes a null-ish workgroup and dumps the keys for the table headers
-const headers = ref(((struct) => Object.keys(struct))(fromDataSource("none", "placeholder", {})))
+const headers = Object.keys(simplifyWorkGroup(newWorkGroup("none", "placeholder", {})))
 
 </script>
 
@@ -95,9 +120,3 @@ const headers = ref(((struct) => Object.keys(struct))(fromDataSource("none", "pl
 
     <DAWGTable :headers="headers" :rows="filteredSet" />
 </template>
-
-<style scoped>
-.monospace {
-    font-family: monospace;
-}
-</style>

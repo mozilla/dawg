@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { WorkGroup } from '../workgroups'
 
 import DAWGTableCell from './DAWGTableCell.vue'
+import type { SimplifiedWorkGroup } from '../views/SearchDAWG.vue'
 const props = defineProps<{
     headers: string[],
-    rows: WorkGroup[],
+    rows: SimplifiedWorkGroup[],
 }>()
+
 </script>
 
 <template>
@@ -17,13 +18,9 @@ const props = defineProps<{
                 </tr>
             </thead>
             <tbody>
-                <tr
-                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-
-                    <template v-for="(row, rowIndex) in props.rows" :key="rowIndex">
-
-                        <DAWGTableCell v-for="(value, key) in row" :key="key" :field-name="key" :contents="value" />
-                    </template>
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    v-for="(row, rowIndex) in props.rows" :key="rowIndex">
+                    <DAWGTableCell v-for="(value, key) in row" :key="key" :field-name="key" :contents="value" />
                 </tr>
             </tbody>
         </table>

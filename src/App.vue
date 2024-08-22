@@ -47,4 +47,8 @@ const sourceFiles = Array.from(Sources.keys())
 header {
   margin: 80px auto 2rem;
 }
+
+.monospace {
+  font-family: monospace;
+}
 </style>
