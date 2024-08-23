@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref, ComputedRef } from 'vue';
-import { ref, inject, computed } from 'vue';
+import { inject, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useClipboard } from '@vueuse/core';
 

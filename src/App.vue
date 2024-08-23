@@ -10,7 +10,7 @@ import { Sources, workgroupSetFromMap } from './workgroups'
 
 
 import DataLoader from './components/DataLoader.vue'
-import Nav from './components/Nav.vue'
+import HeaderNav from './components/HeaderNav.vue'
 
 // initialize components based on data attribute selectors
 onMounted(() => {
@@ -37,7 +37,7 @@ const sourceFiles = Array.from(Sources.keys())
 </script>
 
 <template>
-  <Nav />
+  <HeaderNav />
   <main>
     <DataLoader v-if="dataset.length == 0" :sources="sourceFiles" @done="recieveData" />
     <RouterView v-else />
