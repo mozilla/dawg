@@ -69,6 +69,7 @@ const foundWorkgroup: ComputedRef<boolean> = computed(() => {
 h1 {
     font-size: 2.5rem;
     text-align: center;
+    margin: 2rem 0;
 }
 
 nav {
@@ -77,7 +78,6 @@ nav {
 
 nav a {
     display: inline-block;
-
 }
 
 h1,
@@ -86,7 +86,8 @@ nav {
 }
 
 td {
-    padding: 0.5rem;
+    padding: 1rem;
+    vertical-align: top;
 }
 
 dd {

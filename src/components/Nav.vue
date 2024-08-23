@@ -1,11 +1,11 @@
 <template>
     <nav class="bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-600">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <RouterLink id="home-link" to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
                 <img src="@/assets/dawg.svg" class="h-12" alt="Data Access Workgroups Logo">
                 <span class="self-center text-2xl font-semibold text-white">Data Access <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-400">Workgroups</span></span>
-            </a>
+            </RouterLink>
             <button data-collapse-toggle="navbar-dropdown" type="button"
                 class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                 aria-controls="navbar-dropdown" aria-expanded="false">
@@ -16,7 +16,7 @@
                         d="M1 1h15M1 7h15M1 13h15" />
                 </svg>
             </button>
-            <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
+            <div class="w-full md:block md:w-auto" id="navbar-dropdown">
                 <ul
                     class="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 bg-gray-800 md:bg-gray-900 border-gray-700">
                     <li>
@@ -89,3 +89,28 @@
         </div>
     </nav>
 </template>
+
+<style scoped>
+nav {
+    --mobile-toggle-width: 40px;
+}
+
+#home-link {
+    width: calc(100% - var(--mobile-toggle-width))
+}
+
+
+
+button {
+    width: var(--mobile-toggle-width);
+}
+
+@media (min-width: 640px) {
+
+    #home-link,
+    button {
+        width: auto;
+
+    }
+}
+</style>

@@ -89,6 +89,10 @@ const headers = Object.keys(simplifyWorkGroup(newWorkGroup("none", "placeholder"
 </script>
 
 <template>
+    <header class="text-center">
+        <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore data
+            access workgroups - Compiled from aggregated Terraform State data.</p>
+    </header>
     <div class="search-wrapper">
         <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
         <div class="relative mb-2">
