@@ -31,4 +31,5 @@ coverage
 
 test-results/
 playwright-report/
-public/gcpv*.json
+
+public/*.json
