@@ -35,8 +35,11 @@ const foundWorkgroup: ComputedRef<boolean> = computed(() => {
 
 <template>
     <template v-if="!foundWorkgroup">
-        <h1>404 DAWG Not Found</h1>
-        <h2>Could not find a Data Access Work Group with the id: <span class="monospaced">{{ id }}</span></h2>
+        <div class="message-404">
+            <h1>404 DAWG Not Found</h1>
+            <h2>Could not find a Data Access Work Group with the id: <span class="monospaced">{{ id }}</span></h2>
+            <RouterLink to="/">Return To Search Table ↩️</RouterLink>
+        </div>
     </template>
     <template v-else>
         <h1 @click="copy(source)" v-bind:title="!copied ? 'copy to clipboard' : 'copied'"><span class="monospace">{{
@@ -114,5 +117,30 @@ ul {
     list-style: disc;
     list-style-position: inside;
 }
+
+
+
+.message-404 {
+    text-align: center;
+    margin: 0px auto;
+    display: block;
+}
+
+.message-404 h1 {
+    cursor: default;
+    margin-top: 2rem;
+}
+
+.message-404 .monospaced {
+    font-weight: bold;
+}
+
+.message-404 a {
+    margin: 1rem auto 0;
+    display: inline-block;
+}
+
+.message-404 a:hover {
+    text-decoration: underline;
+}
 </style>
-http://localhost:5173/0din
