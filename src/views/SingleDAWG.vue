@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { Ref, ComputedRef } from 'vue';
-import { inject, computed } from 'vue';
+import { ref, inject, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useClipboard } from '@vueuse/core';
 
 import type { WorkGroup, WorkGroupMap, ListOfText, MapOfLists, PlainText, ListOfLinks } from '@/workgroups';
 import IconLink from '@/components/IconLink.vue';
 import { DisplayMode, WorkGroupDisplayModes, } from '@/workgroups';
+
+const source = computed(() => window.location.href)
+const { copy, copied } = useClipboard({ source })
 
 const details = Array<keyof WorkGroup>('type', 'sponsor', 'managers', 'members')
 const noData = "(nodata)"
@@ -35,7 +39,8 @@ const foundWorkgroup: ComputedRef<boolean> = computed(() => {
         <h2>Could not find a Data Access Work Group with the id: <span class="monospaced">{{ id }}</span></h2>
     </template>
     <template v-else>
-        <h1><span class="monospace">{{ workgroup.name }}</span></h1>
+        <h1 @click="copy(source)" v-bind:title="!copied ? 'copy to clipboard' : 'copied'"><span class="monospace">{{
+            workgroup.name }}</span></h1>
         <nav>
             <IconLink v-for="link, key in workgroup.links as ListOfLinks" v-bind:key :href="link" :autoText="true" />
         </nav>
@@ -70,6 +75,7 @@ h1 {
     font-size: 2.5rem;
     text-align: center;
     margin: 2rem 0;
+    cursor: pointer;
 }
 
 nav {
@@ -109,3 +115,4 @@ ul {
     list-style-position: inside;
 }
 </style>
+http://localhost:5173/0din

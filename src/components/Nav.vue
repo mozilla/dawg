@@ -99,8 +99,6 @@ nav {
     width: calc(100% - var(--mobile-toggle-width))
 }
 
-
-
 button {
     width: var(--mobile-toggle-width);
 }

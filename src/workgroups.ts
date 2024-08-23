@@ -84,9 +84,9 @@ export const newWorkGroup = (sourcename: string, groupname: string, data: any): 
 
   const links: string[] = data?.metadata?.links || []
   // This seems redundant from the GH link already provided?
-  // links.push(
-  //   `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+%22workgroup%3A${groupname}%22&type=code`
-  // )
+  links.push(
+    `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+%22workgroup%3A${groupname}%22&type=code`
+  )
   for (const project in data.team_projects) {
     links.push(`https://console.cloud.google.com/home/dashboard?project=${project}`)
   }
@@ -98,7 +98,12 @@ export const newWorkGroup = (sourcename: string, groupname: string, data: any): 
     sponsor: data?.metadata?.sponsor || 'not listed',
     managers: data?.metadata?.managers || [],
     subgroups,
-    members_list,
+    members_list, // todo
     members: data?.members || {}
   }
 }
+
+// TODOS
+// turn group:da-wg-braze@mozilla.com -> https://groups.google.com/a/mozilla.com/g/da-wg-braze
+// turn serviceAccount:airflow-access@moz-fx-data-shared-prod.iam.gserviceaccount.com -> https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=moz-fx-data-shared-prod
+// turn emails into people links https://people.mozilla.org/s?query=htahsildoost%40mozilla.com&who=staff
