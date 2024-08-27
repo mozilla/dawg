@@ -102,8 +102,3 @@ export const newWorkGroup = (sourcename: string, groupname: string, data: any): 
     members: data?.members || {}
   }
 }
-
-// TODOS
-// turn group:da-wg-braze@mozilla.com -> https://groups.google.com/a/mozilla.com/g/da-wg-braze
-// turn serviceAccount:airflow-access@moz-fx-data-shared-prod.iam.gserviceaccount.com -> https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=moz-fx-data-shared-prod
-// turn emails into people links https://people.mozilla.org/s?query=htahsildoost%40mozilla.com&who=staff
