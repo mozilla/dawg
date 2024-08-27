@@ -4,7 +4,7 @@ import { DisplayMode, WorkGroupDisplayModes } from '@/workgroups';
 import type { WorkGroup } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
-import MagicLinker from './MagicLinker.vue';
+import AutoLinker from './AutoLinker.vue';
 
 
 const props = defineProps<{
@@ -27,14 +27,14 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
             </RouterLink>
         </template>
         <template v-if="display === DisplayMode.PlainText">
-            <MagicLinker :text="props.contents" />
+            <AutoLinker :text="props.contents as string" />
         </template>
         <template v-if="display === DisplayMode.ListOfLinks">
             <IconLink v-for="(link) in props.contents" :key="link.id" :href="link" ß :auto-text="false" />
         </template>
         <ul v-else-if="display === DisplayMode.ListOfText">
             <li v-for="(line, index) in props.contents" :key="index">
-                <MagicLinker :text="line" />
+                <AutoLinker :text="line" />
             </li>
         </ul>
     </td>

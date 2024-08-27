@@ -13,11 +13,7 @@ const formatters: [RegExp, (i: string) => string][] = [
         (i) => `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i}`
     ],
     [
-        new RegExp("([a-zA-z0-9.]+@mozilla.com$)"),
-        (i) => `https://people.mozilla.org/s?who=staff&query=${i}`
-    ],
-    [
-        new RegExp("([a-zA-z0-9.]+@mozillafoundation.org$)"),
+        new RegExp("([a-zA-z0-9.]+@mozilla(?:foundation)?.(?:com|org)$)"),
         (i) => `https://people.mozilla.org/s?who=staff&query=${i}`
     ],
 ]
