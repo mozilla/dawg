@@ -33,10 +33,12 @@ td {
 }
 
 td a {
-    color: blue;
+    color: var(--dawg-blue);
+    transition: color 0.15s;
 }
 
 td a:hover {
     text-decoration: underline;
+    color: var(--dawg-orange)
 }
 </style>
