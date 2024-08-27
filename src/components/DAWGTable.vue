@@ -27,12 +27,16 @@ const props = defineProps<{
     </div>
 </template>
 
-<style scoped>
+<style>
 td {
     vertical-align: top;
 }
 
-td:first-child {
+td a {
+    color: blue;
+}
+
+td a:hover {
     text-decoration: underline;
 }
 </style>

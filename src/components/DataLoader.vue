@@ -2,7 +2,7 @@
 
 import { ref } from 'vue';
 
-import { newWorkGroup } from '../workgroups'
+import { newWorkGroup, Sources } from '../workgroups'
 import type { WorkGroupMap } from '../workgroups'
 
 const props = defineProps<{
@@ -24,11 +24,12 @@ enum Status {
 const status = ref(Status.Loading)
 const message = ref("Loading...");
 
-
+console.log(...Sources)
 if (props?.sources?.length == 0) {
     message.value = "No sources provided"
     status.value = Status.Errored
 }
+
 
 Promise
     .all(props.sources && props.sources.map(src => {
