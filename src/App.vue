@@ -3,8 +3,6 @@
 import { ref, provide, computed, onMounted } from 'vue';
 import type { Ref, ComputedRef } from 'vue';
 
-import { initFlowbite } from 'flowbite'
-
 import type { WorkGroupSet, WorkGroupMap } from './workgroups'
 import { Sources, workgroupSetFromMap } from './workgroups'
 
@@ -12,10 +10,6 @@ import { Sources, workgroupSetFromMap } from './workgroups'
 import DataLoader from './components/DataLoader.vue'
 import HeaderNav from './components/HeaderNav.vue'
 
-// initialize components based on data attribute selectors
-onMounted(() => {
-  initFlowbite();
-})
 
 const datamap: Ref<WorkGroupMap> = ref(new Map())
 // TODO clarify naming
@@ -45,6 +39,11 @@ const sourceFiles = Array.from(Sources.keys())
 </template>
 
 <style>
+body {
+  --dawg-blue: #3F83F8;
+  --dawg-orange: #FF8A4C;
+}
+
 header {
   margin: 80px auto 2rem;
 }
