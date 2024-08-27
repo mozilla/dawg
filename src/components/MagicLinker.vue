@@ -16,6 +16,10 @@ const formatters: [RegExp, (i: string) => string][] = [
         new RegExp("([a-zA-z0-9.]+@mozilla.com$)"),
         (i) => `https://people.mozilla.org/s?who=staff&query=${i}`
     ],
+    [
+        new RegExp("([a-zA-z0-9.]+@mozillafoundation.org$)"),
+        (i) => `https://people.mozilla.org/s?who=staff&query=${i}`
+    ],
 ]
 
 
