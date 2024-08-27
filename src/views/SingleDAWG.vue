@@ -86,7 +86,7 @@ nav {
 }
 
 nav a {
-    display: inline-block;
+    display: block;
 }
 
 h1,
@@ -97,6 +97,7 @@ nav {
 td {
     padding: 1rem;
     vertical-align: top;
+    display: block;
 }
 
 dd {
@@ -110,7 +111,6 @@ table {
 td:first-child {
     text-transform: capitalize;
     font-weight: bold;
-    text-align: right;
 }
 
 ul {
@@ -142,5 +142,17 @@ ul {
 
 .message-404 a:hover {
     text-decoration: underline;
+}
+
+
+@media (min-width: 640px) {
+    td {
+        display: table-cell;
+    }
+
+    nav a {
+        display: inline-block;
+        margin: auto 1rem;
+    }
 }
 </style>
