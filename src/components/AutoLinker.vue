@@ -5,15 +5,16 @@ const props = defineProps<{ text: string }>()
 
 const formatters: [RegExp, (i: string) => string][] = [
     [
-        new RegExp('^group:(.*)@mozilla.com'),
+        /^group:(.*)@(:?mozilla.com)|(?:firefox.gcp.mozilla.com)/,
         (i) => `https://groups.google.com/a/mozilla.com/g/${i}`
     ],
     [
-        new RegExp("^serviceAccount:.*@([a-z0-9-]+).iam.gserviceaccount.com"),
+        /^serviceAccount:.*@([a-z0-9-]+).iam.gserviceaccount.com/,
         (i) => `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i}`
     ],
     [
-        new RegExp("([a-zA-z0-9.]+@mozilla(?:foundation)?.(?:com|org)$)"),
+        // TODO thunderbird and foundation user names are not captured
+        /([a-zA-Z0-9.]+@(?:(?:mozilla.com)|(?:thunderbird.net)|(?:mozillafoundation.org)))/,
         (i) => `https://people.mozilla.org/s?who=staff&query=${i}`
     ],
 ]
