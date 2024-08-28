@@ -42,7 +42,7 @@ const linkType = computed<LinkType>(() => {
     return LinkType.None
 })
 const noop = (i: string) => i
-const href = computed<string>(() => (formatters.get(linkType.value) || noop)(encodeURIComponent(substr.value)))
+const href = computed<string>(() => (formatters.get(linkType.value) || noop)(encodeURIComponent(substr.value || '')))
 
 </script>
 <template>
