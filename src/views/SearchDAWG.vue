@@ -3,7 +3,7 @@
 import { computed, inject } from 'vue'
 import type { ComputedRef } from 'vue'
 import type { WorkGroup, WorkGroupMap, MapOfLists } from '../workgroups'
-import { newWorkGroup } from '../workgroups'
+import { NullWorkGroup } from '../workgroups'
 import DAWGTable from '../components/DAWGTable.vue'
 
 
@@ -71,7 +71,7 @@ const filteredSet: ComputedRef<WorkGroup[]> = computed(() => {
 })
 
 // Takes a null-ish workgroup and dumps the keys for the table headers
-const headers = Object.keys(newWorkGroup("none", "placeholder", {}))
+const headers = Object.keys(NullWorkGroup)
 
 </script>
 
