@@ -1,42 +1,52 @@
 <script setup lang="ts">
-import { computed, defineProps } from 'vue';
+
+import { computed, defineProps, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 
 const props = defineProps<{ text: string }>()
 
-const formatters: [RegExp, (i: string) => string][] = [
-    [
-        /^group:(.*)@(:?mozilla.com)|(?:firefox.gcp.mozilla.com)/,
-        (i) => `https://groups.google.com/a/mozilla.com/g/${i}`
-    ],
-    [
-        /^serviceAccount:.*@([a-z0-9-]+).iam.gserviceaccount.com/,
-        (i) => `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i}`
-    ],
-    [
-        // TODO thunderbird and foundation user names are not captured
-        /([a-zA-Z0-9.]+@(?:(?:mozilla.com)|(?:thunderbird.net)|(?:mozillafoundation.org)))/,
-        (i) => `https://people.mozilla.org/s?who=staff&query=${i}`
-    ],
-]
+enum LinkType {
+    GoogleGroup,
+    ServiceAccount,
+    PhoneBook,
+    WorkGroup,
+    None
+}
 
+const tests = new Map<LinkType, RegExp>([
+    [LinkType.GoogleGroup, /^group:[a-z0-9\-]+@(?:mozilla.com)|(?:firefox.gcp.mozilla.com)/],
+    [LinkType.ServiceAccount, /^serviceAccount:(?:[a-z0-9-]+)@([a-z0-9-]+).iam.gserviceaccount.com/],
+    [LinkType.PhoneBook, /([a-zA-Z0-9.]+@(?:(?:mozilla.com)|(?:thunderbird.net)|(?:mozillafoundation.org)))/],
+    [LinkType.WorkGroup, /^(workgroup:[a-z0-9\-]+)/]
+])
 
-const href = computed(() => {
-    let result = ''
-    for (const f in formatters) {
-        const regx = formatters[f][0]
-        const fmt = formatters[f][1]
-        const matches = regx.exec(props.text)
-        if (matches && matches?.length > 0) {
-            // for now all our formatting takes 1 substring so we can do this by convention
-            result = fmt(encodeURIComponent(matches[1]))
-            break
+const formatters = new Map<LinkType, (input: string) => string>([
+    [LinkType.GoogleGroup, (i) => `https://groups.google.com/a/mozilla.com/g/${i}`],
+    [LinkType.ServiceAccount, (i) => `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i}`],
+    [LinkType.PhoneBook, (i) => `https://people.mozilla.org/s?who=staff&query=${i}`]
+])
+const substr = ref<string>('')
+const linkType = computed<LinkType>(() => {
+
+    if (!props.text) return LinkType.None
+
+    for (let [lt, test] of tests) {
+        const results = test.exec(props.text)
+        if (results && results.length > 1) {
+            console.log(results)
+            substr.value = results[1]
+            return lt
         }
     }
-    return result
+
+    return LinkType.None
 })
+const noop = (i: string) => i
+const href = computed<string>(() => (formatters.get(linkType.value) || noop)(encodeURIComponent(substr.value)))
 
 </script>
 <template>
-    <a v-if="href != ''" :href="href">{{ props.text }}</a>
-    <span v-else>{{ props.text }}</span>
+    <RouterLink v-if="linkType == LinkType.WorkGroup" :to="href" />
+    <span v-if="linkType == LinkType.None">{{ props.text }}</span>
+    <a v-else :href="href">{{ props.text }}</a>
 </template>
