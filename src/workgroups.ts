@@ -4,18 +4,16 @@ export type ListOfLinks = string[]
 export type PlainText = string
 
 export type WorkGroup = {
-  name: string
+  id: string
   type?: PlainText
   links: ListOfLinks
   sponsor: PlainText
   managers: ListOfText
-  // subgroups: ListOfText
-  // members_list: ListOfText
   members: MapOfLists
 }
 
 export type WorkGroupMap = Map<string, WorkGroup>
-//export type WorkGroupSet = WorkGroup[]
+export type WorkGroupSet = WorkGroup[]
 
 export enum DisplayMode {
   PlainText,
@@ -30,7 +28,7 @@ export enum DisplayMode {
   are both of type `string`
   */
 export const WorkGroupDisplayModes: Map<keyof WorkGroup, DisplayMode> = new Map([
-  ['name', DisplayMode.DAWGLink],
+  ['id', DisplayMode.DAWGLink],
   ['type', DisplayMode.PlainText],
   ['links', DisplayMode.ListOfLinks],
   ['sponsor', DisplayMode.PlainText],
@@ -70,17 +68,6 @@ export const workgroupSetFromMap = (wgm: WorkGroupMap): WorkGroupSet => {
 }
 //todo types
 export const newWorkGroup = (sourcename: string, groupname: string, data: any): WorkGroup => {
-  // const subgroups: string[] = []
-  // const members_list: string[] = []
-
-  // for (const subgroup in data.members) {
-  //   // skip a couple of internal groups
-  //   if (!DefaultWorkGroupIDs.includes(subgroup)) {
-  //     subgroups.push(subgroup)
-  //     members_list.push(...data.members[subgroup])
-  //   }
-  // }
-
   const links: string[] = data?.metadata?.links || []
   // This seems redundant from the GH link already provided?
   links.push(
@@ -91,13 +78,11 @@ export const newWorkGroup = (sourcename: string, groupname: string, data: any): 
   }
 
   return {
-    name: groupname,
+    id: `workgroup:${groupname}`,
     type: Sources.get(sourcename),
     links,
     sponsor: data?.metadata?.sponsor || 'not listed',
     managers: data?.metadata?.managers || [],
-    // subgroups,
-    // members_list, // todo
     members: data?.members || {}
   }
 }

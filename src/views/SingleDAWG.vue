@@ -21,7 +21,6 @@ const id = decodeURIComponent(route.params.dawgid as string)
 const datamap: Ref<WorkGroupMap> | undefined = inject('datamap')
 
 const workgroup: ComputedRef<WorkGroup> = computed(() => {
-
     if (datamap && datamap.value.get(id)) {
         return datamap.value.get(id) as WorkGroup
     }
@@ -29,47 +28,55 @@ const workgroup: ComputedRef<WorkGroup> = computed(() => {
 })
 
 const foundWorkgroup: ComputedRef<boolean> = computed(() => {
-    return Object.prototype.hasOwnProperty.call(workgroup.value, 'name')
+    return !!workgroup.value
 })
 </script>
 
 <template>
     <template v-if="!foundWorkgroup">
         <div class="message-404">
-            <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">404 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-400">Workgroup</span> Not Found</h1>
-            <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Could not find <span class="monospace text-blue-600 dark:text-blue-500">{{ id }}</span> data access workgroup</p>
-            <RouterLink to="/"><button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Return to search</button></RouterLink>
+            <h1
+                class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+                404 <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-400">Workgroup</span>
+                Not Found</h1>
+            <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Could not find <span
+                    class="monospace text-blue-600 dark:text-blue-500">{{ id }}</span> data access workgroup</p>
+            <RouterLink to="/"><button type="button"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Return
+                    to search</button></RouterLink>
         </div>
     </template>
     <template v-else>
         <h1 @click="copy(source)" v-bind:title="!copied ? 'copy to clipboard' : 'copied'"><span class="monospace">{{
-            workgroup.name }}</span></h1>
+            workgroup.id }}</span></h1>
         <nav>
-            <IconLink v-for="link, key in workgroup.links as ListOfLinks" v-bind:key :href="link" :autoText="true" />
+            <IconLink v-for="link, key in (workgroup.links as ListOfLinks)" v-bind:key :href="link" :autoText="true" />
         </nav>
-          <table>
-              <tr v-for="(field, i) in details" :key="i">
-                  <td>{{ field }}</td>
-                  <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.PlainText">
-                      {{ (workgroup[field] as PlainText).length > 0 ? workgroup[field] : noData }}
-                  </td>
-                  <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.ListOfText">
-                      <ul v-for="item, i in workgroup[field] as ListOfText" :key="i">
-                          <li>{{ item.length > 0 ? item : noData }}</li>
-                      </ul>
-                  </td>
-                  <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.MapOfLists">
-                      <dl class="max-w-md text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-700" v-for="list, k in workgroup[field] as MapOfLists " :key="k">
-                          <dt class="text-lg font-semibold" v-if="list.length > 0">{{ k }}</dt>
-                          <dd class="mb-1 text-gray-500 md:text-lg dark:text-gray-400" v-if="list.length > 0">
-                              <ul v-for="item, i in list" :key="i">
-                                  <li>{{ item.length > 0 ? item : noData }}</li>
-                              </ul>
-                          </dd>
-                      </dl>
-                  </td>
-              </tr>
-          </table>
+        <table>
+            <tr v-for="(field, i) in details" :key="i">
+                <td>{{ field }}</td>
+                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.PlainText">
+                    {{ (workgroup[field] as PlainText).length > 0 ? workgroup[field] : noData }}
+                </td>
+                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.ListOfText">
+                    <ul v-for="item, i in (workgroup[field] as ListOfText)" :key="i">
+                        <li>{{ item.length > 0 ? item : noData }}</li>
+                    </ul>
+                </td>
+                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.MapOfLists">
+                    <dl class="max-w-md text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-700"
+                        v-for="list, k in (workgroup[field] as MapOfLists)" :key="k">
+                        <dt class="text-lg font-semibold" v-if="list.length > 0">{{ k }}</dt>
+                        <dd class="mb-1 text-gray-500 md:text-lg dark:text-gray-400" v-if="list.length > 0">
+                            <ul v-for="item, i in list" :key="i">
+                                <li>{{ item.length > 0 ? item : noData }}</li>
+                            </ul>
+                        </dd>
+                    </dl>
+                </td>
+            </tr>
+        </table>
     </template>
 </template>
 

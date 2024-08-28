@@ -22,7 +22,6 @@ provide('dataset', dataset)
 provide('datamap', datamap)
 
 const recieveData = (d: WorkGroupMap) => {
-  console.info("data loaded")
   datamap.value = d
 }
 

@@ -27,14 +27,14 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
             </RouterLink>
         </template>
         <template v-if="display === DisplayMode.PlainText">
-            <AutoLinker :text="props.contents as string" />
+            <AutoLinker :text="(props.contents as string)" />
         </template>
         <template v-if="display === DisplayMode.ListOfLinks">
-            <IconLink v-for="(link) in props.contents" :key="link.id" :href="link" ß :auto-text="false" />
+            <IconLink v-for="(link, i) in (props.contents as string[])" :key="i" :href="link" :auto-text="false" />
         </template>
         <ul v-else-if="display === DisplayMode.ListOfText">
             <li v-for="(line, index) in props.contents" :key="index">
-                <AutoLinker :text="line" />
+                <AutoLinker :text="(line as string)" />
             </li>
         </ul>
         <dl v-else-if="display === DisplayMode.MapOfLists">
@@ -42,7 +42,9 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
                 <dt>{{ key }}</dt>
                 <dd>
                     <ul>
-                        <li v-for="item in list">{{ item }}</li>
+                        <li v-for="item in list">
+                            <AutoLinker :text="item" />
+                        </li>
                     </ul>
                 </dd>
             </template>

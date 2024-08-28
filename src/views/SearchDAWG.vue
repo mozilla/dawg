@@ -6,31 +6,11 @@ import type { WorkGroup, WorkGroupMap, MapOfLists } from '../workgroups'
 import { newWorkGroup } from '../workgroups'
 import DAWGTable from '../components/DAWGTable.vue'
 
-// Defines the subset of fields that are shown from the WorkGroup object
-// the 'as const' statement lets TS inspect the array values as types to avoid redundant definitions
-const showFields = [
-    "name",
-    "links",
-    "managers",
-    "sponsor",
-    "members",
-] as const
 
-// Using Pick from WorkGroup prevents us from trying to showfields that dont exist. e.g. adding `foobar` to showFields will error here
-export type SimpleWorkGroup = Pick<WorkGroup, typeof showFields[number]>
-
-const simplifyWorkGroup = (wg: WorkGroup): SimpleWorkGroup => {
-
-    let simple: any = {}
-    showFields.forEach(key => {
-        simple[key] = wg[key]
-    })
-    return simple as SimpleWorkGroup
-}
 
 const dataset = computed(() => {
-    const ds = inject('dataset') as ComputedRef<WorkGroupMap>
-    return !ds ? [] : Array.from(ds.value.entries()).map(entry => simplifyWorkGroup(entry[1]))
+    const ds = inject('dataset') as ComputedRef<WorkGroup[]>
+    return !ds ? [] : ds.value
 })
 
 // The state of the "Use Regex" toggle
@@ -65,29 +45,33 @@ const filterFunc = computed(() => {
 })
 
 // Returns the data set filtered by the seach term or regex
-const filteredSet: ComputedRef<SimpleWorkGroup[]> = computed(() => {
+const filteredSet: ComputedRef<WorkGroup[]> = computed(() => {
     if (!dataset?.value) {
         return []
     }
     if (!searchstring.value) {
-        return Array.from(dataset.value)
+        return dataset.value
     }
-    return Array.from(dataset.value).filter(row => {
+    return dataset.value.filter(row => {
         return Object.values(row).some(contents => {
+
             if (contents instanceof Array) {
                 return contents.some(filterFunc.value)
-            } else if (typeof contents == 'object') {
-                return Object.entries(contents).some((tuple) => {
+            }
+
+            if (typeof contents == 'object') {
+                return Object.entries(contents as MapOfLists).some((tuple) => {
                     return filterFunc.value(tuple[0]) || tuple[1].some(filterFunc.value)
                 })
             }
+
             return filterFunc.value(contents as string)
         })
     })
 })
 
 // Takes a null-ish workgroup and dumps the keys for the table headers
-const headers = Object.keys(simplifyWorkGroup(newWorkGroup("none", "placeholder", {})))
+const headers = Object.keys(newWorkGroup("none", "placeholder", {}))
 
 </script>
 

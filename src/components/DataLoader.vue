@@ -35,7 +35,8 @@ Promise
         return fetch(src).then(async (res) => {
             const tmp = await res.json()
             for (const groupname in tmp) {
-                data.set(groupname, newWorkGroup(src, groupname, tmp[groupname]))
+                const dawg = newWorkGroup(src, groupname, tmp[groupname])
+                data.set(dawg.id, dawg)
             }
         })
     }))
