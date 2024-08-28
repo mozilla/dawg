@@ -11,6 +11,15 @@ export type WorkGroup = {
   managers: ListOfText
   members: MapOfLists
 }
+const nd = 'no data' as const
+export const NullWorkGroup: WorkGroup = {
+  id: nd,
+  type: nd,
+  links: [],
+  sponsor: nd,
+  managers: [],
+  members: {}
+} as const
 
 export type WorkGroupMap = Map<string, WorkGroup>
 export type WorkGroupSet = WorkGroup[]
@@ -81,8 +90,13 @@ export const newWorkGroup = (sourcename: string, groupname: string, data: any): 
     id: `workgroup:${groupname}`,
     type: Sources.get(sourcename),
     links,
-    sponsor: data?.metadata?.sponsor || 'not listed',
-    managers: data?.metadata?.managers || [],
-    members: data?.members || {}
+    sponsor: data?.metadata?.sponsor.length == 0 ? 'None' : data?.metadata?.sponsor,
+    managers: data?.metadata?.managers.length == 0 ? ['None'] : data?.metadata?.managers,
+    members:
+      Object.keys(data?.members).length == 0
+        ? {}
+        : (Object.fromEntries(
+            Object.entries(data?.members).filter(([key]) => !DefaultWorkGroupIDs.includes(key))
+          ) as MapOfLists)
   }
 }
