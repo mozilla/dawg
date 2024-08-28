@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { DisplayMode, WorkGroupDisplayModes } from '@/workgroups';
-import type { MapOfLists, WorkGroup } from '@/workgroups'
+import type { ListOfText, MapOfLists, WorkGroup } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
 import AutoLinker from './AutoLinker.vue';
@@ -18,7 +18,7 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
 
 <template>
     <td class="px-2 py-1">
-        <template v-if="!props.contents">
+        <template v-if="!props || !props.contents || props.contents == undefined">
             (no data)
         </template>
         <template v-if="display === DisplayMode.DAWGLink">
@@ -32,11 +32,15 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
         <template v-if="display === DisplayMode.ListOfLinks">
             <IconLink v-for="(link, i) in (props.contents as string[])" :key="i" :href="link" :auto-text="false" />
         </template>
-        <ul v-else-if="display === DisplayMode.ListOfText">
+        <ul v-else-if="display === DisplayMode.ListOfText && props.contents && (props.contents as string[]).length > 1">
             <li v-for="(line, index) in props.contents" :key="index">
                 <AutoLinker :text="(line as string)" />
             </li>
         </ul>
+        <span
+            v-else-if="display === DisplayMode.ListOfText && props.contents && (props.contents as string[]).length == 1">
+            {{ props.contents && (props.contents as ListOfText)[0] }}
+        </span>
         <dl v-else-if="display === DisplayMode.MapOfLists">
             <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
                 <dt>{{ key }}</dt>

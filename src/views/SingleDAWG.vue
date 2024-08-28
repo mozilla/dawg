@@ -9,6 +9,7 @@ import { DisplayMode, WorkGroupDisplayModes, NullWorkGroup } from '@/workgroups'
 
 import IconLink from '@/components/IconLink.vue';
 import AutoLinker from '@/components/AutoLinker.vue';
+import DAWGTableCell from '@/components/DAWGTableCell.vue';
 
 const route = useRoute();
 const source = computed(() => window.location.href)
@@ -18,8 +19,6 @@ const id = decodeURIComponent(route.params.dawgid as string)
 
 
 const details = Array<keyof WorkGroup>('type', 'sponsor', 'managers', 'members')
-const noData = "(nodata)"
-
 const datamap: Ref<WorkGroupMap> | undefined = inject('datamap')
 
 const workgroup: ComputedRef<WorkGroup> = computed(() => {
@@ -66,27 +65,7 @@ const workgroup: ComputedRef<WorkGroup> = computed(() => {
         <table>
             <tr v-for="(field, i) in details" :key="i">
                 <td>{{ field }}</td>
-                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.PlainText">
-                    {{ workgroup[field] || noData }}
-                </td>
-                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.ListOfText">
-                    <ul v-for="item, i in (workgroup[field] as ListOfText)" :key="i">
-                        <li>{{ item.length > 0 ? item : noData }}</li>
-                    </ul>
-                </td>
-                <td v-if="WorkGroupDisplayModes.get(field) == DisplayMode.MapOfLists">
-                    <dl class="max-w-md text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-700"
-                        v-for="list, k in (workgroup[field] as MapOfLists)" :key="k">
-                        <dt class="text-lg font-semibold" v-if="list.length > 0">{{ k }}</dt>
-                        <dd class="mb-1 text-gray-500 md:text-lg dark:text-gray-400" v-if="list.length > 0">
-                            <ul>
-                                <li v-for="item, i in list" :key="i">
-                                    <AutoLinker :text="item.length > 0 ? item : noData" />
-                                </li>
-                            </ul>
-                        </dd>
-                    </dl>
-                </td>
+                <DAWGTableCell :fieldName="field" :contents="workgroup[field]" />
             </tr>
         </table>
     </template>
