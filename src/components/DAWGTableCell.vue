@@ -41,11 +41,12 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
             <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
                 <dt>{{ key }}</dt>
                 <dd>
-                    <ul>
+                    <ul v-if="list.length > 0">
                         <li v-for="item in list">
                             <AutoLinker :text="item" />
                         </li>
                     </ul>
+                    <span v-else>(no members)</span>
                 </dd>
             </template>
         </dl>
@@ -53,8 +54,44 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
 </template>
 
 <style>
+td {
+    vertical-align: top;
+}
+
 td ul {
     list-style-position: inside;
     list-style-type: disc;
+}
+
+td a {
+    color: var(--dawg-blue);
+    transition: color 0.15s;
+}
+
+td a:hover {
+    text-decoration: underline;
+    color: var(--dawg-orange)
+}
+
+td dt {
+    margin-top: 1rem;
+}
+
+td dd>span {
+    margin-left: 0.3rem;
+}
+
+td dt:first-child {
+    margin-top: 0;
+}
+
+td dt:has(+ dd > ul),
+td dd:has(> ul) {
+    display: block;
+}
+
+td dt:has(+ dd > span),
+td dd:has(> span) {
+    display: inline-block;
 }
 </style>

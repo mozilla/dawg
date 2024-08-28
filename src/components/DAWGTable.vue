@@ -1,10 +1,10 @@
 <script setup lang="ts">
-
+import type { WorkGroup } from '@/workgroups';
 import DAWGTableCell from './DAWGTableCell.vue'
-import type { SimpleWorkGroup } from '../views/SearchDAWG.vue'
+
 const props = defineProps<{
     headers: string[],
-    rows: SimpleWorkGroup[],
+    rows: WorkGroup[],
 }>()
 
 </script>
@@ -27,18 +27,4 @@ const props = defineProps<{
     </div>
 </template>
 
-<style>
-td {
-    vertical-align: top;
-}
-
-td a {
-    color: var(--dawg-blue);
-    transition: color 0.15s;
-}
-
-td a:hover {
-    text-decoration: underline;
-    color: var(--dawg-orange)
-}
-</style>
+<style></style>
