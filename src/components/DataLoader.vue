@@ -24,7 +24,6 @@ enum Status {
 const status = ref(Status.Loading)
 const message = ref("Loading...");
 
-console.log(...Sources)
 if (props?.sources?.length == 0) {
     message.value = "No sources provided"
     status.value = Status.Errored

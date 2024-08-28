@@ -26,7 +26,6 @@ const href = computed(() => {
         const regx = formatters[f][0]
         const fmt = formatters[f][1]
         const matches = regx.exec(props.text)
-        console.log(`tested: ${props.text} against ${regx} got ${matches}`)
         if (matches && matches?.length > 0) {
             // for now all our formatting takes 1 substring so we can do this by convention
             result = fmt(encodeURIComponent(matches[1]))

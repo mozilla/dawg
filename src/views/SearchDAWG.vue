@@ -2,7 +2,7 @@
 
 import { computed, inject } from 'vue'
 import type { ComputedRef } from 'vue'
-import type { WorkGroupSet, WorkGroup } from '../workgroups'
+import type { WorkGroup, WorkGroupMap, MapOfLists } from '../workgroups'
 import { newWorkGroup } from '../workgroups'
 import DAWGTable from '../components/DAWGTable.vue'
 
@@ -13,8 +13,7 @@ const showFields = [
     "links",
     "managers",
     "sponsor",
-    "subgroups",
-    "members_list",
+    "members",
 ] as const
 
 // Using Pick from WorkGroup prevents us from trying to showfields that dont exist. e.g. adding `foobar` to showFields will error here
@@ -30,8 +29,8 @@ const simplifyWorkGroup = (wg: WorkGroup): SimpleWorkGroup => {
 }
 
 const dataset = computed(() => {
-    const ds = inject('dataset') as ComputedRef<WorkGroupSet>
-    return !ds ? [] : ds.value.map(wg => simplifyWorkGroup(wg))
+    const ds = inject('dataset') as ComputedRef<WorkGroupMap>
+    return !ds ? [] : Array.from(ds.value.entries()).map(entry => simplifyWorkGroup(entry[1]))
 })
 
 // The state of the "Use Regex" toggle
@@ -62,7 +61,7 @@ const searchregexp = computed((): RegExp | Error => {
 const filterFunc = computed(() => {
     return isRegex.value
         ? (c: string): boolean => searchregexp.value instanceof Error == false && searchregexp.value.test(c)
-        : (c: string): boolean => !!searchstring.value && c.toLowerCase().includes(searchstring.value.toLowerCase());
+        : (c: string): boolean => !!searchstring.value && c?.toLowerCase().includes(searchstring.value.toLowerCase());
 })
 
 // Returns the data set filtered by the seach term or regex
@@ -76,9 +75,13 @@ const filteredSet: ComputedRef<SimpleWorkGroup[]> = computed(() => {
     return Array.from(dataset.value).filter(row => {
         return Object.values(row).some(contents => {
             if (contents instanceof Array) {
-                return contents.some((item) => filterFunc.value(item))
+                return contents.some(filterFunc.value)
+            } else if (typeof contents == 'object') {
+                return Object.entries(contents).some((tuple) => {
+                    return filterFunc.value(tuple[0]) || tuple[1].some(filterFunc.value)
+                })
             }
-            return filterFunc.value(contents)
+            return filterFunc.value(contents as string)
         })
     })
 })

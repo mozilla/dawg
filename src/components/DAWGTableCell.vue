@@ -1,14 +1,14 @@
 <script setup lang="ts">
 
 import { DisplayMode, WorkGroupDisplayModes } from '@/workgroups';
-import type { WorkGroup } from '@/workgroups'
+import type { MapOfLists, WorkGroup } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
 import AutoLinker from './AutoLinker.vue';
 
 
 const props = defineProps<{
-    contents: undefined | string | Set<any> | Array<any> | Map<any, any>,
+    contents: undefined | string | string[] | MapOfLists,
     fieldName: keyof WorkGroup,
 }>()
 
@@ -37,5 +37,22 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
                 <AutoLinker :text="line" />
             </li>
         </ul>
+        <dl v-else-if="display === DisplayMode.MapOfLists">
+            <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
+                <dt>{{ key }}</dt>
+                <dd>
+                    <ul>
+                        <li v-for="item in list">{{ item }}</li>
+                    </ul>
+                </dd>
+            </template>
+        </dl>
     </td>
 </template>
+
+<style>
+td ul {
+    list-style-position: inside;
+    list-style-type: disc;
+}
+</style>

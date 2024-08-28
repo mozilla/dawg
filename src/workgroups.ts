@@ -9,13 +9,13 @@ export type WorkGroup = {
   links: ListOfLinks
   sponsor: PlainText
   managers: ListOfText
-  subgroups: ListOfText
-  members_list: ListOfText
+  // subgroups: ListOfText
+  // members_list: ListOfText
   members: MapOfLists
 }
 
 export type WorkGroupMap = Map<string, WorkGroup>
-export type WorkGroupSet = WorkGroup[]
+//export type WorkGroupSet = WorkGroup[]
 
 export enum DisplayMode {
   PlainText,
@@ -35,13 +35,12 @@ export const WorkGroupDisplayModes: Map<keyof WorkGroup, DisplayMode> = new Map(
   ['links', DisplayMode.ListOfLinks],
   ['sponsor', DisplayMode.PlainText],
   ['managers', DisplayMode.ListOfText],
-  ['subgroups', DisplayMode.ListOfText],
-  ['members_list', DisplayMode.ListOfText],
+  // ['subgroups', DisplayMode.ListOfText],
+  // ['members_list', DisplayMode.ListOfText],
   ['members', DisplayMode.MapOfLists]
 ])
 
 export const getFieldDisplayMode = (f: keyof WorkGroup, w: WorkGroup): DisplayMode => {
-  console.log(typeof w[f])
   return DisplayMode.PlainText
 }
 
@@ -71,16 +70,16 @@ export const workgroupSetFromMap = (wgm: WorkGroupMap): WorkGroupSet => {
 }
 //todo types
 export const newWorkGroup = (sourcename: string, groupname: string, data: any): WorkGroup => {
-  const subgroups: string[] = []
-  const members_list: string[] = []
+  // const subgroups: string[] = []
+  // const members_list: string[] = []
 
-  for (const subgroup in data.members) {
-    // skip a couple of internal groups
-    if (!DefaultWorkGroupIDs.includes(subgroup)) {
-      subgroups.push(subgroup)
-      members_list.push(...data.members[subgroup])
-    }
-  }
+  // for (const subgroup in data.members) {
+  //   // skip a couple of internal groups
+  //   if (!DefaultWorkGroupIDs.includes(subgroup)) {
+  //     subgroups.push(subgroup)
+  //     members_list.push(...data.members[subgroup])
+  //   }
+  // }
 
   const links: string[] = data?.metadata?.links || []
   // This seems redundant from the GH link already provided?
@@ -97,8 +96,8 @@ export const newWorkGroup = (sourcename: string, groupname: string, data: any): 
     links,
     sponsor: data?.metadata?.sponsor || 'not listed',
     managers: data?.metadata?.managers || [],
-    subgroups,
-    members_list, // todo
+    // subgroups,
+    // members_list, // todo
     members: data?.members || {}
   }
 }
