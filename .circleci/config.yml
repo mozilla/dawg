@@ -17,6 +17,16 @@ jobs:
       - node/install-packages
       - run:
           command: npm run lint
+  test:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run test:e2e
+      - store_test_results: ./playwright-report
+
   build:
     executor:
       name: pw-jammy-development
@@ -56,6 +66,7 @@ workflows:
   ci:
     jobs:
       - lint
+      - test
       - build
   deploy:
     jobs:
