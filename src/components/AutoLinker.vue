@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, defineProps, ref } from 'vue';
+import { computed, defineProps, ref, type ComputedRef } from 'vue';
 import { RouterLink } from 'vue-router';
 
 const props = defineProps<{ text: string }>()
@@ -25,28 +25,28 @@ const formatters = new Map<LinkType, (input: string) => string>([
     [LinkType.ServiceAccount, (i) => `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i}`],
     [LinkType.PhoneBook, (i) => `https://people.mozilla.org/s?who=staff&query=${i}`]
 ])
-const substr = ref<string>('')
-const linkType = computed<LinkType>(() => {
 
-    if (!props.text) return LinkType.None
+const linkInfo = computed<{ type: LinkType, match: string }>(() => {
+    let result = { type: LinkType.None, match: '' }
+
+    if (!props.text) return result
 
     for (let [lt, test] of tests) {
         const results = test.exec(props.text)
         if (results && results.length > 1) {
-            console.log(results)
-            substr.value = results[1]
-            return lt
+            result = { type: lt, match: results[1] }
+            break
         }
     }
 
-    return LinkType.None
+    return result
 })
 const noop = (i: string) => i
-const href = computed<string>(() => (formatters.get(linkType.value) || noop)(encodeURIComponent(substr.value || '')))
+const href = computed<string>(() => (formatters.get(linkInfo.value.type) || noop)(encodeURIComponent(linkInfo.value.match || '')))
 
 </script>
 <template>
-    <RouterLink v-if="linkType == LinkType.WorkGroup" :to="href" />
-    <span v-if="linkType == LinkType.None">{{ props.text }}</span>
+    <RouterLink v-if="linkInfo.type == LinkType.WorkGroup" :to="href" />
+    <span v-if="linkInfo.type == LinkType.None">{{ props.text }}</span>
     <a v-else :href="href">{{ props.text }}</a>
 </template>
