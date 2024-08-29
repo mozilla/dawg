@@ -29,9 +29,7 @@ const formatters = new Map<LinkType, (input: string) => string>([
 const linkInfo = computed<{ type: LinkType, match: string }>(() => {
     let result = { type: LinkType.None, match: '' }
 
-    if (!props.text) return result
-
-    for (let [lt, test] of tests) {
+    if (props.text) for (let [lt, test] of tests) {
         const results = test.exec(props.text)
         if (results && results.length > 1) {
             result = { type: lt, match: results[1] }
