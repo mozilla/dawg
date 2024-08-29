@@ -46,7 +46,7 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
                 <dt>{{ key }}</dt>
                 <dd>
                     <ul v-if="list.length > 0">
-                        <li v-for="item in list">
+                        <li v-for="item, i in list" :key="i">
                             <AutoLinker :text="item" />
                         </li>
                     </ul>
