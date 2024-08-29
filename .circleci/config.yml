@@ -24,9 +24,7 @@ jobs:
       - checkout
       - node/install-packages
       - run:
-          command: npx playwright install --with-deps
-      - run:
-          command: npm run test:e2e
+          command: CI=true npm run test:e2e
       - store_test_results:
           path: ./playwright-report
 
