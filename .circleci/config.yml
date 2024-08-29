@@ -25,7 +25,8 @@ jobs:
       - node/install-packages
       - run:
           command: npm run test:e2e
-      - store_test_results: ./playwright-report
+      - store_test_results:
+          path: ./playwright-report
 
   build:
     executor:
