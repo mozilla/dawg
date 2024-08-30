@@ -24,7 +24,10 @@ jobs:
       - checkout
       - node/install-packages
       - run: npm run build
-      - run: npm run test:e2e:ci
+      - run:
+          command: npm run test:e2e:ci
+          environment:
+            CI: 'true'
       - store_test_results:
           path: ./test-results
 
