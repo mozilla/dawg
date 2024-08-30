@@ -4,11 +4,10 @@ import { inject, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useClipboard } from '@vueuse/core';
 
-import type { WorkGroup, WorkGroupMap, ListOfText, MapOfLists, PlainText, ListOfLinks } from '@/workgroups';
-import { DisplayMode, WorkGroupDisplayModes, NullWorkGroup } from '@/workgroups';
+import type { WorkGroup, WorkGroupMap, ListOfLinks } from '@/workgroups';
+import { NullWorkGroup } from '@/workgroups';
 
 import IconLink from '@/components/IconLink.vue';
-import AutoLinker from '@/components/AutoLinker.vue';
 import DAWGTableCell from '@/components/DAWGTableCell.vue';
 
 const route = useRoute();
