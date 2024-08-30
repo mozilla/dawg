@@ -32,3 +32,19 @@ test('check that we can toggle dark mode', async ({ page }) => {
   await page.locator('#theme-toggle').click()
   await expect(page.locator('html')).not.toHaveClass('dark')
 })
+
+test('check that we can link to plain text searches', async ({ page }) => {
+  const term = 'two'
+  await page.goto(`?searchstring=${encodeURIComponent(term)}`)
+  await expect(page.locator('input#search')).toHaveValue(term)
+  await expect(page.locator('table tbody tr')).toHaveCount(1)
+})
+
+test('check that we can link to regex searchess', async ({ page }) => {
+  const term = 'two$'
+  const isRegex = true
+  await page.goto(`?isRegex=${isRegex}&searchstring=${encodeURIComponent(term)}`)
+  await expect(page.locator('input#search')).toHaveValue(term)
+  await expect(page.locator('input[name="regex"]')).toBeChecked()
+  await expect(page.locator('table tbody tr')).toHaveCount(1)
+})
