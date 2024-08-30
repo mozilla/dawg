@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { newWorkGroup, Sources } from '../workgroups'
 import type { WorkGroupMap } from '../workgroups'
@@ -29,24 +29,29 @@ if (props?.sources?.length == 0) {
     status.value = Status.Errored
 }
 
+onMounted(() => {
+    let response: Response;
 
-Promise
-    .all(props.sources && props.sources.map(src => {
-        return fetch(src).then(async (res) => {
-            const tmp = await res.json()
-            for (const groupname in tmp) {
-                const dawg = newWorkGroup(src, groupname, tmp[groupname])
-                data.set(dawg.id, dawg)
-            }
+    Promise
+        .all(props.sources && props.sources.map(src => {
+            return fetch(`//${window.location.host}/${src}`).then(async (res) => {
+                const tmp = await res.json()
+                for (const groupname in tmp) {
+                    const dawg = newWorkGroup(src, groupname, tmp[groupname])
+                    data.set(dawg.id, dawg)
+                }
+            })
+        }))
+        .catch((err: Error) => {
+            console.log(err, response)
+            status.value = Status.Errored
+            message.value = err.toString()
         })
-    }))
-    .catch((err: Error) => {
-        status.value = Status.Errored
-        message.value = err.toString()
-    })
-    .then(() => {
-        emit('done', data)
-    })
+        .then(() => {
+            emit('done', data)
+        })
+})
+
 
 </script>
 

@@ -9,13 +9,16 @@ test('visits the app root url', async ({ page }) => {
 
 test('search for a DAWG', async ({ page }) => {
   await page.goto('/')
+  await page.locator('header p')
   await page.getByPlaceholder('Search').fill('0din')
   // 0din is known to return a single result from search so the table should have just one row
   await expect(page.locator('table tbody tr')).toHaveCount(1)
 })
 
 test('check that we can navigate to a detail page', async ({ page }) => {
-  await page.goto('/workgroup%3Adatasre')
+  await page.goto('/')
+  await page.locator('header p')
+  await page.goto('/workgroup/datasre')
   await expect(page.locator('h1 .monospace')).toHaveText('workgroup:datasre')
   await expect(page.getByText('jgibbs@mozilla.com')).toHaveCount(1) // Sponsor
   await expect(page.getByText('None')).toHaveCount(1) // Managers
