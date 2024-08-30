@@ -32,8 +32,3 @@ test('check that we can toggle dark mode', async ({ page }) => {
   await page.locator('#theme-toggle').click()
   await expect(page.locator('html')).not.toHaveClass('dark')
 })
-
-test('forcefailure', async ({ page }) => {
-  await page.goto('/thisshouldfail')
-  await expect(false).toBeTruthy()
-})
