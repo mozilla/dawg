@@ -33,12 +33,16 @@ npm run build
 ```
 
 ### Use Production Assets in Dev Testing (`workgroup:mozilla-confidential` metadata)
+
 ## ⚠️ Do not commit these files
+
 ```sh
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv2_merged.json public/
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv1_enriched.json public/
 npm run dev
 ```
+
+then add `/?useProdData=true` to your URL to override the mockdata loading for local dev
 
 ### Run End-to-End Tests with [Playwright](https://playwright.dev)
 

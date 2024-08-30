@@ -9,7 +9,9 @@ import { Sources, workgroupSetFromMap } from './workgroups'
 
 import DataLoader from './components/DataLoader.vue'
 import HeaderNav from './components/HeaderNav.vue'
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
 
 const datamap: Ref<WorkGroupMap> = ref(new Map())
 // TODO clarify naming
@@ -25,8 +27,13 @@ const recieveData = (d: WorkGroupMap) => {
   datamap.value = d
 }
 
-const sourceFiles = Array.from(Sources.keys())
-
+const sourceFiles = computed(() => {
+  // intentionally getting search param w/o vue router as it's initially empty and we don't want to wait on
+  // vue lifecycle to start loading data
+  return (/^protosaur/.test(window.location.host) || (new URLSearchParams(window.location.search).get('useProdData') == 'true'))
+    ? Array.from(Sources.keys())
+    : ['mockdata.json'];
+})
 </script>
 
 <template>
