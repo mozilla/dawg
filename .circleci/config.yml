@@ -23,8 +23,8 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - run:
-          command: CI=true npm run test:e2e
+      - run: npm run build
+      - run: CI=true npm run test:e2e
       - store_test_results:
           path: ./playwright-report
 
@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Build assets
           command: |
-            npm run build
+            npm run build --base="/dawg"
       - persist_to_workspace:
           root: ~/project
           paths:

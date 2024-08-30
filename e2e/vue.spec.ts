@@ -10,7 +10,7 @@ test('visits the app root url', async ({ page }) => {
 test('search for a DAWG', async ({ page }) => {
   await page.goto('/')
   await page.locator('header p')
-  await page.getByPlaceholder('Search').fill('0din')
+  await page.getByPlaceholder('Search').fill('madeup-workgroup-two')
   // 0din is known to return a single result from search so the table should have just one row
   await expect(page.locator('table tbody tr')).toHaveCount(1)
 })
@@ -18,11 +18,11 @@ test('search for a DAWG', async ({ page }) => {
 test('check that we can navigate to a detail page', async ({ page }) => {
   await page.goto('/')
   await page.locator('header p')
-  await page.goto('/workgroup/datasre')
-  await expect(page.locator('h1 .monospace')).toHaveText('workgroup:datasre')
-  await expect(page.getByText('jgibbs@mozilla.com')).toHaveCount(1) // Sponsor
-  await expect(page.getByText('None')).toHaveCount(1) // Managers
-  await expect(page.getByText('whd@firefox.gcp.mozilla.com')).toHaveCount(1) // Members
+  await page.goto('/workgroup/madeup-workgroup-two')
+  await expect(page.locator('h1 .monospace')).toHaveText('workgroup:madeup-workgroup-two')
+  await expect(page.getByText('sponsor@mozilla.com')).toHaveCount(1) // Sponsor
+  await expect(page.getByText('manager@mozilla.com')).toHaveCount(1) // Managers
+  await expect(page.getByText('group:da-wg-madeup-workgroup-two@mozilla.com')).toHaveCount(1) // Members
 })
 
 test('check that we can toggle dark mode', async ({ page }) => {
