@@ -15,7 +15,7 @@ const route = useRoute();
 const source = computed(() => window.location.href)
 const { copy, copied } = useClipboard({ source })
 
-const id = decodeURIComponent(route.params.dawgid as string)
+const id = `workgroup:${decodeURIComponent(route.params.dawgid as string)}`
 
 
 const details = Array<keyof WorkGroup>('type', 'sponsor', 'managers', 'members')

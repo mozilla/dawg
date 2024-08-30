@@ -1,10 +1,12 @@
 <script setup lang="ts">
 
+import { dawgLinker } from '@/routing';
 import { DisplayMode, WorkGroupDisplayModes } from '@/workgroups';
 import type { ListOfText, MapOfLists, WorkGroup } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
 import AutoLinker from './AutoLinker.vue';
+
 
 
 const props = defineProps<{
@@ -14,6 +16,7 @@ const props = defineProps<{
 
 const display = WorkGroupDisplayModes.get(props.fieldName)
 
+
 </script>
 
 <template>
@@ -22,7 +25,7 @@ const display = WorkGroupDisplayModes.get(props.fieldName)
             (no data)
         </template>
         <template v-if="display === DisplayMode.DAWGLink">
-            <RouterLink :to="`/${encodeURIComponent(props.contents as string)}`">
+            <RouterLink :to="dawgLinker(props.contents as string)">
                 {{ props.contents }}
             </RouterLink>
         </template>

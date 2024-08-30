@@ -2,7 +2,7 @@ export type MapOfLists = { [key: string]: string[] }
 export type ListOfText = string[]
 export type ListOfLinks = string[]
 export type PlainText = string
-
+export const WorkGroupIDRegex = /^workgroup:([a-z0-9-]+)/
 export type WorkGroup = {
   id: string
   type?: PlainText
