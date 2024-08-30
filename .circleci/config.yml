@@ -25,11 +25,11 @@ jobs:
       - node/install-packages
       - run: npm run build
       - run:
-          command: npm run test:e2e:ci
+          command: npm run test:e2e
           environment:
             CI: 'true'
       - store_test_results:
-          path: ./test-results
+          path: ./test-results/results.xml
 
   build:
     executor:
