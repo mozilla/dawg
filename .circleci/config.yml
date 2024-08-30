@@ -24,7 +24,7 @@ jobs:
       - checkout
       - node/install-packages
       - run: npm run build
-      - run: CI=true npm run test:e2e
+      - run: npm run test:e2e:ci
       - store_test_results:
           path: ./playwright-report
 
