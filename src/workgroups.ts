@@ -42,13 +42,11 @@ export const WorkGroupDisplayModes: Map<keyof WorkGroup, DisplayMode> = new Map(
   ['links', DisplayMode.ListOfLinks],
   ['sponsor', DisplayMode.PlainText],
   ['managers', DisplayMode.ListOfText],
-  // ['subgroups', DisplayMode.ListOfText],
-  // ['members_list', DisplayMode.ListOfText],
   ['members', DisplayMode.MapOfLists]
 ])
 
-export const getFieldDisplayMode = (f: keyof WorkGroup, w: WorkGroup): DisplayMode => {
-  return DisplayMode.PlainText
+export const getFieldDisplayMode = (f: keyof WorkGroup): DisplayMode => {
+  return WorkGroupDisplayModes.get(f) || DisplayMode.PlainText
 }
 
 const DefaultWorkGroupIDs = [

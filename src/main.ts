@@ -9,7 +9,7 @@ import { routes } from './routing'
 const router = createRouter({
   routes,
   history: createWebHistory(),
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior() {
     // always scroll to top
     return { top: 0 }
   }

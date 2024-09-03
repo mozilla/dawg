@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import { computed, inject, onMounted, watch } from 'vue'
+import { computed, inject, watch } from 'vue'
 import type { ComputedRef } from 'vue'
 
 import { useUrlSearchParams } from '@vueuse/core'
 
-import type { WorkGroup, WorkGroupMap, MapOfLists } from '../workgroups'
+import type { WorkGroup, MapOfLists } from '../workgroups'
 import { NullWorkGroup } from '../workgroups'
 import DAWGTable from '../components/DAWGTable.vue'
 
@@ -29,18 +29,9 @@ const searchstring = defineModel<string>('searchstring', {
     default: useUrlSearchParams('history').searchstring
 });
 
-watch(isRegex, async (n, o) => params.isRegex = `${n}`)
-watch(searchstring, async (n, o) => params.searchstring = `${n}`)
-
-// check that the values aren't equal before setting to avoid an infinite update loop
-// watch(params, async (newParams, oldParams) => {
-//     // if the new query params are not already equal to the current state, convert the string to a bool and store it
-//     if (newParams.isRegex && newParams.isRegex !== `${isRegex.value}`)
-//         isRegex.value = (newParams.isRegex === "true")
-
-//     if (newParams.searchstring && newParams.searchstring !== searchstring.value)
-//         searchstring.value = newParams.searchstring as string || ''
-// })
+// Push model changes to url search params to keep url in-sync
+watch(isRegex, async (n) => params.isRegex = `${n}`)
+watch(searchstring, async (n) => params.searchstring = `${n}`)
 
 // A compiled RegExp from the user input string, or the error if one was encountered
 const searchregexp = computed((): RegExp | Error => {

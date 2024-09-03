@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, provide, computed, onMounted } from 'vue';
+import { ref, provide, computed } from 'vue';
 import type { Ref, ComputedRef } from 'vue';
 
 import type { WorkGroupSet, WorkGroupMap } from './workgroups'
@@ -9,9 +9,6 @@ import { Sources, workgroupSetFromMap } from './workgroups'
 
 import DataLoader from './components/DataLoader.vue'
 import HeaderNav from './components/HeaderNav.vue'
-import { useRoute } from 'vue-router';
-
-const route = useRoute();
 
 const datamap: Ref<WorkGroupMap> = ref(new Map())
 // TODO clarify naming

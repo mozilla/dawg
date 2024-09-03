@@ -2,7 +2,7 @@
 
 import { onMounted, ref } from 'vue';
 
-import { newWorkGroup, Sources } from '../workgroups'
+import { newWorkGroup } from '../workgroups'
 import type { WorkGroupMap } from '../workgroups'
 
 const props = defineProps<{
