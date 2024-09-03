@@ -43,7 +43,7 @@ onMounted(() => {
             })
         }))
         .catch((err: Error) => {
-            console.log(err, response)
+            console.warn(err, response)
             status.value = Status.Errored
             message.value = err.toString()
         })
