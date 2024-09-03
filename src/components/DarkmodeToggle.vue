@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import { watch } from 'vue';
-import { useStorage } from '@vueuse/core'
+import { set, useStorage } from '@vueuse/core'
 
 type Themes = "dark" | "light" | "unselected"
 const theme = useStorage<Themes>('color-theme', "unselected")
+const setThemeCSSClass = (t: Themes) => {
+    if (t == "dark") return document.documentElement.classList.add('dark');
+    return document.documentElement.classList.remove('dark');
+}
 
 // check once 
 if (theme.value == "unselected" && !!window.matchMedia('(prefers-color-scheme: dark)').matches) {
     theme.value = "dark"
+} else {
+    setThemeCSSClass(theme.value)
 }
+
 // whenever theme is set this will be called
-watch(theme, (t: Themes) => {
-    if (t == "dark") return document.documentElement.classList.add('dark');
-    return document.documentElement.classList.remove('dark');
-})
+watch(theme, setThemeCSSClass)
 
 </script>
 <template>
