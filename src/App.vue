@@ -42,11 +42,6 @@ const sourceFiles = computed(() => {
 </template>
 
 <style>
-body {
-  --dawg-blue: #3F83F8;
-  --dawg-orange: #FF8A4C;
-}
-
 header {
   margin: 80px auto 2rem;
 }
