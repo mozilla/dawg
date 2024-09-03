@@ -5,13 +5,13 @@ export type PlainText = string
 export const WorkGroupIDRegex = /^workgroup:([a-z0-9-]+)/
 export type WorkGroup = {
   id: string
-  type?: PlainText
+  type: PlainText
   links: ListOfLinks
   sponsor: PlainText
   managers: ListOfText
   members: MapOfLists
 }
-const nd = 'no data' as const
+const nd = '[no data]' as const
 export const NullWorkGroup: WorkGroup = {
   id: nd,
   type: nd,
@@ -36,7 +36,7 @@ export enum DisplayMode {
   which can be difficult for things such as PlainText vs DAWGLink which
   are both of type `string`
   */
-export const WorkGroupDisplayModes: Map<keyof WorkGroup, DisplayMode> = new Map([
+const WorkGroupDisplayModes: Map<keyof WorkGroup, DisplayMode> = new Map([
   ['id', DisplayMode.DAWGLink],
   ['type', DisplayMode.PlainText],
   ['links', DisplayMode.ListOfLinks],
@@ -73,7 +73,9 @@ export const Sources: Map<string, string> = new Map(
 export const workgroupSetFromMap = (wgm: WorkGroupMap): WorkGroupSet => {
   return Array.from(wgm.values())
 }
-//todo types
+
+const none = 'None' as const
+
 export const newWorkGroup = (sourcename: string, groupname: string, data: any): WorkGroup => {
   const links: string[] = data?.metadata?.links || []
   // This seems redundant from the GH link already provided?
@@ -86,10 +88,10 @@ export const newWorkGroup = (sourcename: string, groupname: string, data: any): 
 
   return {
     id: `workgroup:${groupname}`,
-    type: Sources.get(sourcename),
+    type: (!Sources.has(sourcename) ? none : Sources.get(sourcename)) as string,
     links,
-    sponsor: data?.metadata?.sponsor.length == 0 ? 'None' : data?.metadata?.sponsor,
-    managers: data?.metadata?.managers.length == 0 ? ['None'] : data?.metadata?.managers,
+    sponsor: data?.metadata?.sponsor.length == 0 ? none : data?.metadata?.sponsor,
+    managers: data?.metadata?.managers.length == 0 ? [none] : data?.metadata?.managers,
     members:
       Object.keys(data?.members).length == 0
         ? {}

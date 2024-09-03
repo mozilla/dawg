@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { dawgLinker } from '@/routing';
-import { DisplayMode, WorkGroupDisplayModes } from '@/workgroups';
+import { DisplayMode, getFieldDisplayMode } from '@/workgroups';
 import type { ListOfText, MapOfLists, WorkGroup } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
@@ -14,7 +14,7 @@ const props = defineProps<{
     fieldName: keyof WorkGroup,
 }>()
 
-const display = WorkGroupDisplayModes.get(props.fieldName)
+const display = getFieldDisplayMode(props.fieldName)
 
 
 </script>
