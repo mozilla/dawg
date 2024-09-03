@@ -42,7 +42,7 @@ const display = getFieldDisplayMode(props.fieldName)
         </ul>
         <span
             v-else-if="display === DisplayMode.ListOfText && props.contents && (props.contents as string[]).length == 1">
-            {{ props.contents && (props.contents as ListOfText)[0] }}
+            <AutoLinker :text="props.contents && (props.contents as ListOfText)[0]" />"
         </span>
         <dl v-else-if="display === DisplayMode.MapOfLists">
             <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
