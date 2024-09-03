@@ -93,7 +93,6 @@ nav {
 
 td {
     padding: 1rem;
-    vertical-align: top;
     display: block;
 }
 
@@ -145,6 +144,7 @@ ul {
 @media (min-width: 640px) {
     td {
         display: table-cell;
+        vertical-align: top;
     }
 
     nav a {
