@@ -6,6 +6,7 @@ import jiraLogo from '@/assets/jira.svg'
 import gitHubLogo from '@/assets/github.svg'
 import externalLink from '@/assets/externallink.svg'
 import gcpLogo from '@/assets/gcp.png'
+import bugZillaLogo from '@/assets/bugzilla.png'
 
 const slots = useSlots()
 
@@ -13,6 +14,7 @@ enum LinkTypes {
     Jira,
     GitHub,
     GCP,
+    BugZilla,
     Internal,
     External
 }
@@ -30,7 +32,8 @@ const LinkTypeMap: Map<LinkTypes, RegExp> = new Map([
     [LinkTypes.Jira, new RegExp('mozilla-hub.atlassian.net')],
     [LinkTypes.GitHub, new RegExp('github.com')],
     [LinkTypes.GCP, new RegExp('console.cloud.google.com')],
-    [LinkTypes.Internal, new RegExp(`^/|${window.location.host}`)] // starts with a slash or contains the current page URL
+    [LinkTypes.Internal, new RegExp(`^/|${window.location.host}`)], // starts with a slash or contains the current page URL
+    [LinkTypes.BugZilla, new RegExp(`bugzilla.mozilla.org`)],
 ])
 
 const type: ComputedRef<LinkTypes> = computed(() => {
@@ -52,6 +55,8 @@ const text: ComputedRef<string> = computed(() => {
             return "Jira Ticket"
         case type.value == LinkTypes.GitHub:
             return "Search on Github"
+        case type.value == LinkTypes.BugZilla:
+            return "View On BugZilla"
         case URL.canParse(props.href):
             return new URL(props.href).host
         default:
@@ -63,7 +68,8 @@ const text: ComputedRef<string> = computed(() => {
     <a :href="props.href">
         <img v-if="type == LinkTypes.GCP" :src="gcpLogo" width="25px" height="25px" alt="GCP Logo" />
         <img v-else-if="type == LinkTypes.Jira" :src="jiraLogo" width="25px" height="25px" alt="Jira Logo" />
-        <img v-else-if="type == LinkTypes.GitHub" :src="gitHubLogo" width="23px" height="23px" alt="Github Logo" />
+        <img v-else-if="type == LinkTypes.GitHub" :src="gitHubLogo" width="25px" height="25px" alt="Github Logo" />
+        <img v-else-if="type == LinkTypes.BugZilla" :src="bugZillaLogo" width="25px" height="25px" alt="BugZilla Logo">
         <img v-else :src="externalLink" width="23px" height="23px" alt="External Link" />
         <span>
             <slot v-if="hasSlot()"></slot>
