@@ -2,7 +2,9 @@ export type MapOfLists = { [key: string]: string[] }
 export type ListOfText = string[]
 export type ListOfLinks = string[]
 export type PlainText = string
-export const WorkGroupIDRegex = /^workgroup:([a-z0-9-]+)/
+
+export const WorkGroupIDRegex = /^(?!workgroup:)?([a-z0-9-]+)/
+
 export type WorkGroup = {
   id: string
   type: PlainText
@@ -15,10 +17,10 @@ const nd = '[no data]' as const
 export const NullWorkGroup: WorkGroup = {
   id: nd,
   type: nd,
-  links: [],
+  links: [nd],
   sponsor: nd,
-  managers: [],
-  members: {}
+  managers: [nd],
+  members: { none: [] }
 } as const
 
 export type WorkGroupMap = Map<string, WorkGroup>
@@ -76,27 +78,33 @@ export const workgroupSetFromMap = (wgm: WorkGroupMap): WorkGroupSet => {
 
 const none = 'None' as const
 
+const copy = (o: any) => JSON.parse(JSON.stringify(o))
+
 export const newWorkGroup = (sourcename: string, groupname: string, data: any): WorkGroup => {
-  const links: string[] = data?.metadata?.links || []
+  const wg = copy(NullWorkGroup)
+
+  wg.links = data?.metadata?.links || []
+
   // This seems redundant from the GH link already provided?
-  links.push(
+  wg.links.push(
     `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+%22workgroup%3A${groupname}%22&type=code`
   )
   for (const project in data.team_projects) {
-    links.push(`https://console.cloud.google.com/home/dashboard?project=${project}`)
+    wg.links.push(`https://console.cloud.google.com/home/dashboard?project=${project}`)
   }
 
-  return {
-    id: `workgroup:${groupname}`,
-    type: (!Sources.has(sourcename) ? none : Sources.get(sourcename)) as string,
-    links,
-    sponsor: data?.metadata?.sponsor.length == 0 ? none : data?.metadata?.sponsor,
-    managers: data?.metadata?.managers.length == 0 ? [none] : data?.metadata?.managers,
-    members:
-      Object.keys(data?.members).length == 0
-        ? {}
-        : (Object.fromEntries(
-            Object.entries(data?.members).filter(([key]) => !DefaultWorkGroupIDs.includes(key))
-          ) as MapOfLists)
-  }
+  wg.id = `workgroup:${groupname}`
+
+  if (Sources.has(sourcename)) wg.type = Sources.get(sourcename)
+
+  if (data?.metadata?.sponsor) wg.sponsor = data.metadata.sponsor
+
+  if (data?.metadata?.managers) wg.managers = data.metadata.managers
+
+  if (Object.keys(data?.members).length > 0)
+    wg.members = Object.fromEntries(
+      Object.entries(data?.members).filter(([key]) => !DefaultWorkGroupIDs.includes(key))
+    )
+
+  return wg
 }
