@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { WorkGroup } from '@/workgroups';
+import type { DAWG } from '@/workgroups';
 import DAWGTableCell from './DAWGTableCell.vue'
 
 const props = defineProps<{
     headers: string[],
-    rows: WorkGroup[],
+    rows: DAWG[],
 }>()
 
 </script>

@@ -1,42 +1,46 @@
 <script setup lang="ts">
 
 import { ref, provide, computed } from 'vue';
-import type { Ref, ComputedRef } from 'vue';
+import type { Ref, ComputedRef, InjectionKey } from 'vue';
 
-import type { WorkGroupSet, WorkGroupMap } from './workgroups'
-import { Sources, workgroupSetFromMap } from './workgroups'
 
+import { sourceFiles } from './workgroups'
+import type { DAWGMap, DAWGSet } from './workgroups';
 
 import DataLoader from './components/DataLoader.vue'
 import HeaderNav from './components/HeaderNav.vue'
+import { datamapinjection, datasetinjection } from './data';
 
-const datamap: Ref<WorkGroupMap> = ref(new Map())
-// TODO clarify naming
-const dataset: ComputedRef<WorkGroupSet> = computed(() => {
-  return workgroupSetFromMap(datamap.value)
-})
-
-// makes data reachable by nested child components
-provide('dataset', dataset)
-provide('datamap', datamap)
-
-const recieveData = (d: WorkGroupMap) => {
-  datamap.value = d
-}
-
-const sourceFiles = computed(() => {
+const filteredSourceFiles = (() => {
   // intentionally getting search param w/o vue router as it's initially empty and we don't want to wait on
   // vue lifecycle to start loading data
   return (/^protosaur/.test(window.location.host) || (new URLSearchParams(window.location.search).get('useProdData') == 'true'))
-    ? Array.from(Sources.keys())
-    : ['mockdata.json'];
-})
+    ? sourceFiles.filter(src => src !== 'mockdata.json')
+    : sourceFiles.filter(src => src == 'mockdata.json');
+})()
+
+const hasLoaded = ref(false)
+
+const datamap = ref(new Map() as DAWGMap)
+const dataset = ref([] as DAWGSet)
+
+provide(datamapinjection, datamap)
+provide(datasetinjection, dataset)
+
+const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
+  console.log('recieved data')
+  datamap.value = recievedMap
+  dataset.value = recievedSet
+  hasLoaded.value = true
+}
+
+
 </script>
 
 <template>
   <HeaderNav />
   <main>
-    <DataLoader v-if="dataset.length == 0" :sources="sourceFiles" @done="recieveData" />
+    <DataLoader v-if="!hasLoaded" :sources="filteredSourceFiles" @done="recieveData" />
     <RouterView v-else />
   </main>
 </template>
@@ -48,5 +52,10 @@ header {
 
 .monospace {
   font-family: monospace;
+}
+
+.container {
+  width: 100%;
+  margin: 0px auto;
 }
 </style>

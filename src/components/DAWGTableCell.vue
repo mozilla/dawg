@@ -2,7 +2,7 @@
 
 import { dawgLinker } from '@/routing';
 import { DisplayMode, getFieldDisplayMode } from '@/workgroups';
-import type { ListOfText, MapOfLists, WorkGroup } from '@/workgroups'
+import type { DAWG, ListOfText, MapOfLists, PlainText } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
 import AutoLinker from './AutoLinker.vue';
@@ -10,8 +10,8 @@ import AutoLinker from './AutoLinker.vue';
 
 
 const props = defineProps<{
-    contents: undefined | string | string[] | MapOfLists,
-    fieldName: keyof WorkGroup,
+    contents: undefined | PlainText | ListOfText | MapOfLists,
+    fieldName: keyof DAWG,
 }>()
 
 const display = getFieldDisplayMode(props.fieldName)
@@ -33,16 +33,16 @@ const display = getFieldDisplayMode(props.fieldName)
             <AutoLinker :text="(props.contents as string)" />
         </template>
         <template v-if="display === DisplayMode.ListOfLinks">
-            <IconLink v-for="(link, i) in (props.contents as string[])" :key="i" :href="link" :auto-text="false" />
+            <IconLink v-for="(link, i) in (props.contents as ListOfText)" :key="i" :href="link" :auto-text="false" />
         </template>
         <ul v-else-if="display === DisplayMode.ListOfText && props.contents && (props.contents as string[]).length > 1">
             <li v-for="(line, index) in props.contents" :key="index">
-                <AutoLinker :text="(line as string)" />
+                <AutoLinker :text="(line as PlainText)" />
             </li>
         </ul>
         <span
             v-else-if="display === DisplayMode.ListOfText && props.contents && (props.contents as string[]).length == 1">
-            <AutoLinker :text="props.contents && (props.contents as ListOfText)[0]" />"
+            <AutoLinker :text="props.contents && (props.contents as ListOfText)[0]" />
         </span>
         <dl v-else-if="display === DisplayMode.MapOfLists">
             <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">

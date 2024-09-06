@@ -1,19 +1,22 @@
 <script setup lang="ts">
 
 import { onMounted, ref } from 'vue';
+import type { DAWG, DAWGMap, DAWGSet, SourceFile, Version } from '../workgroups'
+import { newWorkGroup, formatDAWGID, sourceVersions, versionKinds } from '../workgroups'
+import { useRouter } from 'vue-router';
+import { ErrorCode, serializeErrorDetails } from '@/errors';
 
-import { newWorkGroup } from '../workgroups'
-import type { WorkGroupMap } from '../workgroups'
-
+const router = useRouter();
 const props = defineProps<{
-    sources: string[],
+    sources: SourceFile[],
 }>()
 
 const emit = defineEmits<{
-    done: [WorkGroupMap]
+    done: [DAWGMap, DAWGSet]
 }>()
 
-const data: WorkGroupMap = new Map();
+const wgMap: DAWGMap = new Map();
+const wgSet: DAWGSet = [];
 
 enum Status {
     Loading,
@@ -24,31 +27,42 @@ enum Status {
 const status = ref(Status.Loading)
 const message = ref("Loading...");
 
-if (props?.sources?.length == 0) {
-    message.value = "No sources provided"
-    status.value = Status.Errored
-}
-
 onMounted(() => {
     let response: Response;
 
     Promise
-        .all(props.sources && props.sources.map(src => {
+        .all(props.sources && props.sources.map(async (src) => {
             return fetch(`//${window.location.host}/${src}`).then(async (res) => {
+                if (!src) return // make typescript happy
+
+                const ver = sourceVersions.get(src)
+                if (!ver) throw new Error(`couldn't map source to a DAWG version: ${src} = ${ver}`)
+
+                const kind = versionKinds.get(ver)
+                if (!kind) throw new Error(`couldn't map DAWG version to a DAWG kind: ${ver} = ${kind}`)
+
                 const tmp = await res.json()
                 for (const groupname in tmp) {
-                    const dawg = newWorkGroup(src, groupname, tmp[groupname])
-                    data.set(dawg.id, dawg)
+                    const dawg = newWorkGroup(groupname, kind, tmp[groupname])
+                    const id = formatDAWGID(groupname)
+                    //  If we run into intermitent missing data it's probably here
+                    // this operation isn't fully thread safe due to lack of mutexes
+                    if (!wgMap.has(id)) wgMap.set(id, new Map<Version, DAWG>())
+
+                    wgMap.get(id)?.set(ver, dawg)
+
+                    // Push all DAWGs blindly into the set
+                    wgSet.push(dawg)
                 }
             })
         }))
         .catch((err: Error) => {
             console.warn(err, response)
-            status.value = Status.Errored
-            message.value = err.toString()
+            router.push({ path: '/error', query: { err: ErrorCode.Application, detail: serializeErrorDetails(err) } })
+
         })
         .then(() => {
-            emit('done', data)
+            emit('done', wgMap, wgSet)
         })
 })
 

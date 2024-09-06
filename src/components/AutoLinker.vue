@@ -3,8 +3,7 @@
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
-import { WorkGroupIDRegex } from '@/workgroups';
-import { dawgLinker } from '@/routing';
+import { WorkGroupIDRegex, dawgLinker } from '@/routing';
 
 const props = defineProps<{ text: string }>()
 

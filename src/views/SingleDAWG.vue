@@ -1,85 +1,96 @@
 <script setup lang="ts">
-import type { Ref, ComputedRef } from 'vue';
-import { inject, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import type { Ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
+import { inject, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useClipboard } from '@vueuse/core';
 
-import type { WorkGroup, WorkGroupMap, ListOfLinks } from '@/workgroups';
-import { NullWorkGroup } from '@/workgroups';
+import { type DAWG, type DAWGMap, type DAWGHouse, type ListOfLinks, formatDAWGID, versions, versionKinds } from '@/workgroups';
 
 import IconLink from '@/components/IconLink.vue';
 import DAWGTableCell from '@/components/DAWGTableCell.vue';
+import { datamapinjection } from '@/data';
+import { ErrorCode, serializeErrorDetails } from '@/errors';
 
+
+const router = useRouter();
 const route = useRoute();
 const source = computed(() => window.location.href)
 const { copy, copied } = useClipboard({ source })
 
-const id = `workgroup:${decodeURIComponent(route.params.dawgid as string)}`
 
 
-const details = Array<keyof WorkGroup>('type', 'sponsor', 'managers', 'members')
-const datamap: Ref<WorkGroupMap> | undefined = inject('datamap')
 
-const workgroup: ComputedRef<WorkGroup> = computed(() => {
-    if (datamap?.value.get(id)) {
-        return datamap.value.get(id) as WorkGroup
+const details = Array<keyof DAWG>('sponsor', 'managers', 'members')
+const datamap = inject(datamapinjection)
+
+const dawghouse: Ref<DAWGHouse | undefined> = ref()
+const id = ref(formatDAWGID(route.params.id as string))
+
+
+onMounted(() => {
+
+    if (!datamap) return router.push({ path: '/error', query: { err: ErrorCode.Application, detail: serializeErrorDetails(`datamap was not loaded got ${datamap}`) } })
+
+    if (!datamap.value.has(id.value)) {
+        console.warn('did not find workgroup so sending to 404')
+        router.push({ path: '/error', query: { err: ErrorCode.NotFound404, dawgid: encodeURIComponent(id.value) } })
     }
-    return NullWorkGroup
+    dawghouse.value = datamap.value.get(id.value)
 })
+
+
 
 </script>
 
 <template>
-    <template v-if="workgroup === NullWorkGroup">
-        <div class="message-404">
-            <h1
-                class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-                404
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-400">
-                    Workgroup
-                </span>
-                Not Found
-            </h1>
-            <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
-                Could not find <span class="monospace text-blue-600 dark:text-blue-500">{{ id }}</span> data access
-                workgroup
-            </p>
-            <RouterLink to="/">
-                <button type="button"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                    Return to search
-                </button>
-            </RouterLink>
-        </div>
-    </template>
-    <template v-else>
-        <h1 @click="copy(source)" v-bind:title="!copied ? 'copy to clipboard' : 'copied'">
-            <span class="monospace">
-                {{ workgroup?.id }}
+    <div class="container">
+        <h1 class="monospace">
+            {{ id }}
+            <span @click="copy(source)" v-bind:title="!copied ? 'copy to clipboard' : 'copied'">
+                🔗
             </span>
         </h1>
-        <nav>
-            <IconLink v-for="link, key in (workgroup?.links as ListOfLinks)" v-bind:key :href="link" :autoText="true" />
-        </nav>
-        <table>
-            <tr v-for="(field, i) in details" :key="i">
-                <td>{{ field }}</td>
-                <DAWGTableCell :fieldName="field" :contents="workgroup[field]" />
-            </tr>
-        </table>
-    </template>
+        <template v-for="ver in versions">
+            <div v-if="dawghouse?.has(ver)">
+
+                <h2>{{ versionKinds.get(ver) }} ({{ ver }})</h2>
+
+                <nav>
+                    <IconLink v-for="link, key in (dawghouse.get(ver)?.links as ListOfLinks)" v-bind:key :href="link"
+                        :autoText="true" />
+                </nav>
+                <table>
+                    <tr v-for="(field, i) in details" :key="i">
+                        <td>{{ field }}</td>
+                        <DAWGTableCell :fieldName="field" :contents="(dawghouse?.get(ver) || {})[field]" />
+                    </tr>
+                </table>
+            </div>
+        </template>
+    </div>
+
+
 </template>
 
 <style scoped>
+.container {
+    text-align: left;
+}
+
 h1 {
     font-size: 2.5rem;
-    text-align: center;
     margin: 2rem 0;
-    cursor: pointer;
+}
+
+h2 {
+    font-size: 1.2rem;
+    margin: 3rem 0 0 0;
 }
 
 nav {
-    text-align: center;
+    text-align: left;
+    margin-top: 1rem;
 }
 
 nav a {
@@ -92,16 +103,17 @@ nav {
 }
 
 td {
-    padding: 1rem;
+    padding: 0 1rem 1rem 0;
     display: block;
+    text-align: left;
+}
+
+td a {
+    margin-top: 0;
 }
 
 dd {
     margin-bottom: 1rem;
-}
-
-table {
-    margin: 0px auto;
 }
 
 td:first-child {
@@ -113,33 +125,6 @@ ul {
     list-style: disc;
     list-style-position: inside;
 }
-
-
-
-.message-404 {
-    text-align: center;
-    margin: 0px auto;
-    display: block;
-}
-
-.message-404 h1 {
-    cursor: default;
-    margin-top: 2rem;
-}
-
-.message-404 .monospaced {
-    font-weight: bold;
-}
-
-.message-404 a {
-    margin: 1rem auto 0;
-    display: inline-block;
-}
-
-.message-404 a:hover {
-    text-decoration: underline;
-}
-
 
 @media (min-width: 640px) {
     td {

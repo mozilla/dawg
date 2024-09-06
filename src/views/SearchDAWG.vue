@@ -5,16 +5,14 @@ import type { ComputedRef } from 'vue'
 
 import { useUrlSearchParams } from '@vueuse/core'
 
-import type { WorkGroup, MapOfLists } from '../workgroups'
+import type { DAWG, MapOfLists } from '../workgroups'
 import { NullWorkGroup } from '../workgroups'
 import DAWGTable from '../components/DAWGTable.vue'
+import { datasetinjection } from '@/data'
 
 
 
-const dataset = computed(() => {
-    const ds = inject('dataset') as ComputedRef<WorkGroup[]>
-    return !ds ? [] : ds.value
-})
+const dataset = inject(datasetinjection)
 
 // first set our models equal to whatever is set in the url
 const params = useUrlSearchParams('history')
@@ -59,7 +57,7 @@ const filterFunc = computed(() => {
 })
 
 // Returns the data set filtered by the seach term or regex
-const filteredSet: ComputedRef<WorkGroup[]> = computed(() => {
+const filteredSet: ComputedRef<DAWG[]> = computed(() => {
     if (!dataset?.value) {
         return []
     }
