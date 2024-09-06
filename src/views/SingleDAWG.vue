@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
-import { onBeforeMount, ref, watch } from 'vue';
+import { ref } from 'vue';
 import { inject, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useClipboard } from '@vueuse/core';
 
-import { type DAWG, type DAWGMap, type DAWGHouse, type ListOfLinks, formatDAWGID, versions, versionKinds } from '@/workgroups';
+import { type DAWG, type DAWGHouse, type ListOfLinks, formatDAWGID, versions, versionKinds } from '@/workgroups';
 
 import IconLink from '@/components/IconLink.vue';
 import DAWGTableCell from '@/components/DAWGTableCell.vue';
@@ -52,7 +52,7 @@ onMounted(() => {
             </span>
         </h1>
         <template v-for="ver in versions">
-            <div v-if="dawghouse?.has(ver)">
+            <div v-if="dawghouse?.has(ver)" :key="ver">
 
                 <h2>{{ versionKinds.get(ver) }} ({{ ver }})</h2>
 

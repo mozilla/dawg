@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watch } from 'vue';
-import { set, useStorage } from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 
 type Themes = "dark" | "light" | "unselected"
 const theme = useStorage<Themes>('color-theme', "unselected")

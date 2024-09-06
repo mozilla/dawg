@@ -1,8 +1,6 @@
 <script setup lang="ts">
 
-import { ref, provide, computed } from 'vue';
-import type { Ref, ComputedRef, InjectionKey } from 'vue';
-
+import { ref, provide } from 'vue';
 
 import { sourceFiles } from './workgroups'
 import type { DAWGMap, DAWGSet } from './workgroups';
