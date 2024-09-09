@@ -95,7 +95,7 @@ export const newWorkGroup = (groupname: string, kind: DAWGKind, data: any): DAWG
     `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+%22workgroup%3A${groupname}%22&type=code`
   )
 
-  data.team_projects.forEach((project: string) => {
+  data.team_projects?.forEach((project: string) => {
     wg.links.push(`https://console.cloud.google.com/home/dashboard?project=${project}`)
   })
 
