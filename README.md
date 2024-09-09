@@ -33,12 +33,16 @@ npm run build
 ```
 
 ### Use Production Assets in Dev Testing (`workgroup:mozilla-confidential` metadata)
+
 ## ⚠️ Do not commit these files
+
 ```sh
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv2_merged.json public/
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv1_enriched.json public/
 npm run dev
 ```
+
+then add `/?useProdData=true` to your URL to override the mockdata loading for local dev
 
 ### Run End-to-End Tests with [Playwright](https://playwright.dev)
 
@@ -51,10 +55,7 @@ npm run build
 
 # Runs the end-to-end tests
 npm run test:e2e
-# Runs the tests only on Chromium
-npm run test:e2e -- --project=chromium
-# Runs the tests of a specific file
-npm run test:e2e -- tests/example.spec.ts
+
 # Runs the tests in debug mode
 npm run test:e2e -- --debug
 ```

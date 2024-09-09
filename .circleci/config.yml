@@ -17,6 +17,20 @@ jobs:
       - node/install-packages
       - run:
           command: npm run lint
+  test:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npm run build
+      - run:
+          command: npm run test:e2e
+          environment:
+            CI: 'true'
+      - store_test_results:
+          path: ./test-results/results.xml
+
   build:
     executor:
       name: pw-jammy-development
@@ -26,7 +40,7 @@ jobs:
       - run:
           name: Build assets
           command: |
-            npm run build
+            npm run build --base="/dawg"
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -56,6 +70,7 @@ workflows:
   ci:
     jobs:
       - lint
+      - test
       - build
   deploy:
     jobs:

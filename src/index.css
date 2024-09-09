@@ -2,9 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  --dawg-blue: #3f83f8;
+  --dawg-orange: #ff8a4c;
+}
+
 #app {
   max-width: 1920px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 80px 2rem 2rem;
   font-weight: normal;
+}
+
+.no-js-message h1,
+.no-js-message p {
+  margin: 10px auto;
+  width: 100%;
+  text-align: center;
+  color: white;
+  animation-name: effect;
+  animation-delay: 1s;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes effect {
+  from {
+    color: white;
+  }
+
+  to {
+    color: var(--dawg-blue);
+  }
 }

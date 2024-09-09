@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { WorkGroup } from '../workgroup'
+import type { DAWG } from '@/workgroups';
+import DAWGTableCell from './DAWGTableCell.vue'
 
-import FancyCell from './FancyCell.vue'
 const props = defineProps<{
     headers: string[],
-    rows: WorkGroup[],
+    rows: DAWG[],
 }>()
+
 </script>
 
 <template>
@@ -17,20 +18,13 @@ const props = defineProps<{
                 </tr>
             </thead>
             <tbody>
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" v-for="(row, rowIndex) in props.rows" :key="rowIndex">
-                    <td class="px-2 py-1" v-for="(cell, cellIndex) in row" :key="cellIndex">
-                        <FancyCell :contents="cell" />
-                    </td>
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    v-for="(row, rowIndex) in props.rows" :key="rowIndex">
+                    <DAWGTableCell v-for="(value, key) in row" :key="key" :field-name="key" :contents="value" />
                 </tr>
             </tbody>
         </table>
     </div>
 </template>
 
-<style>
-    td {
-        vertical-align: top;
-    }
-</style>
-
-
+<style></style>

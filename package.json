@@ -8,14 +8,16 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:e2e": "playwright test",
-    "build-only": "vite build --base=/dawg",
+    "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@vueuse/core": "^11.0.1",
     "flowbite": "^2.4.1",
-    "vue": "^3.4.29"
+    "vue": "^3.4.29",
+    "vue-router": "^4.4.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.1",

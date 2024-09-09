@@ -31,3 +31,6 @@ coverage
 
 test-results/
 playwright-report/
+
+public/*.json
+!public/mockdata.json

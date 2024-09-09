@@ -1,35 +1,59 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { initFlowbite } from 'flowbite'
-import PolyAssetLoader from './components/PolyAssetLoader.vue'
 
-// initialize components based on data attribute selectors
-onMounted(() => {
-    initFlowbite();
-})
+import { ref, provide } from 'vue';
+
+import { sourceFiles } from './workgroups'
+import type { DAWGMap, DAWGSet } from './workgroups';
+
+import DataLoader from './components/DataLoader.vue'
+import HeaderNav from './components/HeaderNav.vue'
+import { datamapinjection, datasetinjection } from './data';
+
+const filteredSourceFiles = (() => {
+  // intentionally getting search param w/o vue router as it's initially empty and we don't want to wait on
+  // vue lifecycle to start loading data
+  return (/^protosaur/.test(window.location.host) || (new URLSearchParams(window.location.search).get('useProdData') == 'true'))
+    ? sourceFiles.filter(src => src !== 'mockdata.json')
+    : sourceFiles.filter(src => src == 'mockdata.json');
+})()
+
+const hasLoaded = ref(false)
+
+const datamap = ref(new Map() as DAWGMap)
+const dataset = ref([] as DAWGSet)
+
+provide(datamapinjection, datamap)
+provide(datasetinjection, dataset)
+
+const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
+  console.log('recieved data')
+  datamap.value = recievedMap
+  dataset.value = recievedSet
+  hasLoaded.value = true
+}
+
+
 </script>
 
 <template>
-  <header class="text-center">
-    <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore data access workgroups - Compiled from aggregated Terraform State data.</p>
-  </header>
+  <HeaderNav />
   <main>
-    <PolyAssetLoader :sources="['gcpv1_enriched.json', 'gcpv2_merged.json']" />
+    <DataLoader v-if="!hasLoaded" :sources="filteredSourceFiles" @done="recieveData" />
+    <RouterView v-else />
   </main>
 </template>
 
-<style scoped>
+<style>
 header {
   margin: 80px auto 2rem;
 }
-.whd-links {
-  margin: 2rem 0;
+
+.monospace {
+  font-family: monospace;
 }
-.whd-links a {
-  display: inline-block;
-  margin: 0 2rem;
-}
-.whd-links a:hover {
-  text-decoration: underline;
+
+.container {
+  width: 100%;
+  margin: 0px auto;
 }
 </style>
