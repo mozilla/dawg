@@ -12,6 +12,7 @@ export const dawgLinker = (t: string): string => {
 
   return wgroute(encodeURIComponent(matches[1]))
 }
+export const base = window.location.host.includes('localhost') ? '/' : '/dawg'
 
 export const routes = [
   { path: '/', component: SearchDAWG, name: 'SearchPage' },
