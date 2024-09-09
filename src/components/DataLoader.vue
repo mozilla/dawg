@@ -32,7 +32,7 @@ onMounted(() => {
 
     Promise
         .all(props.sources && props.sources.map(async (src) => {
-            return fetch(`//${window.location.host}/${src}`).then(async (res) => {
+            return fetch(`//${window.location.host}${window.location.pathname}/${src}`).then(async (res) => {
                 if (!src) return // make typescript happy
 
                 const ver = sourceVersions.get(src)
