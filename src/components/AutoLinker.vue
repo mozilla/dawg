@@ -16,7 +16,7 @@ enum LinkType {
 }
 
 const tests = new Map<LinkType, RegExp>([
-    [LinkType.GoogleGroup, /^group:[a-z0-9-]+@(?:mozilla.com)|(?:firefox.gcp.mozilla.com)/],
+    [LinkType.GoogleGroup, /^group:([a-z0-9-]+)@((?:mozilla.com)|(?:firefox.gcp.mozilla.com))/],
     [LinkType.ServiceAccount, /^serviceAccount:(?:[a-z0-9-]+)@([a-z0-9-]+).iam.gserviceaccount.com/],
     [LinkType.PhoneBook, /([a-zA-Z0-9.]+@(?:(?:mozilla.com)|(?:thunderbird.net)|(?:mozillafoundation.org)))/],
     [LinkType.WorkGroup, WorkGroupIDRegex]
