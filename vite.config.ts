@@ -8,7 +8,13 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  test: { globals: true, environment: 'happy-dom', exclude: ['node_modules/*', 'e2e/*'] },
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    exclude: ['node_modules/*', 'e2e/*'],
+    reporters: process.env.CI ? 'junit' : 'default',
+    outputFile: process.env.CI ? './test-results/unit-results.xml' : ''
+  },
   plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
     alias: {
