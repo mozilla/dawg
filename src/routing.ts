@@ -1,8 +1,7 @@
 import SearchDAWG from './views/SearchDAWG.vue'
 import SingleDAWG from './views/SingleDAWG.vue'
 import BadDAWG from './views/BadDAWG.vue'
-
-export const WorkGroupIDRegex = /^(?:workgroup:)([a-z0-9-]+)/
+import { WorkGroupIDRegex } from './workgroups'
 
 const wgroute = (s: string): string => `/workgroup/${s}`
 

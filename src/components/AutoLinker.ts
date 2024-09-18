@@ -1,4 +1,5 @@
-import { dawgLinker, WorkGroupIDRegex } from '@/routing'
+import { WorkGroupIDRegex } from '@/workgroups'
+import { dawgLinker } from '@/routing'
 
 export type LinkInfo = { type: LinkType; matches: string[] }
 
