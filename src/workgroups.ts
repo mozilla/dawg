@@ -69,25 +69,22 @@ export const getFieldDisplayMode = (f: keyof DAWG): DisplayMode => {
 
 const copy = (o: any) => JSON.parse(JSON.stringify(o))
 export const formatDAWGID = (name: string) => `workgroup:${name}`
-const defaultWorkGroupIDs = [
-  '_default',
-  'analysis-writer',
-  'udf',
-  'udf-writer',
-  'team',
-  'default-compute',
-  'syndicate',
-  'syndicated',
-  'unmanaged',
-  'client-managed',
-  'application',
-  'application-noanalysis'
-]
-const filterDefaultWorkgroups = (key: string) => !defaultWorkGroupIDs.includes(key)
-const transformSubGroupIDs = (wgID: string, subID: string) =>
-  subID != 'default' ? `${wgID}/${subID}` : subID
-
 export const newWorkGroup = (groupname: string, kind: DAWGKind, data: any): DAWG => {
+  const defaultWorkGroupIDs = [
+    '_default',
+    'analysis-writer',
+    'udf',
+    'udf-writer',
+    'team',
+    'default-compute',
+    'syndicate',
+    'syndicated',
+    'unmanaged',
+    'client-managed',
+    'application',
+    'application-noanalysis'
+  ]
+
   const wg = copy(NullWorkGroup)
   wg.id = formatDAWGID(groupname)
   wg.kind = kind
@@ -108,11 +105,7 @@ export const newWorkGroup = (groupname: string, kind: DAWGKind, data: any): DAWG
 
   if (Object.keys(data?.members).length > 0)
     wg.members = Object.fromEntries(
-      Object.entries(data?.members)
-        .filter(([key]) => filterDefaultWorkgroups(key))
-        .map(([key, value]) => {
-          return [transformSubGroupIDs(wg.id, key), value]
-        })
+      Object.entries(data?.members).filter(([key]) => !defaultWorkGroupIDs.includes(key))
     )
 
   return wg
