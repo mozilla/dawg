@@ -31,6 +31,14 @@ jobs:
       - store_test_results:
           path: ./test-results/results.xml
 
+  type-check:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npm run lint
+
   build:
     executor:
       name: pw-jammy-development
@@ -40,7 +48,7 @@ jobs:
       - run:
           name: Build assets
           command: |
-            npm run build --base="/dawg"
+            npm run build-only -- --base="/dawg"
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -71,6 +79,7 @@ workflows:
     jobs:
       - lint
       - test
+      - type-check
       - build
   deploy:
     jobs:

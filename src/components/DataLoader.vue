@@ -5,6 +5,7 @@ import type { DAWG, DAWGMap, DAWGSet, SourceFile, Version } from '../workgroups'
 import { newWorkGroup, formatDAWGID, sourceVersions, versionKinds } from '../workgroups'
 import { useRouter } from 'vue-router';
 import { ErrorCode, serializeErrorDetails } from '@/errors';
+import { base } from '@/routing';
 
 const router = useRouter();
 const props = defineProps<{
@@ -32,7 +33,7 @@ onMounted(() => {
 
     Promise
         .all(props.sources && props.sources.map(async (src) => {
-            return fetch(`//${window.location.host}/${src}`).then(async (res) => {
+            return fetch(`//${window.location.host}${base}/${src}`).then(async (res) => {
                 if (!src) return // make typescript happy
 
                 const ver = sourceVersions.get(src)

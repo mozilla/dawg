@@ -4,11 +4,11 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './App.vue'
-import { routes } from './routing'
+import { routes, base } from './routing'
 
 const router = createRouter({
   routes,
-  history: createWebHistory(),
+  history: createWebHistory(base),
   scrollBehavior() {
     // always scroll to top
     return { top: 0 }
