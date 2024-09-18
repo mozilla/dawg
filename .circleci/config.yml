@@ -46,6 +46,14 @@ jobs:
       - store_test_results:
           path: ./test-results/e2e-results.xml
 
+  type-check:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npm run type-check
+
   build:
     executor:
       name: pw-jammy-development
@@ -55,7 +63,7 @@ jobs:
       - run:
           name: Build assets
           command: |
-            npm run build --base="/dawg"
+            npm run build-only -- --base="/dawg"
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -85,6 +93,7 @@ workflows:
   ci:
     jobs:
       - lint
+      - type-check
       - test-unit
       - test-e2e
       - build

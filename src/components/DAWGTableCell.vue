@@ -6,8 +6,7 @@ import type { DAWG, ListOfText, MapOfLists, PlainText } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
 import AutoLinker from './AutoLinker.vue';
-
-
+import { computed } from 'vue';
 
 const props = defineProps<{
     contents: undefined | PlainText | ListOfText | MapOfLists,
@@ -15,8 +14,6 @@ const props = defineProps<{
 }>()
 
 const display = getFieldDisplayMode(props.fieldName)
-
-
 </script>
 
 <template>
@@ -45,16 +42,26 @@ const display = getFieldDisplayMode(props.fieldName)
             <AutoLinker :text="props.contents && (props.contents as ListOfText)[0]" />
         </span>
         <dl v-else-if="display === DisplayMode.MapOfLists">
+
+            <ul v-if="(props.contents as MapOfLists).hasOwnProperty('default')">
+                <li v-for="member in (props.contents as MapOfLists).default" :key="member">
+                    {{ member }}
+                </li>
+            </ul>
+
             <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
-                <dt>{{ key }}</dt>
-                <dd>
-                    <ul v-if="list.length > 0">
-                        <li v-for="item, i in list" :key="i">
-                            <AutoLinker :text="item" />
-                        </li>
-                    </ul>
-                    <span v-else>(no members)</span>
-                </dd>
+                <template v-if="key != 'default'">
+                    <dt class="monospace">{{ key }}</dt>
+                    <dd>
+                        <ul v-if="list.length > 0">
+                            <li v-for="item, i in list" :key="i">
+                                <AutoLinker :text="item" />
+                            </li>
+                        </ul>
+                        <span v-else>(no members)</span>
+                    </dd>
+                </template>
+
             </template>
         </dl>
     </td>
