@@ -17,7 +17,22 @@ jobs:
       - node/install-packages
       - run:
           command: npm run lint
-  test:
+
+  test-unit:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npm run build
+      - run:
+          command: npm run test:unit
+          environment:
+            CI: 'true'
+      - store_test_results:
+          path: ./test-results/unit-results.xml
+
+  test-e2e:
     executor:
       name: pw-jammy-development
     steps:
@@ -29,7 +44,7 @@ jobs:
           environment:
             CI: 'true'
       - store_test_results:
-          path: ./test-results/results.xml
+          path: ./test-results/e2e-results.xml
 
   type-check:
     executor:
@@ -37,7 +52,7 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - run: npm run lint
+      - run: npm run type-check
 
   build:
     executor:
@@ -78,8 +93,9 @@ workflows:
   ci:
     jobs:
       - lint
-      - test
       - type-check
+      - test-unit
+      - test-e2e
       - build
   deploy:
     jobs:
