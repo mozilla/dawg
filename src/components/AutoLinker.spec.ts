@@ -17,10 +17,10 @@ describe('HelloWorld', () => {
   })
 
   it('should identify link types correctly', () => {
-    testCases.forEach(async (tests, exepected) => {
-      await tests.forEach(async (test) => {
+    testCases.forEach((tests, exepected) => {
+      tests.forEach((test) => {
         const result = testLinkText(test)
-        await expect(result.type).toBe(exepected)
+        expect(result.type).toBe(exepected)
       })
     })
   })
