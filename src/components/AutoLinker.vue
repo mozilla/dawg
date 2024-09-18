@@ -22,29 +22,32 @@ const tests = new Map<LinkType, RegExp>([
     [LinkType.WorkGroup, WorkGroupIDRegex]
 ])
 
-const formatters = new Map<LinkType, (input: string) => string>([
-    [LinkType.GoogleGroup, (i) => `https://groups.google.com/a/mozilla.com/g/${i}`],
-    [LinkType.ServiceAccount, (i) => `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i}`],
-    [LinkType.PhoneBook, (i) => `https://people.mozilla.org/s?who=staff&query=${i}`],
-    [LinkType.WorkGroup, dawgLinker]
-
+const formatters = new Map<LinkType, (input: string[]) => string>([
+    [LinkType.GoogleGroup, (i) => `https://groups.google.com/a/${i[2]}/g/${i[1]}`],
+    [LinkType.ServiceAccount, (i) => `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i[1]}`],
+    [LinkType.PhoneBook, (i) => `https://people.mozilla.org/s?who=staff&query=${i[1]}`],
+    [LinkType.WorkGroup, (i) => dawgLinker(i[1])]
 ])
-
-const linkInfo = computed<{ type: LinkType, match: string }>(() => {
-    let result = { type: LinkType.None, match: '' }
+type LinkInfo = { type: LinkType, matches: string[] }
+const linkInfo = computed<LinkInfo>(() => {
+    let result: LinkInfo = { type: LinkType.None, matches: [] }
 
     if (props.text) for (let [lt, test] of tests) {
         const results = test.exec(props.text)
         if (results && results.length > 1) {
-            result = { type: lt, match: results[1] }
+            result.type = lt
+            result.matches = results
+            for (let i = 1; i < result.matches.length; i++) {
+                result.matches[i] = encodeURIComponent(result.matches[i])
+            }
             break
         }
     }
 
     return result
 })
-const noop = (i: string) => i
-const href = computed<string>(() => (formatters.get(linkInfo.value.type) || noop)(encodeURIComponent(linkInfo.value.match || '')))
+const noop = (i: string[]) => i[1];
+const href = computed<string>(() => linkInfo.value.matches.length == 0 ? '' : (formatters.get(linkInfo.value.type) || noop)(linkInfo.value.matches))
 
 </script>
 <template>
