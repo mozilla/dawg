@@ -45,7 +45,7 @@ const display = getFieldDisplayMode(props.fieldName)
 
             <ul v-if="(props.contents as MapOfLists).hasOwnProperty('default')">
                 <li v-for="member in (props.contents as MapOfLists).default" :key="member">
-                    {{ member }}
+                    <AutoLinker :text="member" />
                 </li>
             </ul>
 
