@@ -11,6 +11,7 @@ const router = createRouter({
   history: createWebHistory(base),
   scrollBehavior() {
     // always scroll to top
+    // SingleDAWG component has to handle its own scrolling
     return { top: 0 }
   }
 })
