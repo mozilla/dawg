@@ -79,7 +79,7 @@ td ul {
     list-style-type: disc;
 }
 
-td a {
+td a:not(td dt a) {
     color: var(--dawg-blue);
     transition: color 0.15s;
 }
@@ -91,6 +91,8 @@ td a:hover {
 
 td dt {
     margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 td dd>span {
