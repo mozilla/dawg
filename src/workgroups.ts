@@ -5,6 +5,7 @@ export type PlainText = string
 export type WorkGroupID = string
 
 export const WorkGroupIDRegex = /^(?:workgroup:)([a-z0-9-]+)/
+export const SubGroupIDRegex = /^(?:workgroup:)([a-z0-9-]+)\/([a-z0-9-]+)/
 
 export const sourceFiles = ['gcpv1_enriched.json', 'gcpv2_merged.json', 'mockdata.json'] as const
 export const versions = ['v1', 'v2', 'm1'] as const
