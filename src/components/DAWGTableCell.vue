@@ -51,7 +51,9 @@ const display = getFieldDisplayMode(props.fieldName)
 
             <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
                 <template v-if="key != 'default'">
-                    <dt class="monospace">{{ key }}</dt>
+                    <dt class="monospace" v-bind:id="(key as string).split('/')[1]">
+                        <AutoLinker :text="(key as string)" />
+                    </dt>
                     <dd>
                         <ul v-if="list.length > 0">
                             <li v-for="item, i in list" :key="i">
