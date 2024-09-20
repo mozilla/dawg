@@ -2,8 +2,9 @@ import SearchDAWG from './views/SearchDAWG.vue'
 import SingleDAWG from './views/SingleDAWG.vue'
 import BadDAWG from './views/BadDAWG.vue'
 import { WorkGroupIDRegex } from './workgroups'
+export const base = window.location.host.includes('localhost') ? '/' : '/dawg/'
 
-const wgroute = (s: string): string => `/workgroup/${s}`
+export const wgroute = (s: string): string => `${base}workgroup/${s}`
 
 export const dawgLinker = (t: string): string => {
   const matches = WorkGroupIDRegex.exec(t)
@@ -11,7 +12,6 @@ export const dawgLinker = (t: string): string => {
 
   return wgroute(encodeURIComponent(matches[1]))
 }
-export const base = window.location.host.includes('localhost') ? '/' : '/dawg'
 
 export const routes = [
   { path: '/', component: SearchDAWG, name: 'SearchPage' },
