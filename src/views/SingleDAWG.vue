@@ -4,11 +4,12 @@ import { inject, computed, onMounted, onBeforeMount, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useClipboard } from '@vueuse/core';
 
-import { type DAWG, type DAWGHouse, type ListOfLinks, formatDAWGID, versions, versionKinds } from '@/workgroups';
+import { type DAWG, type DAWGHouse, type ListOfLinks, formatDAWGID } from '@/workgroups';
+import { shortVersions, versionShortToLong, } from '@/metadata'
 
 import IconLink from '@/components/IconLink.vue';
 import DAWGTableCell from '@/components/DAWGTableCell.vue';
-import { datamapinjection } from '@/data';
+import { datamapinjection } from '@/injections';
 import { ErrorCode, serializeErrorDetails } from '@/errors';
 
 
@@ -58,10 +59,10 @@ onMounted(() => {
                 🔗
             </span>
         </h1>
-        <template v-for="ver in versions">
+        <template v-for="ver in shortVersions">
             <div v-if="dawghouse?.has(ver)" :key="ver">
 
-                <h2>{{ versionKinds.get(ver) }} ({{ ver }})</h2>
+                <h2>{{ versionShortToLong.get(ver) }} ({{ ver }})</h2>
 
                 <nav>
                     <IconLink v-for="link, key in (dawghouse.get(ver)?.links as ListOfLinks)" v-bind:key :href="link"

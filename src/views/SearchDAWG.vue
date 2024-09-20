@@ -5,10 +5,10 @@ import type { ComputedRef } from 'vue'
 
 import { useUrlSearchParams } from '@vueuse/core'
 
-import type { DAWG, MapOfLists } from '../workgroups'
-import { NullWorkGroup } from '../workgroups'
-import DAWGTable from '../components/DAWGTable.vue'
-import { datasetinjection } from '@/data'
+import type { DAWG, MapOfLists } from '@/workgroups'
+import { NullWorkGroup } from '@/workgroups'
+import DAWGTable from '@/components/DAWGTable.vue'
+import { datasetinjection } from '@/injections'
 
 
 

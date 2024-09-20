@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { dawgLinker } from '@/routing';
-import { DisplayMode, getFieldDisplayMode } from '@/workgroups';
+import { DisplayMode, getFieldDisplayMode } from '@/metadata';
 import type { DAWG, ListOfText, MapOfLists, PlainText } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
