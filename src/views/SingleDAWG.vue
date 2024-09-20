@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
-import { ref } from 'vue';
-import { inject, computed, onMounted } from 'vue';
+import { inject, computed, onMounted, onBeforeMount, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useClipboard } from '@vueuse/core';
 
@@ -28,7 +27,7 @@ const dawghouse: Ref<DAWGHouse | undefined> = ref()
 const id = ref(formatDAWGID(route.params.id as string))
 
 
-onMounted(() => {
+onBeforeMount(() => {
 
     if (!datamap) return router.push({ path: '/error', query: { err: ErrorCode.Application, detail: serializeErrorDetails(`datamap was not loaded got ${datamap}`) } })
 
@@ -39,6 +38,14 @@ onMounted(() => {
     dawghouse.value = datamap.value.get(id.value)
 })
 
+onMounted(() => {
+    if (!window.location.hash) return
+
+    const position = document.querySelector(window.location.hash)?.getBoundingClientRect().top
+    if (!position) return
+
+    window.scrollTo(0, position - 90)
+})
 
 
 </script>
