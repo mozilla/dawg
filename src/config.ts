@@ -4,7 +4,17 @@ export enum Source {
   mock = 'mockdata.json'
 }
 
-export const sources: Source[] =
-  import.meta.env.PROD || import.meta.env.USE_PROD ? [Source.v1, Source.v2] : [Source.mock]
+export const sources: Source[] = (() => {
+  console.warn(import.meta.env)
+  switch (true) {
+    case import.meta.env.PROD:
+    case import.meta.env.VITE_USE_PROD_DATA == 'true':
+      return [Source.v1, Source.v2]
 
-export const routebase: string = import.meta.env.PROD ? '/dawg/' : '/'
+    case import.meta.env.DEV:
+    default:
+      return [Source.mock]
+  }
+})()
+
+export const routebase: string = import.meta.env.BASE_URL

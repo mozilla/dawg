@@ -4,7 +4,8 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './App.vue'
-import { routes, routebase } from './routing'
+import { routes } from './routing'
+import { routebase } from './config'
 
 const router = createRouter({
   routes,

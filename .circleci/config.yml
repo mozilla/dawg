@@ -63,7 +63,7 @@ jobs:
       - run:
           name: Build assets
           command: |
-            npm run build-only -- --base="/dawg"
+            npm run build-only -- --base="/dawg/"
       - persist_to_workspace:
           root: ~/project
           paths:

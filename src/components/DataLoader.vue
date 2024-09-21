@@ -33,10 +33,9 @@ const message = ref("Loading...");
 
 onMounted(() => {
     let response: Response;
-    console.log(props.sources)
     Promise
         .all(props.sources && props.sources.map(async (src) => {
-            return fetch(`//${window.location.host}${routebase}/${src}`).then(async (res) => {
+            return fetch(`//${window.location.host}${routebase}${src}`).then(async (res) => {
                 if (!src) return // make typescript happy
 
                 const ver = sourceShortVersions.get(src)
