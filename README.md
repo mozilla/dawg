@@ -39,10 +39,8 @@ npm run build
 ```sh
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv2_merged.json public/
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv1_enriched.json public/
-npm run dev
+VITE_USE_PROD_DATA=true npm run dev
 ```
-
-then add `/?useProdData=true` to your URL to override the mockdata loading for local dev
 
 ### Run End-to-End Tests with [Playwright](https://playwright.dev)
 
