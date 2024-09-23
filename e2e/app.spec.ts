@@ -9,13 +9,14 @@ test('visits the app root url', async ({ page }) => {
 
 test('search for a DAWG', async ({ page }) => {
   await page.goto('/')
-  page.locator('header p')
+  await page.waitForSelector('header p')
   await page.getByPlaceholder('Search').fill('madeup-workgroup-two')
   await expect(page.locator('table tbody tr')).toHaveCount(1)
 })
 
 test('check that we can navigate to a detail page', async ({ page }) => {
   await page.goto('/workgroup/madeup-workgroup-two')
+  await page.waitForSelector('h1')
   await expect(page.locator('h1')).toHaveText('workgroup:madeup-workgroup-two 🔗')
   await expect(page.locator('h2')).toHaveText('mockdata (m1)')
   await expect(page.getByText('sponsor@mozilla.com')).toHaveCount(1) // Sponsor
@@ -34,6 +35,7 @@ test('check that we can toggle dark mode', async ({ page }) => {
 test('check that we can link to plain text searches', async ({ page }) => {
   const term = 'two'
   await page.goto(`?searchstring=${encodeURIComponent(term)}`)
+  await page.waitForSelector('input#search')
   await expect(page.locator('input#search')).toHaveValue(term)
   await expect(page.locator('table tbody tr')).toHaveCount(1)
 })
@@ -42,6 +44,8 @@ test('check that we can link to regex searches', async ({ page }) => {
   const term = 'two$'
   const isRegex = true
   await page.goto(`?isRegex=${isRegex}&searchstring=${encodeURIComponent(term)}`)
+  await page.waitForSelector('input#search')
+
   await expect(page.locator('input#search')).toHaveValue(term)
   await expect(page.locator('input[name="regex"]')).toBeChecked()
   await expect(page.locator('table tbody tr')).toHaveCount(1)
