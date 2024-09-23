@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import type { DAWG, DAWGMap, DAWGSet, } from '@/workgroups'
@@ -31,7 +31,7 @@ enum Status {
 const status = ref(Status.Loading)
 const message = ref("Loading...");
 
-onMounted(() => {
+onBeforeMount(() => {
     let response: Response;
     Promise
         .all(props.sources && props.sources.map(async (src) => {
@@ -68,6 +68,7 @@ onMounted(() => {
             emit('done', wgMap, wgSet)
         })
 })
+
 
 
 </script>

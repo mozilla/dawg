@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, provide } from 'vue';
+import { ref, provide, shallowRef } from 'vue';
 
 import { sources } from './config';
 import type { DAWGMap, DAWGSet } from '@/workgroups';
@@ -11,8 +11,8 @@ import { datamapinjection, datasetinjection } from '@/injections';
 
 const hasLoaded = ref(false)
 
-const datamap = ref(new Map() as DAWGMap)
-const dataset = ref([] as DAWGSet)
+const datamap = shallowRef(new Map() as DAWGMap)
+const dataset = shallowRef([] as DAWGSet)
 
 provide(datamapinjection, datamap)
 provide(datasetinjection, dataset)
