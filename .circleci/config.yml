@@ -38,7 +38,7 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - run: npm run build -- --mode development
+      - run: npm run build-only -- --mode development
       - run:
           command: npm run test:e2e
           environment:
