@@ -46,13 +46,13 @@ jobs:
       - store_test_results:
           path: ./test-results/e2e-results.xml
 
-  type-check:
+  test-types:
     executor:
       name: pw-jammy-development
     steps:
       - checkout
       - node/install-packages
-      - run: npm run type-check
+      - run: npm run test:types
 
   build:
     executor:
@@ -93,7 +93,7 @@ workflows:
   ci:
     jobs:
       - lint
-      - type-check
+      - test-types
       - test-unit
       - test-e2e
       - build

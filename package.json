@@ -9,8 +9,8 @@
     "test": "run-p test:unit test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "test:types": "vue-tsc --build --force",
     "build": "vite build",
-    "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
