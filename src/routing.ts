@@ -6,7 +6,7 @@ import { routebase } from './config'
 
 export { routebase }
 
-export const wgroute = (s: string): string => `${routebase}workgroup/${s}`
+export const wgroute = (s: string): string => `/workgroup/${s}`
 
 export const dawgLinker = (t: string): string => {
   const matches = WorkGroupIDRegex.exec(t)
@@ -14,7 +14,6 @@ export const dawgLinker = (t: string): string => {
 
   return wgroute(encodeURIComponent(matches[1]))
 }
-
 export const routes = [
   { path: '/', component: SearchDAWG, name: 'SearchPage' },
   { path: '/error', component: BadDAWG, name: 'ErrorPage' },
