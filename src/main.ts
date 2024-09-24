@@ -4,13 +4,15 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './App.vue'
-import { routes, base } from './routing'
+import { routes } from './routing'
+import { routebase } from './config'
 
 const router = createRouter({
   routes,
-  history: createWebHistory(base),
+  history: createWebHistory(routebase),
   scrollBehavior() {
     // always scroll to top
+    // SingleDAWG component has to handle its own scrolling
     return { top: 0 }
   }
 })

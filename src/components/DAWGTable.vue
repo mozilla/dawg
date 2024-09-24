@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DAWG } from '@/workgroups';
-import DAWGTableCell from './DAWGTableCell.vue'
+import DAWGTableCell from '@/components/DAWGTableCell.vue'
 
 const props = defineProps<{
     headers: string[],

@@ -38,7 +38,7 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - run: npm run build
+      - run: npm run build-only -- --mode development
       - run:
           command: npm run test:e2e
           environment:
@@ -63,7 +63,7 @@ jobs:
       - run:
           name: Build assets
           command: |
-            npm run build-only -- --base="/dawg"
+            npm run build-only -- --base="/dawg/"
       - persist_to_workspace:
           root: ~/project
           paths:

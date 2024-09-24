@@ -1,16 +1,17 @@
-import { WorkGroupIDRegex } from '@/workgroups'
-import { dawgLinker } from '@/routing'
+import { SubGroupIDRegex, WorkGroupIDRegex } from '@/workgroups'
+import { dawgLinker, wgroute } from '@/routing'
 
 export type LinkInfo = { type: LinkType; matches: string[] }
 
 export type LinkFormatter = (input: string[]) => string
 
 export enum LinkType {
-  GoogleGroup,
-  ServiceAccount,
-  PhoneBook,
-  WorkGroup,
-  None
+  GoogleGroup = 'GGroup',
+  ServiceAccount = 'ServiceAcct',
+  PhoneBook = 'PhoneBook',
+  WorkGroup = 'WorkG',
+  SubGroup = 'SubG',
+  None = 'None'
 }
 const noop: LinkFormatter = (i) => i[1]
 
@@ -21,6 +22,7 @@ const tests = new Map<LinkType, RegExp>([
     LinkType.PhoneBook,
     /([a-zA-Z0-9.]+@(?:(?:mozilla.com)|(?:thunderbird.net)|(?:mozillafoundation.org)))/
   ],
+  [LinkType.SubGroup, SubGroupIDRegex], // like workgroup, but has a slash
   [LinkType.WorkGroup, WorkGroupIDRegex]
 ])
 
@@ -51,7 +53,8 @@ const formatters = new Map<LinkType, LinkFormatter>([
       `https://console.cloud.google.com/iam-admin/serviceaccounts?organizationId=442341870013&project=${i[1]}`
   ],
   [LinkType.PhoneBook, (i) => `https://people.mozilla.org/s?who=staff&query=${i[1]}`],
-  [LinkType.WorkGroup, (i) => dawgLinker(i[1])]
+  [LinkType.WorkGroup, (i) => dawgLinker(i[1])],
+  [LinkType.SubGroup, (i) => `${window.location.origin}${wgroute(i[1])}#${i[2]}`]
 ])
 
 export const formatHref = (li: LinkInfo): string => {

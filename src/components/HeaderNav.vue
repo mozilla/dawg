@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DarkmodeToggle from './DarkmodeToggle.vue';
+import DarkmodeToggle from '@/components/DarkmodeToggle.vue'
 
 import { onMounted } from 'vue'
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { dawgLinker } from '@/routing';
-import { DisplayMode, getFieldDisplayMode } from '@/workgroups';
+import { DisplayMode, getFieldDisplayMode } from '@/metadata';
 import type { DAWG, ListOfText, MapOfLists, PlainText } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
@@ -51,7 +51,9 @@ const display = getFieldDisplayMode(props.fieldName)
 
             <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
                 <template v-if="key != 'default'">
-                    <dt class="monospace">{{ key }}</dt>
+                    <dt class="monospace" v-bind:id="(key as string).split('/')[1]">
+                        <AutoLinker :text="(key as string)" />
+                    </dt>
                     <dd>
                         <ul v-if="list.length > 0">
                             <li v-for="item, i in list" :key="i">
@@ -77,7 +79,7 @@ td ul {
     list-style-type: disc;
 }
 
-td a {
+td a:not(td dt a) {
     color: var(--dawg-blue);
     transition: color 0.15s;
 }
@@ -89,6 +91,8 @@ td a:hover {
 
 td dt {
     margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 td dd>span {
