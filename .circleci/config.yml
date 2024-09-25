@@ -45,7 +45,7 @@ jobs:
           at: *cwd
       - checkout
       - node/install-packages
-      - run: npm run build -- --base="/dawg/"
+      - run: npm run build
       - persist_to_workspace:
           root: *cwd
           paths:
