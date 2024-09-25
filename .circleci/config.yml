@@ -13,34 +13,34 @@ jobs:
     executor:
       name: pw-jammy-development
     steps:
-      # TODO: measure build times to see if cacheing repo is faster
-      # - restore_cache:
-      #     keys:
-      #       - &source-cache source-v1-{{ .Branch }}-{{ .Revision }}
-      #       - source-v1-{{ .Branch }}-
-      #       - source-v1-
-      # - checkout
-      # - save_cache:
-      #     key: *source-cache
-      #     paths:
-      #       - '.git'
-      - checkout
-      - restore_cache: &packagelock
+      - restore_cache:
           keys:
-            - npm-packages-{{ checksum "package-lock.json" }}
+            - &source-cache source-v1-{{ .Branch }}-{{ .Revision }}
+            - source-v1-{{ .Branch }}-
+            - source-v1-
+      - checkout
+      - save_cache:
+          key: *source-cache
+          paths:
+            - '.git'
+      - restore_cache:
+          keys:
+            - &package-cache npm-packages-{{ checksum "package-lock.json" }}
       - node/install-packages
       - save_cache:
           name: Save NPM Package Cache
           key: npm-packages-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - ./
 
   lint:
     executor:
       name: pw-jammy-development
     steps:
-      - checkout
-      - restore_cache: *packagelock
       - run:
           command: npm run lint
 
@@ -48,8 +48,6 @@ jobs:
     executor:
       name: pw-jammy-development
     steps:
-      - checkout
-      - restore_cache: *packagelock
       - run: npm run build
       - run:
           command: npm run test:unit
@@ -60,10 +58,7 @@ jobs:
     executor:
       name: pw-jammy-development
     steps:
-      - checkout
-      - restore_cache: *packagelock
       - run: npm run build -- --mode development --baseurl="/dawg/"
-      - run: npm run test:e2e
       - store_test_results:
           path: ./test-results/e2e-results.xml
 
@@ -71,16 +66,12 @@ jobs:
     executor:
       name: pw-jammy-development
     steps:
-      - checkout
-      - restore_cache: *packagelock
       - run: npm run test:types
 
   build:
     executor:
       name: pw-jammy-development
     steps:
-      - checkout
-      - restore_cache: *packagelock
       - run:
           name: Build assets
           command: |
@@ -114,15 +105,27 @@ workflows:
   ci:
     jobs:
       - setup
-      - lint
-      - test-types
-      - test-unit
-      - test-e2e
-      - build
+      - lint:
+          requires:
+            - setup
+      - test-types:
+          requires:
+            - setup
+      - test-unit:
+          requires:
+            - setup
+      - test-e2e:
+          requires:
+            - setup
+      - build:
+          requires:
+            - setup
   deploy:
     jobs:
       - setup
       - build:
+          requires:
+            - setup
           filters:
             branches:
               only:
