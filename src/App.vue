@@ -36,7 +36,7 @@ const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
 
 <style>
 header {
-  margin: 80px auto 2rem;
+  margin: 1rem auto 2rem;
 }
 
 .monospace {

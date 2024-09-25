@@ -54,7 +54,7 @@ const formatters = new Map<LinkType, LinkFormatter>([
   ],
   [LinkType.PhoneBook, (i) => `https://people.mozilla.org/s?who=staff&query=${i[1]}`],
   [LinkType.WorkGroup, (i) => dawgLinker(i[1])],
-  [LinkType.SubGroup, (i) => `${window.location.origin}${wgroute(i[1])}#${i[2]}`]
+  [LinkType.SubGroup, (i) => dawgLinker(i[1], i[2])]
 ])
 
 export const formatHref = (li: LinkInfo): string => {

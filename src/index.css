@@ -9,8 +9,8 @@ html {
 
 #app {
   max-width: 1920px;
-  margin: 0 auto;
-  padding: 80px 2rem 2rem;
+  margin: 80px auto 0;
+  padding: 1px 2rem;
   font-weight: normal;
 }
 
