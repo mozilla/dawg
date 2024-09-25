@@ -7,7 +7,7 @@ executors:
   pw-jammy-development:
     docker:
       - image: mcr.microsoft.com/playwright:v1.45.1-jammy
-    working_directory: /tmp/dawg
+    working_directory: &cwd /tmp/dawg
 
 jobs:
   setup:
@@ -34,7 +34,7 @@ jobs:
           paths:
             - ./node_modules
       - persist_to_workspace:
-          root: /tmp/dawg
+          root: *cwd
           paths:
             - ./
 
@@ -49,38 +49,42 @@ jobs:
     executor:
       name: pw-jammy-development
     steps:
-      - run: npm run build
-      - run:
-          command: npm run test:unit
+      - attach_workspace:
+          at: *cwd
+      - run: npm run test:unit
       - store_test_results:
           path: ./test-results/unit-results.xml
-
-  test-e2e:
-    executor:
-      name: pw-jammy-development
-    steps:
-      - run: npm run build -- --mode development --baseurl="/dawg/"
-      - store_test_results:
-          path: ./test-results/e2e-results.xml
 
   test-types:
     executor:
       name: pw-jammy-development
     steps:
+      - attach_workspace:
+          at: *cwd
       - run: npm run test:types
 
   build:
     executor:
       name: pw-jammy-development
     steps:
-      - run:
-          name: Build assets
-          command: |
-            npm run build -- --base="/dawg/"
+      - attach_workspace:
+          at: *cwd
+      - run: npm run build -- --base="/dawg/"
       - persist_to_workspace:
-          root: ~/project
+          root: *cwd
           paths:
             - dist
+
+  test-e2e:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - attach_workspace:
+          at: *cwd
+      - run: nohup npm run preview &
+      - run: npm run test:e2e
+      - store_test_results:
+          path: ./test-results/e2e-results.xml
 
   artifact-deployment:
     executor: gcp-cli/google
@@ -115,12 +119,13 @@ workflows:
       - test-unit:
           requires:
             - setup
-      - test-e2e:
-          requires:
-            - setup
       - build:
           requires:
             - setup
+      - test-e2e:
+          requires:
+            - setup
+            - build
   deploy:
     jobs:
       - setup:
