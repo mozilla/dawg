@@ -7,7 +7,7 @@ executors:
   pw-jammy-development:
     docker:
       - image: mcr.microsoft.com/playwright:v1.45.1-jammy
-    working_directory: /tmp
+    working_directory: /tmp/dawg
 
 jobs:
   setup:
@@ -34,9 +34,9 @@ jobs:
           paths:
             - ./node_modules
       - persist_to_workspace:
-          root: workspace
+          root: /tmp/dawg
           paths:
-            - echo-output
+            - ./
 
   lint:
     executor:
