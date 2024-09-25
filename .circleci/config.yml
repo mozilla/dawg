@@ -83,7 +83,6 @@ jobs:
     steps:
       - attach_workspace:
           at: *cwd
-      - run: nohup npm run preview &
       - run: npm run test:e2e
       - store_test_results:
           path: ./test-results/e2e-results.xml
