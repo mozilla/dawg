@@ -14,9 +14,10 @@ export const routes = [
   { path: wgroute(':id'), component: SingleDAWG, name: 'ViewDAWG' }
 ]
 
-export const dawgLinker = (t: string): string => {
-  const matches = WorkGroupIDRegex.exec(t)
-  if (!matches || matches?.length < 2) return wgroute('404')
+export const dawgLinker = (wg: string, sg?: string): string => {
+  // const matches = WorkGroupIDRegex.exec(t)
+  // if (!matches || matches?.length < 2) return wgroute('404')
+  const wgpath = wgroute(encodeURIComponent(wg.replace('workgroup:', '')))
 
-  return routebase + wgroute(encodeURIComponent(matches[1]))
+  return !sg ? wgpath : wgpath + `#${encodeURIComponent(sg)}`
 }
