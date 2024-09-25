@@ -18,9 +18,6 @@ const route = useRoute();
 const source = computed(() => window.location.href)
 const { copy, copied } = useClipboard({ source })
 
-
-
-
 const details = Array<keyof DAWG>('sponsor', 'managers', 'members')
 const datamap = inject(datamapinjection)
 
