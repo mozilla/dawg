@@ -7,6 +7,7 @@ executors:
   pw-jammy-development:
     docker:
       - image: mcr.microsoft.com/playwright:v1.45.1-jammy
+    working_directory: &cwd /tmp/dawg
 
 jobs:
   lint:
@@ -24,27 +25,9 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - run: npm run build
-      - run:
-          command: npm run test:unit
-          environment:
-            CI: 'true'
+      - run: npm run test:unit
       - store_test_results:
           path: ./test-results/unit-results.xml
-
-  test-e2e:
-    executor:
-      name: pw-jammy-development
-    steps:
-      - checkout
-      - node/install-packages
-      - run: npm run build -- --mode development
-      - run:
-          command: npm run test:e2e
-          environment:
-            CI: 'true'
-      - store_test_results:
-          path: ./test-results/e2e-results.xml
 
   test-types:
     executor:
@@ -58,16 +41,25 @@ jobs:
     executor:
       name: pw-jammy-development
     steps:
+      - attach_workspace:
+          at: *cwd
       - checkout
       - node/install-packages
-      - run:
-          name: Build assets
-          command: |
-            npm run build -- --base="/dawg/"
+      - run: npm run build
       - persist_to_workspace:
-          root: ~/project
+          root: *cwd
           paths:
-            - dist
+            - ./dist
+
+  test-e2e:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npm run test:e2e
+      - store_test_results:
+          path: ./test-results/e2e-results.xml
 
   artifact-deployment:
     executor: gcp-cli/google
@@ -95,8 +87,8 @@ workflows:
       - lint
       - test-types
       - test-unit
-      - test-e2e
       - build
+      - test-e2e
   deploy:
     jobs:
       - build:

@@ -1,5 +1,5 @@
 import { SubGroupIDRegex, WorkGroupIDRegex } from '@/workgroups'
-import { dawgLinker, wgroute } from '@/routing'
+import { dawgLinker } from '@/routing'
 
 export type LinkInfo = { type: LinkType; matches: string[] }
 
@@ -27,10 +27,10 @@ const tests = new Map<LinkType, RegExp>([
 ])
 
 export const testLinkText = (text: string): LinkInfo => {
-  let result: LinkInfo = { type: LinkType.None, matches: [] }
+  const result: LinkInfo = { type: LinkType.None, matches: [] }
 
   if (text)
-    for (let [lt, test] of tests) {
+    for (const [lt, test] of tests) {
       const results = test.exec(text)
       if (results && results.length > 1) {
         result.type = lt

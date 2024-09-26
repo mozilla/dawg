@@ -1,7 +1,6 @@
 import SearchDAWG from './views/SearchDAWG.vue'
 import SingleDAWG from './views/SingleDAWG.vue'
 import BadDAWG from './views/BadDAWG.vue'
-import { WorkGroupIDRegex } from './workgroups'
 import { routebase } from './config'
 
 export { routebase }
