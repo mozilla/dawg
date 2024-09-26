@@ -11,9 +11,9 @@
     "test:e2e": "playwright test",
     "test:types": "vue-tsc --build --force",
     "build": "vite build",
-    "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore --fix",
-    "format:check": "prettier --check src/",
+    "format": "prettier --check src/",
     "format:fix": "prettier --write src/"
   },
   "dependencies": {
