@@ -17,7 +17,15 @@ jobs:
       - checkout
       - node/install-packages
       - run:
-          command: npm run lint
+          command: npm run lint:check
+  format:
+    executor:
+      name: pw-jammy-development
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run format:check
 
   test-unit:
     executor:
@@ -85,6 +93,7 @@ workflows:
   ci:
     jobs:
       - lint
+      - format
       - test-types
       - test-unit
       - build
