@@ -49,15 +49,14 @@ jobs:
       - persist_to_workspace:
           root: *cwd
           paths:
-            - ./
+            - ./dist
 
   test-e2e:
     executor:
       name: pw-jammy-development
     steps:
-      - attach_workspace:
-          at: *cwd
-
+      - checkout
+      - node/install-packages
       - run: npm run test:e2e
       - store_test_results:
           path: ./test-results/e2e-results.xml
@@ -89,9 +88,7 @@ workflows:
       - test-types
       - test-unit
       - build
-      - test-e2e:
-          requires:
-            - build
+      - test-e2e
   deploy:
     jobs:
       - build:
