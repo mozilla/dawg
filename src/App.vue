@@ -1,13 +1,12 @@
 <script setup lang="ts">
+import { ref, provide, shallowRef } from 'vue'
 
-import { ref, provide, shallowRef } from 'vue';
-
-import { sources } from './config';
-import type { DAWGMap, DAWGSet } from '@/workgroups';
+import { sources } from './config'
+import type { DAWGMap, DAWGSet } from '@/workgroups'
 
 import DataLoader from '@/components/DataLoader.vue'
 import HeaderNav from '@/components/HeaderNav.vue'
-import { datamapinjection, datasetinjection } from '@/injections';
+import { datamapinjection, datasetinjection } from '@/injections'
 
 const hasLoaded = ref(false)
 
@@ -23,7 +22,6 @@ const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
   dataset.value = recievedSet
   hasLoaded.value = true
 }
-
 </script>
 
 <template>
