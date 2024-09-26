@@ -1,7 +1,5 @@
 ![Data Access Workgroups](./src/assets/dawg.png)
 
-This template should help get you started developing with Vue 3 in Vite.
-
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
@@ -26,7 +24,7 @@ npm install
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Compile and Minify for Production
 
 ```sh
 npm run build
@@ -34,7 +32,7 @@ npm run build
 
 ### Use Production Assets in Dev Testing (`workgroup:mozilla-confidential` metadata)
 
-## ⚠️ Do not commit these files
+> [!WARNING] Do not commit these files
 
 ```sh
 gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv2_merged.json public/
@@ -48,14 +46,14 @@ VITE_USE_PROD_DATA=true npm run dev
 # Install browsers for the first run
 npx playwright install
 
-# When testing on CI, must build the project first
-npm run build
-
 # Runs the end-to-end tests
 npm run test:e2e
 
 # Runs the tests in debug mode
 npm run test:e2e -- --debug
+
+# Runs the e2e tests w/ CI configuration
+CI=true npm run test:e2e
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
