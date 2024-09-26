@@ -24,15 +24,9 @@ npm install
 npm run dev
 ```
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
 ### Use Production Assets in Dev Testing (`workgroup:mozilla-confidential` metadata)
 
-> [!WARNING] 
+> [!WARNING]
 > Do not commit these files
 
 ```sh
@@ -41,7 +35,33 @@ gsutil cp gs://moz-fx-data-prot-nonprod-c3a1-protodash/dawg/static/gcpv1_enriche
 VITE_USE_PROD_DATA=true npm run dev
 ```
 
-### Run End-to-End Tests with [Playwright](https://playwright.dev)
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```
+
+### Testing
+
+Run all test concurrently
+
+```sh
+npm run test
+```
+
+### Run Type Tests/Checking
+
+```sh
+npm run test:types
+```
+
+#### Run Unit Tests with [Vitetest](https://vitest.dev/)
+
+```sh
+npm run test:unit
+```
+
+#### Run End-to-End Tests with [Playwright](https://playwright.dev)
 
 ```sh
 # Install browsers for the first run
@@ -57,8 +77,8 @@ npm run test:e2e -- --debug
 CI=true npm run test:e2e
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Compile and Minify for Production
 
 ```sh
-npm run lint
+npm run build
 ```
