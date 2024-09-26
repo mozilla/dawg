@@ -1,4 +1,4 @@
-import { describe as suite, it, test, expect, describe } from 'vitest'
+import { it, expect, describe } from 'vitest'
 
 import { mount } from '@vue/test-utils'
 import { LinkType, testLinkText } from './AutoLinker'

@@ -1,7 +1,7 @@
 import './index.css'
 
 import { createApp } from 'vue'
-import { createRouter, createWebHistory, type RouterScrollBehavior } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './App.vue'
 import { routes } from './routing'

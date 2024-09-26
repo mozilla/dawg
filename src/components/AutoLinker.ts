@@ -1,5 +1,5 @@
 import { SubGroupIDRegex, WorkGroupIDRegex } from '@/workgroups'
-import { dawgLinker, wgroute } from '@/routing'
+import { dawgLinker } from '@/routing'
 
 export type LinkInfo = { type: LinkType; matches: string[] }
 
