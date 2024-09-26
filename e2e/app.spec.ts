@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 // Tests the configuration of the vite+playwright system itself, if this fails ignore other test failures
 test('meta', async ({ page }) => {
-  const ideal = !!process.env.CI ? 'http://localhost:5173/dawg/' : 'http://localhost:5173/'
+  const ideal = process.env.CI ? 'http://localhost:5173/dawg/' : 'http://localhost:5173/'
   await page.goto('./')
   await expect(page.url()).toBe(ideal)
 })
