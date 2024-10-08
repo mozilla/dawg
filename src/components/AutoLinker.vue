@@ -14,5 +14,5 @@ const href = computed<string>(() => formatHref(linkInfo.value))
     <RouterLink v-if="linkInfo.type == LinkType.WorkGroup" :to="href">{{ props.text }}</RouterLink>
     <RouterLink v-else-if="linkInfo.type == LinkType.SubGroup" :to="href">{{ props.text }}</RouterLink>
     <span v-else-if="linkInfo.type == LinkType.None">{{ props.text }}</span>
-    <a v-else :href="() => { console.log(href); return href }">{{ props.text }}</a>
+    <a v-else :href="href">{{ props.text }}</a>
 </template>
