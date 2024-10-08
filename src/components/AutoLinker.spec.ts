@@ -24,10 +24,10 @@ describe('should identify link types correctly', () => {
       ]
     ]
   ])
-  testCases.forEach((tests, exepected) => {
+  testCases.forEach((tests, expected) => {
     tests.forEach((test) => {
-      it(`${test} should be a ${exepected}`, () => {
-        expect(testLinkText(test).type).toBe(exepected)
+      it(`${test} should be a ${expected}`, () => {
+        expect(testLinkText(test).type).toBe(expected)
       })
     })
   })
@@ -43,9 +43,9 @@ describe('should format links correctly', () => {
       }
     ]
   ])
-  testCases.forEach((test, exepected) => {
-    it(`${test.matches[0]} should format to ${exepected}`, () => {
-      expect(formatHref(test)).toBe(exepected)
+  testCases.forEach((test, expected) => {
+    it(`${test.matches[0]} should format to ${expected}`, () => {
+      expect(formatHref(test)).toBe(expected)
     })
   })
 })
@@ -55,11 +55,11 @@ describe('renders hrefs properly', () => {
     ['https://people.mozilla.org/s?who=staff&query=whd%40mozilla.com', 'whd@mozilla.com']
   ])
 
-  testCases.forEach((input, exepected) => {
-    it(`${input} should have an href of ${exepected}`, () => {
+  testCases.forEach((input, expected) => {
+    it(`${input} should have an href of ${expected}`, () => {
       const wrapper = mount(AutoLinker, { props: { text: input } })
       const link = wrapper.find('[href]').attributes()['href']
-      expect(link).toBe(exepected)
+      expect(link).toBe(expected)
     })
   })
 })
