@@ -182,6 +182,9 @@
       "team": ["group:da-wg-madeup-workgroup-two@mozilla.com"],
       "udf": [
         "serviceAccount:bigquery-madeup-workgroup-two-redash-viewer@mozdata.iam.gserviceaccount.com"
+      ],
+      "developers": [
+        "workgroup:madeup-workgroup/default2"
       ]
     },
     "metadata": {
