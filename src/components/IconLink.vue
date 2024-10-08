@@ -71,20 +71,19 @@ const text: ComputedRef<string> = computed(() => {
         <img v-else-if="type == LinkTypes.GitHub" :src="gitHubLogo" width="25px" height="25px" alt="Github Logo" />
         <img v-else-if="type == LinkTypes.BugZilla" :src="bugZillaLogo" width="25px" height="25px" alt="BugZilla Logo">
         <img v-else :src="externalLink" width="23px" height="23px" alt="External Link" />
-        <span>
+        <a>
             <slot v-if="hasSlot()"></slot>
             <template v-else-if="autoText">{{ text }}</template>
-        </span>
+        </a>
     </a>
 </template>
 <style scoped>
 a,
-a span,
 a img {
     display: inline-block;
 }
 
-a span {
+a a {
     padding: 0 0.5rem;
 }
 

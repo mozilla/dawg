@@ -52,8 +52,8 @@ onMounted(() => {
     <div class="container">
         <h1 class="monospace">
             {{ id }}
-            <span @click="copy(source)" v-bind:title="!copied ? 'copy to clipboard' : 'copied'">
-                🔗
+            <span class="copy-link" @click="copy(source)">
+                🔗<span class="copy-tooltip">{{ !copied ? 'copy to clipboard' : 'copied' }}</span>
             </span>
         </h1>
         <template v-for="ver in shortVersions">
@@ -81,6 +81,28 @@ onMounted(() => {
 <style scoped>
 .container {
     text-align: left;
+}
+
+.copy-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.copy-link:hover {
+  cursor: pointer;
+}
+
+.copy-tooltip {
+  visibility: hidden;
+  padding-left: 8px;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.copy-link:hover .copy-tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 h1 {
