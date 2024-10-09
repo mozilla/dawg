@@ -23,7 +23,7 @@ test('search for a DAWG', async ({ page }) => {
 
 test('check that we can navigate to a detail page', async ({ page }) => {
   await page.goto('./workgroup/madeup-workgroup-two')
-  await expect(page.locator('h1')).toHaveText('workgroup:madeup-workgroup-two 🔗')
+  await expect(page.locator('h1')).toHaveText('workgroup:madeup-workgroup-two  🔗copy to clipboard')
   await expect(page.locator('h2')).toHaveText('mockdata (m1)')
   await expect(page.getByText('sponsor@mozilla.com')).toHaveCount(1) // Sponsor
   await expect(page.getByText('manager@mozilla.com')).toHaveCount(1) // Managers
