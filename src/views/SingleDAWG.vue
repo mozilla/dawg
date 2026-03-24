@@ -53,6 +53,31 @@ const scrollToHash = () => {
 
 onMounted(scrollToHash)
 
+const stats = computed(() => {
+    const dawg = dawghouse.value?.values().next().value as DAWG | undefined
+    if (!dawg) return null
+
+    const entries = Object.entries(dawg.members)
+    const subgroups = entries.length
+    const uniqueMembers = new Set<string>()
+    let users = 0
+    let serviceAccounts = 0
+    let groups = 0
+    let workgroupRefs = 0
+
+    for (const [, members] of entries) {
+        for (const m of members) {
+            uniqueMembers.add(m)
+            if (m.startsWith('user:')) users++
+            else if (m.startsWith('serviceAccount:') || m.includes('.iam.gserviceaccount.com')) serviceAccounts++
+            else if (m.startsWith('group:')) groups++
+            else if (m.startsWith('workgroup:')) workgroupRefs++
+        }
+    }
+
+    return { subgroups, total: uniqueMembers.size, users, serviceAccounts, groups, workgroupRefs }
+})
+
 
 </script>
 
@@ -64,6 +89,14 @@ onMounted(scrollToHash)
                 🔗<span class="copy-tooltip">{{ !copied ? 'copy to clipboard' : 'copied' }}</span>
             </span>
         </h1>
+        <div v-if="stats" class="stats">
+            <span><strong>{{ stats.subgroups }}</strong> subgroups</span>
+            <span><strong>{{ stats.total }}</strong> members</span>
+            <span v-if="stats.users"><strong>{{ stats.users }}</strong> users</span>
+            <span v-if="stats.serviceAccounts"><strong>{{ stats.serviceAccounts }}</strong> service accounts</span>
+            <span v-if="stats.groups"><strong>{{ stats.groups }}</strong> groups</span>
+            <span v-if="stats.workgroupRefs"><strong>{{ stats.workgroupRefs }}</strong> workgroup refs</span>
+        </div>
         <template v-for="ver in shortVersions">
             <div v-if="dawghouse?.has(ver)" :key="ver">
 
@@ -116,6 +149,19 @@ onMounted(scrollToHash)
 h1 {
     font-size: 2.5rem;
     margin: 2rem 0;
+}
+
+.stats {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+:global(.dark) .stats {
+    color: #9ca3af;
 }
 
 h2 {
