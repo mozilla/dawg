@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
-import { inject, computed, onMounted, onBeforeMount, ref } from 'vue';
+import { inject, computed, onMounted, watch, ref, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useClipboard } from '@vueuse/core';
 
@@ -22,11 +22,9 @@ const details = Array<keyof DAWG>('sponsor', 'managers', 'members')
 const datamap = inject(datamapinjection)
 
 const dawghouse: Ref<DAWGHouse | undefined> = ref()
-const id = ref(formatDAWGID(route.params.id as string))
+const id = computed(() => formatDAWGID(route.params.id as string))
 
-
-onBeforeMount(() => {
-
+const loadWorkgroup = () => {
     if (!datamap) return router.push({ path: '/error', query: { err: ErrorCode.Application, detail: serializeErrorDetails(`datamap was not loaded got ${datamap}`) } })
 
     if (!datamap.value.has(id.value)) {
@@ -34,16 +32,26 @@ onBeforeMount(() => {
         router.push({ path: '/error', query: { err: ErrorCode.NotFound404, dawgid: encodeURIComponent(id.value) } })
     }
     dawghouse.value = datamap.value.get(id.value)
+}
+
+watch(id, async () => {
+    loadWorkgroup()
+    await nextTick()
+    scrollToHash()
 })
 
-onMounted(() => {
+loadWorkgroup()
+
+const scrollToHash = () => {
     if (!window.location.hash) return
 
     const position = document.querySelector(window.location.hash)?.getBoundingClientRect().top
     if (!position) return
 
     window.scrollTo(0, position - 90)
-})
+}
+
+onMounted(scrollToHash)
 
 
 </script>
