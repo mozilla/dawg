@@ -107,6 +107,6 @@ td dd:has(> ul) {
 
 td dt:has(+ dd > span),
 td dd:has(> span) {
-  display: inline-block;
+  display: block;
 }
 </style>

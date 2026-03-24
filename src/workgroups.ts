@@ -61,7 +61,12 @@ export const newWorkGroup = (groupname: string, kind: LongVersion, data: any): D
     wg.members = Object.fromEntries(
       Object.entries(data?.members)
         .map(([key, value]) => {
-          return [transformSubGroupIDs(wg.id, key), value]
+          const subgroupID = transformSubGroupIDs(wg.id, key)
+          const existing = value as string[]
+          const sas = (data?.service_accounts?.[key] || [])
+            .filter((sa: string) => !existing.some((m: string) => m.includes(sa)))
+            .map((sa: string) => `serviceAccount:${sa}`)
+          return [subgroupID, [...existing, ...sas]]
         })
     )
 
