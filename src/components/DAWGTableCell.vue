@@ -15,9 +15,25 @@ const props = defineProps<{
 
 const display = getFieldDisplayMode(props.fieldName)
 
+const isSA = (m: string) => m.startsWith('serviceAccount:') || m.includes('.iam.gserviceaccount.com')
+const isWGRef = (m: string) => m.startsWith('workgroup:')
+const visibleMembers = (list: string[]) => {
+  const hasWGRefs = list.some(isWGRef)
+  return hasWGRefs ? list.filter(m => !isSA(m)) : list
+}
+
 const githubSearchUrl = (subgroupId: string) => {
   const encoded = encodeURIComponent(`"${subgroupId}"`)
   return `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+${encoded}&type=code`
+}
+
+const expandedSubgroups = ref<Set<string>>(new Set())
+const toggleSubgroupExpand = (key: string) => {
+  if (expandedSubgroups.value.has(key)) {
+    expandedSubgroups.value.delete(key)
+  } else {
+    expandedSubgroups.value.add(key)
+  }
 }
 
 const copiedGroup = ref<string | null>(null)
@@ -68,7 +84,8 @@ const copySubgroup = (text: string) => {
       <template v-for="(list, key) in (props.contents as MapOfLists)" :key="key">
         <template v-if="key != 'default'">
           <dt class="monospace" v-bind:id="(key as string).split('/')[1]">
-            <AutoLinker :text="(key as string)" />
+            <span class="expand-all-toggle" @click="toggleSubgroupExpand(key as string)">{{ expandedSubgroups.has(key as string) ? '▾' : '▸' }}<span class="copy-tooltip">{{ expandedSubgroups.has(key as string) ? 'collapse all' : 'expand all' }}</span></span>
+            <AutoLinker :text="(key as string)" :expandable="false" />
             <span class="copy-link" @click="copySubgroup(key as string)">
               🔗<span class="copy-tooltip">{{ copiedGroup === key ? 'copied' : 'copy to clipboard' }}</span>
             </span>
@@ -82,7 +99,7 @@ const copySubgroup = (text: string) => {
             </a>
             <ul v-if="props.googleGroups?.[key as string]?.length" class="google-groups">
               <li v-for="group in props.googleGroups[key as string]" :key="group">
-                <AutoLinker :text="group" />
+                <AutoLinker :text="group" :expandable="false" />
                 <span class="copy-link" @click="copyToClipboard(group)">
                   🔗<span class="copy-tooltip">{{ copiedGroup === group ? 'copied' : 'copy to clipboard' }}</span>
                 </span>
@@ -90,9 +107,9 @@ const copySubgroup = (text: string) => {
             </ul>
           </dt>
           <dd>
-            <ul v-if="list.length > 0">
-              <li v-for="item, i in list" :key="i">
-                <AutoLinker :text="item" />
+            <ul v-if="visibleMembers(list).length > 0">
+              <li v-for="item, i in visibleMembers(list)" :key="i">
+                <AutoLinker :text="item" :forceExpanded="expandedSubgroups.has(key as string)" />
               </li>
             </ul>
             <span v-else>(no members)</span>
@@ -191,7 +208,7 @@ td dt:first-child {
   white-space: nowrap;
   padding-left: 4px;
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: #d1d5db;
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -203,6 +220,24 @@ td dt:first-child {
 
 td dd {
   margin-left: 0;
+}
+
+.expand-all-toggle {
+  cursor: pointer;
+  margin-right: 0.3rem;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  user-select: none;
+  position: relative;
+}
+
+.expand-all-toggle:hover {
+  opacity: 1;
+}
+
+.expand-all-toggle:hover .copy-tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 td dt:has(+ dd > ul),
