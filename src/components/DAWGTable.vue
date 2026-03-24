@@ -7,6 +7,9 @@ const props = defineProps<{
     rows: DAWG[],
 }>()
 
+const visibleFields = (row: DAWG) =>
+    Object.entries(row).filter(([key]) => props.headers.includes(key))
+
 </script>
 
 <template>
@@ -20,7 +23,7 @@ const props = defineProps<{
             <tbody>
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     v-for="(row, rowIndex) in props.rows" :key="rowIndex">
-                    <DAWGTableCell v-for="(value, key) in row" :key="key" :field-name="key" :contents="value" />
+                    <DAWGTableCell v-for="[key, value] in visibleFields(row)" :key="key" :field-name="(key as keyof DAWG)" :contents="value" />
                 </tr>
             </tbody>
         </table>

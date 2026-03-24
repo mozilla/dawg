@@ -83,7 +83,8 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
 })
 
 // Takes a null-ish workgroup and dumps the keys for the table headers
-const headers = Object.keys(NullWorkGroup)
+const hiddenFields = ['google_groups']
+const headers = Object.keys(NullWorkGroup).filter(k => !hiddenFields.includes(k))
 
 const stats = computed(() => {
     const data = dataset?.value || []

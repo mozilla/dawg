@@ -9,6 +9,7 @@ import AutoLinker from './AutoLinker.vue';
 const props = defineProps<{
   contents: undefined | PlainText | ListOfText | MapOfLists,
   fieldName: keyof DAWG,
+  googleGroups?: MapOfLists,
 }>()
 
 const display = getFieldDisplayMode(props.fieldName)
@@ -50,6 +51,11 @@ const display = getFieldDisplayMode(props.fieldName)
         <template v-if="key != 'default'">
           <dt class="monospace" v-bind:id="(key as string).split('/')[1]">
             <AutoLinker :text="(key as string)" />
+            <ul v-if="props.googleGroups?.[key as string]?.length" class="google-groups">
+              <li v-for="group in props.googleGroups[key as string]" :key="group">
+                <AutoLinker :text="group" />
+              </li>
+            </ul>
           </dt>
           <dd>
             <ul v-if="list.length > 0">
@@ -98,6 +104,18 @@ td dd>span {
 
 td dt:first-child {
   margin-top: 0;
+}
+
+.google-groups {
+  font-weight: normal;
+  font-size: 0.85rem;
+  list-style-type: none;
+  margin: 0.15rem 0 0 0;
+  padding-left: 0;
+}
+
+td dd {
+  margin-left: 0;
 }
 
 td dt:has(+ dd > ul),
