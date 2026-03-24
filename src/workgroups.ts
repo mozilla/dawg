@@ -59,14 +59,20 @@ export const newWorkGroup = (groupname: string, kind: LongVersion, data: any): D
 
   if (data?.metadata?.managers) wg.managers = data.metadata.managers
 
-  if (data?.google_groups && Object.keys(data.google_groups).length > 0)
-    wg.google_groups = Object.fromEntries(
-      Object.entries(data.google_groups)
-        .filter(([, value]) => (value as string[]).length > 0)
-        .map(([key, value]) => {
-          return [transformSubGroupIDs(wg.id, key), (value as string[]).map((g: string) => `group:${g}`)]
-        })
-    )
+  const mergedGroups: { [key: string]: string[] } = {}
+  for (const source of [data?.google_groups, data?.extra_google_groups]) {
+    if (!source) continue
+    for (const [key, value] of Object.entries(source)) {
+      const subgroupID = transformSubGroupIDs(wg.id, key)
+      const groups = (value as string[]).map((g: string) => g.startsWith('group:') ? g : `group:${g}`)
+      if (!mergedGroups[subgroupID]) mergedGroups[subgroupID] = []
+      for (const g of groups) {
+        if (!mergedGroups[subgroupID].includes(g)) mergedGroups[subgroupID].push(g)
+      }
+    }
+  }
+  if (Object.keys(mergedGroups).length > 0)
+    wg.google_groups = mergedGroups
 
   if (Object.keys(data?.members).length > 0)
     wg.members = Object.fromEntries(
