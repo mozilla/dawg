@@ -94,8 +94,6 @@ const stats = computed(() => {
         <template v-for="ver in shortVersions">
             <div v-if="dawghouse?.has(ver)" :key="ver">
 
-                <h2>{{ versionShortToLong.get(ver) }}</h2>
-
                 <nav>
                     <IconLink v-for="link, key in (dawghouse.get(ver)?.links as ListOfLinks)" v-bind:key :href="link"
                         :autoText="true" />
