@@ -81,7 +81,7 @@ jobs:
           command: |
             cd ~/project/dist
             find . -type f ! -name 'gcpv*.json' ! -name 'mockdata.json' | while read f; do
-              gcloud storage cp "$f" "gs://protosaur-stage-iap-static-website/dawg/$f"
+              gcloud storage cp "$f" "gs://protosaur-stage-iap-static-website/dawg/${f#./}"
             done
 
 workflows:
