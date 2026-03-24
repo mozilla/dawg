@@ -69,7 +69,7 @@ const text: ComputedRef<string> = computed(() => {
             return match ? match[1] : "Jira Ticket"
         }
         case type.value == LinkTypes.GitHub:
-            return "Search on Github"
+            return "Search on GitHub"
         case type.value == LinkTypes.GoogleDocs:
             return "Google Docs"
         case type.value == LinkTypes.BugZilla:
