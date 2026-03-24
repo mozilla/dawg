@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gsutil rsync -r -x "gcpv.*\.json" ~/project/dist gs://protosaur-stage-iap-static-website/dawg/static
+            gsutil rsync -d -r -x "gcpv.*\.json" ~/project/dist gs://protosaur-stage-iap-static-website/dawg/static
 
   artifact-deployment-v2:
     executor: gcp-cli/google
