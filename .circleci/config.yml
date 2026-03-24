@@ -79,8 +79,10 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            rm -f ~/project/dist/gcpv*.json ~/project/dist/mockdata.json
-            gcloud storage cp --recursive ~/project/dist/* gs://protosaur-stage-iap-static-website/dawg/
+            cd ~/project/dist
+            find . -type f ! -name 'gcpv*.json' ! -name 'mockdata.json' | while read f; do
+              gcloud storage cp "$f" "gs://protosaur-stage-iap-static-website/dawg/$f"
+            done
 
 workflows:
   ci:
