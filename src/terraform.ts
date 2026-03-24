@@ -30,6 +30,7 @@ export async function getLatestRef(): Promise<string> {
 
 export function terraformSnippet(id: string, ref: string = FALLBACK): string {
   const name = id.replace('workgroup:', '').replace(/\//g, '_')
-  const moduleName = `${name}_workgroup`.replace(/-/g, '_')
+  let moduleName = `${name}_workgroup`.replace(/-/g, '_')
+  if (/^\d/.test(moduleName)) moduleName = `mozilla_${moduleName}`
   return `module "${moduleName}" {\n  source = "github.com/mozilla/terraform-modules//mozilla_workgroup?ref=${ref}"\n  ids    = ["${id}"]\n}\n# module.${moduleName}.members`
 }
