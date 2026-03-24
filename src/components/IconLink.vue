@@ -80,7 +80,7 @@ const text: ComputedRef<string> = computed(() => {
 })
 </script>
 <template>
-    <a :href="props.href">
+    <a :href="props.href" target="_blank" rel="noopener noreferrer">
         <img v-if="type == LinkTypes.GCP" :src="gcpLogo" width="25px" height="25px" alt="GCP Logo" />
         <img v-else-if="type == LinkTypes.JiraServiceDesk" :src="jiraServiceMgmtLogo" width="25px" height="25px" alt="Jira Service Management Logo" />
         <img v-else-if="type == LinkTypes.Confluence" :src="confluenceLogo" width="25px" height="25px" alt="Confluence Logo" />
