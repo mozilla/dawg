@@ -76,7 +76,7 @@ td ul {
   list-style-type: disc;
 }
 
-td a:not(td dt a) {
+td a {
   color: var(--dawg-blue);
   transition: color 0.15s;
 }

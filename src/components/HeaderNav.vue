@@ -36,8 +36,8 @@ onMounted(() => {
                             to="/">Home</RouterLink>
                     </li>
                     <li>
-                        <a href="https://github.com/mozilla/dawg/blob/main/FAQ.md"
-                            class="block py-2 px-3 rounded md:border-0 md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent">Guide</a>
+                        <RouterLink to="/guide"
+                            class="block py-2 px-3 rounded md:border-0 md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent">Guide</RouterLink>
                     </li>
 
                     <li>

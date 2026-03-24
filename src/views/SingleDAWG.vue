@@ -149,6 +149,7 @@ const stats = computed(() => {
 h1 {
     font-size: 2.5rem;
     margin: 2rem 0;
+    color: var(--dawg-blue);
 }
 
 .stats {
