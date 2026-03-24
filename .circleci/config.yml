@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gsutil rsync -r -x "gcpv.*\.json" ~/project/dist gs://protosaur-stage-iap-static-website/dawg
+            gcloud storage cp --recursive --exclude="gcpv*.json" ~/project/dist/* gs://protosaur-stage-iap-static-website/dawg/
 
 workflows:
   ci:
