@@ -96,15 +96,6 @@ workflows:
             branches:
               only:
                 - main
-      - artifact-deployment-v1:
-          name: Deploy static website
-          context: gcpv2-workload-identity
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - main
       - artifact-deployment-v2:
           name: Deploy static website
           context: gcpv2-workload-identity
