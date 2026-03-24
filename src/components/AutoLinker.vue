@@ -22,8 +22,6 @@ const isExpandable = computed(() =>
     props.expandable && (linkInfo.value.type === LinkType.WorkGroup || linkInfo.value.type === LinkType.SubGroup)
 )
 
-const isSA = (m: string) => m.startsWith('serviceAccount:') || m.includes('.iam.gserviceaccount.com')
-
 const resolvedMembers = computed<string[]>(() => {
     if (!expanded.value || !datamap?.value) return []
 

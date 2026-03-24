@@ -5,7 +5,7 @@ import { useRouter, useRoute } from 'vue-router';
 
 
 import { type DAWG, type DAWGHouse, type ListOfLinks, formatDAWGID } from '@/workgroups';
-import { shortVersions, versionShortToLong, } from '@/metadata'
+import { shortVersions } from '@/metadata'
 
 import IconLink from '@/components/IconLink.vue';
 import DAWGTableCell from '@/components/DAWGTableCell.vue';
