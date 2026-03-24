@@ -2,7 +2,7 @@
 import type { Ref } from 'vue';
 import { inject, computed, onMounted, watch, ref, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useClipboard } from '@vueuse/core';
+
 
 import { type DAWG, type DAWGHouse, type ListOfLinks, formatDAWGID } from '@/workgroups';
 import { shortVersions, versionShortToLong, } from '@/metadata'
@@ -15,9 +15,6 @@ import { ErrorCode, serializeErrorDetails } from '@/errors';
 
 const router = useRouter();
 const route = useRoute();
-const source = computed(() => window.location.href)
-const { copy, copied } = useClipboard({ source })
-
 const details = Array<keyof DAWG>('sponsor', 'managers', 'members')
 const datamap = inject(datamapinjection)
 
@@ -84,10 +81,7 @@ const stats = computed(() => {
 <template>
     <div class="container">
         <h1 class="monospace">
-            {{ id }}
-            <span class="copy-link" @click="copy(source)">
-                🔗<span class="copy-tooltip">{{ !copied ? 'copy to clipboard' : 'copied' }}</span>
-            </span>
+            <RouterLink :to="`/workgroup/${encodeURIComponent(route.params.id as string)}`">{{ id }}</RouterLink>
         </h1>
         <div v-if="stats" class="stats">
             <span><strong>{{ stats.subgroups }}</strong> subgroups</span>
@@ -123,28 +117,6 @@ const stats = computed(() => {
 <style scoped>
 .container {
     text-align: left;
-}
-
-.copy-link {
-  display: inline-flex;
-  align-items: center;
-}
-
-.copy-link:hover {
-  cursor: pointer;
-}
-
-.copy-tooltip {
-  visibility: hidden;
-  padding-left: 8px;
-  font-size: 0.8rem;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.copy-link:hover .copy-tooltip {
-  visibility: visible;
-  opacity: 1;
 }
 
 h1 {
