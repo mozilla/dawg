@@ -85,12 +85,36 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
 // Takes a null-ish workgroup and dumps the keys for the table headers
 const headers = Object.keys(NullWorkGroup)
 
+const stats = computed(() => {
+    const data = dataset?.value || []
+    const workgroups = data.length
+    let subgroups = 0
+    const uniqueMembers = new Set<string>()
+
+    for (const wg of data) {
+        const entries = Object.entries(wg.members)
+        subgroups += entries.length
+        for (const [, members] of entries) {
+            for (const m of members) {
+                uniqueMembers.add(m)
+            }
+        }
+    }
+
+    return { workgroups, subgroups, members: uniqueMembers.size }
+})
+
 </script>
 
 <template>
     <header class="text-center">
-        <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore data
-            access workgroups - Compiled from aggregated Terraform State data.</p>
+        <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Effortlessly search and explore
+            data access workgroups - Compiled from aggregated Terraform State data.</p>
+        <div v-if="stats.workgroups > 0" class="stats flex justify-center gap-6 mt-3 text-sm text-gray-500 dark:text-gray-400">
+            <span><strong>{{ stats.workgroups }}</strong> workgroups</span>
+            <span><strong>{{ stats.subgroups }}</strong> subgroups</span>
+            <span><strong>{{ stats.members }}</strong> unique members</span>
+        </div>
     </header>
     <div class="search-wrapper">
         <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
