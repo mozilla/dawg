@@ -61,26 +61,6 @@ jobs:
       - store_test_results:
           path: ./test-results/e2e-results.xml
 
-  artifact-deployment-v1:
-    executor: gcp-cli/google
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run:
-          name: Prepare environment variables for OIDC authentication
-          command: |
-            echo 'export GOOGLE_PROJECT_ID="moz-fx-data-prot-nonprod-c3a1"' >> "$BASH_ENV"
-            echo "export OIDC_WIP_ID=$GCPV2_WORKLOAD_IDENTITY_POOL_ID" >> "$BASH_ENV"
-            echo "export OIDC_WIP_PROVIDER_ID=$GCPV2_CIRCLECI_WORKLOAD_IDENTITY_PROVIDER" >> "$BASH_ENV"
-            echo "export GOOGLE_PROJECT_NUMBER=$GCPV2_WORKLOAD_IDENTITY_POOL_PROJECT_NUMBER" >> "$BASH_ENV"
-            echo "export OIDC_SERVICE_ACCOUNT_EMAIL=$GCP_SERVICE_ACCOUNT_EMAIL" >> "$BASH_ENV"
-      - gcp-cli/setup:
-          use_oidc: true
-      - run:
-          name: Upload artifacts
-          command: |
-            gsutil rsync -d -r -x "gcpv.*\.json" ~/project/dist gs://protosaur-stage-iap-static-website/dawg/static
-
   artifact-deployment-v2:
     executor: gcp-cli/google
     steps:
@@ -99,7 +79,7 @@ jobs:
       - run:
           name: Upload artifacts
           command: |
-            gsutil rsync -r -x "gcpv.*\.json" ~/project/dist gs://protosaur-stage-iap-static-website/dawg          
+            gsutil rsync -r -x "gcpv.*\.json" ~/project/dist gs://protosaur-stage-iap-static-website/dawg
 
 workflows:
   ci:
