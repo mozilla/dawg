@@ -110,23 +110,25 @@ const stats = computed(() => {
     const data = dataset?.value || []
     const workgroups = data.length
     let subgroups = 0
-    const uniqueMembers = new Set<string>()
     const uniqueUsers = new Set<string>()
     const uniqueSAs = new Set<string>()
+    const uniqueGroups = new Set<string>()
+    const uniqueWGRefs = new Set<string>()
 
     for (const wg of data) {
         const entries = Object.entries(wg.members)
         subgroups += entries.length
         for (const [, members] of entries) {
             for (const m of members) {
-                uniqueMembers.add(m)
                 if (m.startsWith('user:')) uniqueUsers.add(m)
                 else if (m.startsWith('serviceAccount:') || m.includes('.iam.gserviceaccount.com')) uniqueSAs.add(m)
+                else if (m.startsWith('group:')) uniqueGroups.add(m)
+                else if (m.startsWith('workgroup:')) uniqueWGRefs.add(m)
             }
         }
     }
 
-    return { workgroups, subgroups, members: uniqueMembers.size, users: uniqueUsers.size, serviceAccounts: uniqueSAs.size }
+    return { workgroups, subgroups, users: uniqueUsers.size, serviceAccounts: uniqueSAs.size, groups: uniqueGroups.size, workgroupRefs: uniqueWGRefs.size }
 })
 
 </script>
@@ -138,9 +140,10 @@ const stats = computed(() => {
         <div v-if="stats.workgroups > 0" class="stats flex justify-center gap-6 mt-3 text-sm text-gray-500 dark:text-gray-400">
             <span><strong>{{ stats.workgroups }}</strong> workgroups</span>
             <span><strong>{{ stats.subgroups }}</strong> subgroups</span>
-            <span><strong>{{ stats.members }}</strong> unique members</span>
-            <span><strong>{{ stats.users }}</strong> unique users</span>
-            <span><strong>{{ stats.serviceAccounts }}</strong> service accounts</span>
+            <RouterLink to="/members/users" class="stat-link"><strong>{{ stats.users }}</strong> users</RouterLink>
+            <RouterLink to="/members/service-accounts" class="stat-link"><strong>{{ stats.serviceAccounts }}</strong> service accounts</RouterLink>
+            <RouterLink to="/members/groups" class="stat-link"><strong>{{ stats.groups }}</strong> groups</RouterLink>
+            <RouterLink to="/members/workgroup-refs" class="stat-link"><strong>{{ stats.workgroupRefs }}</strong> workgroup refs</RouterLink>
         </div>
     </header>
     <div class="search-wrapper">
@@ -181,3 +184,15 @@ const stats = computed(() => {
 
     <DAWGTable :headers="headers" :rows="filteredSet" />
 </template>
+
+<style scoped>
+.stat-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.stat-link:hover {
+    text-decoration: underline;
+    color: var(--dawg-blue);
+}
+</style>
