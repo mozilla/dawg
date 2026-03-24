@@ -26,20 +26,18 @@ export const getFieldDisplayMode = (f: keyof DAWG): DisplayMode => {
   return WorkGroupDisplayModes.get(f) || DisplayMode.PlainText
 }
 
-export const shortVersions = ['v1', 'v2', 'm1'] as const
-export const longVersions = ['Data Access Workgroup', 'GCPv2 Workgroup', 'mockdata'] as const
+export const shortVersions = ['v2', 'm1'] as const
+export const longVersions = ['Workgroup', 'mockdata'] as const
 
 export type ShortVersion = (typeof shortVersions)[number]
 export type LongVersion = (typeof longVersions)[number]
 
 export const sourceShortVersions = new Map<Source, ShortVersion>([
-  [Source.v1, 'v1'],
   [Source.v2, 'v2'],
   [Source.mock, 'm1']
 ])
 
 export const versionShortToLong = new Map<ShortVersion, LongVersion>([
-  ['v1', 'Data Access Workgroup'],
-  ['v2', 'GCPv2 Workgroup'],
+  ['v2', 'Workgroup'],
   ['m1', 'mockdata']
 ])
