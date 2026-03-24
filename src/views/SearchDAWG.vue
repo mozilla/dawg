@@ -27,9 +27,15 @@ const searchstring = defineModel<string>('searchstring', {
     default: useUrlSearchParams('history').searchstring
 });
 
+// The state of the "Filter members" toggle
+const filterMembers = defineModel<boolean>('filterMembers', {
+    default: (useUrlSearchParams('history').filterMembers === "true")
+});
+
 // Push model changes to url search params to keep url in-sync
 watch(isRegex, async (n) => params.isRegex = `${n}`)
 watch(searchstring, async (n) => params.searchstring = `${n}`)
+watch(filterMembers, async (n) => params.filterMembers = `${n}`)
 
 // A compiled RegExp from the user input string, or the error if one was encountered
 const searchregexp = computed((): RegExp | Error => {
@@ -56,7 +62,7 @@ const filterFunc = computed(() => {
         : (c: string): boolean => !!searchstring.value && c?.toLowerCase().includes(searchstring.value.toLowerCase());
 })
 
-// Returns the data set filtered by the seach term or regex
+// Returns the data set filtered by the search term or regex
 const filteredSet: ComputedRef<DAWG[]> = computed(() => {
     if (!dataset?.value) {
         return []
@@ -64,7 +70,7 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
     if (!searchstring.value) {
         return dataset.value
     }
-    return dataset.value.filter(row => {
+    const matched = dataset.value.filter(row => {
         return Object.values(row).some(contents => {
 
             if (contents instanceof Array) {
@@ -79,6 +85,20 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
 
             return filterFunc.value(contents as string)
         })
+    })
+
+    if (!filterMembers.value) return matched
+
+    return matched.map(row => {
+        const filteredMembers: MapOfLists = {}
+        for (const [key, members] of Object.entries(row.members)) {
+            const matchesKey = filterFunc.value(key)
+            const matchedMembers = members.filter(filterFunc.value)
+            if (matchesKey || matchedMembers.length > 0) {
+                filteredMembers[key] = matchesKey ? members : matchedMembers
+            }
+        }
+        return { ...row, members: filteredMembers }
     })
 })
 
@@ -142,13 +162,20 @@ const stats = computed(() => {
             <span class="font-medium">⚠️ {{ searchregexp }}</span>
         </div>
     </div>
-    <div class="relative mb-2">
+    <div class="relative mb-2 flex gap-6">
         <label class="inline-flex items-center cursor-pointer">
             <input v-model="isRegex" type="checkbox" name="regex" value="regex" class="sr-only peer">
             <div
                 class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
             </div>
-            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Use Regex</span>
+            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300" title="Search using a regular expression instead of plain text">Use Regex</span>
+        </label>
+        <label class="inline-flex items-center cursor-pointer">
+            <input v-model="filterMembers" type="checkbox" name="filterMembers" value="filterMembers" class="sr-only peer">
+            <div
+                class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+            </div>
+            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300" title="When enabled, only show subgroups and members matching the search term within each workgroup">Filter Members</span>
         </label>
     </div>
 
