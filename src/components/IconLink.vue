@@ -64,8 +64,10 @@ const text: ComputedRef<string> = computed(() => {
             return "Jira Service Desk"
         case type.value == LinkTypes.Confluence:
             return "Confluence"
-        case type.value == LinkTypes.Jira:
-            return "Jira Ticket"
+        case type.value == LinkTypes.Jira: {
+            const match = props.href.match(/\/browse\/([A-Z]+-\d+)/)
+            return match ? match[1] : "Jira Ticket"
+        }
         case type.value == LinkTypes.GitHub:
             return "Search on Github"
         case type.value == LinkTypes.GoogleDocs:
