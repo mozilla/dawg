@@ -5,7 +5,6 @@ import { computed, useSlots } from 'vue';
 import jiraLogo from '@/assets/jira.svg'
 import jiraServiceMgmtLogo from '@/assets/jira-service-management.svg'
 import confluenceLogo from '@/assets/confluence.svg'
-import gitHubLogo from '@/assets/github.svg'
 import externalLink from '@/assets/externallink.svg'
 import googleDocsLogo from '@/assets/google-docs.svg'
 import gcpLogo from '@/assets/gcp.png'
