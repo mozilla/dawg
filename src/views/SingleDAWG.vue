@@ -50,6 +50,38 @@ const scrollToHash = () => {
 
 onMounted(scrollToHash)
 
+const hasManagers = computed(() => {
+    const dawg = dawghouse.value?.values().next().value as DAWG | undefined
+    if (!dawg) return false
+    return dawg.managers.length > 0 && dawg.managers[0] !== '[no data]'
+})
+
+const hasSubgroupManagers = computed(() => {
+    const dawg = dawghouse.value?.values().next().value as DAWG | undefined
+    if (!dawg) return false
+    return Object.values(dawg.subgroup_managers).some(m => m.length > 0)
+})
+
+const fieldHelp = computed(() => (field: string): string | undefined => {
+    if (field === 'sponsor') {
+        if (hasManagers.value || hasSubgroupManagers.value) {
+            return 'This is the executive sponsor of this workgroup. Group management is delegated to managers.'
+        }
+        return 'This is the executive sponsor of this workgroup. This user is responsible for approving changes to members, or delegating that responsibility to managers.'
+    }
+    if (field === 'managers') {
+        if (hasManagers.value) {
+            return hasSubgroupManagers.value
+                ? 'These users are responsible for approving changes to members of this workgroup. See also subgroup managers.'
+                : 'These users are responsible for approving changes to members of this workgroup.'
+        }
+        return hasSubgroupManagers.value
+            ? 'No top-level managers. The sponsor is responsible for managing members or delegating that to managers. See subgroup managers below.'
+            : 'No managers. The sponsor is responsible for managing members or delegating that to managers.'
+    }
+    return undefined
+})
+
 const stats = computed(() => {
     const dawg = dawghouse.value?.values().next().value as DAWG | undefined
     if (!dawg) return null
@@ -100,7 +132,7 @@ const stats = computed(() => {
                 </nav>
                 <table>
                     <tr v-for="(field, i) in details" :key="i">
-                        <td>{{ field }}</td>
+                        <td>{{ field }} <span v-if="fieldHelp(field)" class="help-wrapper"><span class="help-icon">?</span><span class="help-tooltip">{{ fieldHelp(field) }}</span></span></td>
                         <DAWGTableCell :fieldName="field" :contents="(dawghouse?.get(ver) || {})[field]"
                             :googleGroups="field === 'members' ? dawghouse?.get(ver)?.google_groups : undefined"
                             :subgroupManagers="field === 'members' ? dawghouse?.get(ver)?.subgroup_managers : undefined" />
@@ -135,6 +167,60 @@ h1 {
 
 :global(.dark) .stats {
     color: #9ca3af;
+}
+
+.help-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.help-icon {
+    display: inline-block;
+    font-size: 0.7rem;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    text-align: center;
+    border-radius: 50%;
+    background: #d1d5db;
+    color: #374151;
+    cursor: help;
+}
+
+:global(.dark) .help-icon {
+    background: #4b5563;
+    color: #d1d5db;
+}
+
+.help-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0.5rem;
+    white-space: nowrap;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: normal;
+    text-transform: none;
+    border-radius: 0.25rem;
+    color: #374151;
+    background: #f3f4f6;
+    z-index: 10;
+    transition: opacity 0.2s;
+}
+
+:global(.dark) .help-tooltip {
+    color: #e5e7eb;
+    background: #1f2937;
+}
+
+.help-wrapper:hover .help-tooltip {
+    visibility: visible;
+    opacity: 1;
 }
 
 h2 {
