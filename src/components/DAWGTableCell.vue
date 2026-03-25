@@ -126,7 +126,7 @@ const copyTerraform = async (id: string, key: string) => {
             </ul>
             <ul v-if="props.subgroupManagers?.[key as string]?.length" class="subgroup-managers">
               <li v-for="mgr in props.subgroupManagers[key as string]" :key="mgr">
-                <span class="meta-label">manager:</span> <AutoLinker :text="mgr" :expandable="false" />
+                <span class="meta-label">manager<span class="help-wrapper"><span class="help-icon">?</span><span class="help-tooltip">This user is responsible for approving changes to members of this workgroup.</span></span>:</span> <AutoLinker :text="mgr" :expandable="false" />
               </li>
             </ul>
           </dt>
@@ -207,6 +207,62 @@ td dt:first-child {
 
 .dark .meta-label {
   color: #9ca3af;
+}
+
+.help-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.15rem;
+  vertical-align: middle;
+}
+
+.help-icon {
+  display: inline-block;
+  font-size: 0.6rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  line-height: 0.85rem;
+  text-align: center;
+  border-radius: 50%;
+  background: #d1d5db;
+  color: #374151;
+  cursor: help;
+  font-style: normal;
+}
+
+.dark .help-icon {
+  background: #4b5563;
+  color: #d1d5db;
+}
+
+.help-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: normal;
+  font-style: normal;
+  border-radius: 0.25rem;
+  color: #374151;
+  background: #f3f4f6;
+  z-index: 10;
+  transition: opacity 0.2s;
+}
+
+.dark .help-tooltip {
+  color: #e5e7eb;
+  background: #1f2937;
+}
+
+.help-wrapper:hover .help-tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 .copy-buttons {
