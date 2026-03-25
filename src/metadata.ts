@@ -20,6 +20,7 @@ const WorkGroupDisplayModes: Map<keyof DAWG, DisplayMode> = new Map([
   ['sponsor', DisplayMode.PlainText],
   ['managers', DisplayMode.ListOfText],
   ['google_groups', DisplayMode.MapOfLists],
+  ['subgroup_managers', DisplayMode.MapOfLists],
   ['members', DisplayMode.MapOfLists]
 ])
 

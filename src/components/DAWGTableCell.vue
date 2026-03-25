@@ -11,6 +11,7 @@ const props = defineProps<{
   contents: undefined | PlainText | ListOfText | MapOfLists,
   fieldName: keyof DAWG,
   googleGroups?: MapOfLists,
+  subgroupManagers?: MapOfLists,
 }>()
 
 const display = getFieldDisplayMode(props.fieldName)
@@ -123,6 +124,11 @@ const copyTerraform = async (id: string, key: string) => {
                 </span>
               </li>
             </ul>
+            <ul v-if="props.subgroupManagers?.[key as string]?.length" class="subgroup-managers">
+              <li v-for="mgr in props.subgroupManagers[key as string]" :key="mgr">
+                <span class="meta-label">manager:</span> <AutoLinker :text="mgr" :expandable="false" />
+              </li>
+            </ul>
           </dt>
           <dd>
             <ul v-if="visibleMembers(list).length > 0">
@@ -184,6 +190,23 @@ td dt:first-child {
 .google-groups li {
   display: flex;
   align-items: center;
+}
+
+.subgroup-managers {
+  font-weight: normal;
+  font-size: 0.85rem;
+  list-style-type: none;
+  margin: 0.15rem 0 0 0;
+  padding-left: 0;
+}
+
+.meta-label {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.dark .meta-label {
+  color: #9ca3af;
 }
 
 .copy-buttons {

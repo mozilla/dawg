@@ -10,6 +10,7 @@ export type DAWG = {
   sponsor: PlainText
   managers: ListOfText
   google_groups: MapOfLists
+  subgroup_managers: MapOfLists
   members: MapOfLists
 }
 
@@ -32,6 +33,7 @@ export const NullWorkGroup: DAWG = {
   sponsor: nd,
   managers: [nd],
   google_groups: {},
+  subgroup_managers: {},
   members: { none: [] }
 } as const
 
@@ -73,6 +75,15 @@ export const newWorkGroup = (groupname: string, kind: LongVersion, data: any): D
   }
   if (Object.keys(mergedGroups).length > 0)
     wg.google_groups = mergedGroups
+
+  if (data?.subgroup_managers && Object.keys(data.subgroup_managers).length > 0)
+    wg.subgroup_managers = Object.fromEntries(
+      Object.entries(data.subgroup_managers)
+        .filter(([, value]) => (value as string[]).length > 0)
+        .map(([key, value]) => {
+          return [transformSubGroupIDs(wg.id, key), value]
+        })
+    )
 
   if (Object.keys(data?.members).length > 0)
     wg.members = Object.fromEntries(
