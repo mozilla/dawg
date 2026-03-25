@@ -102,7 +102,8 @@ const stats = computed(() => {
                     <tr v-for="(field, i) in details" :key="i">
                         <td>{{ field }}</td>
                         <DAWGTableCell :fieldName="field" :contents="(dawghouse?.get(ver) || {})[field]"
-                            :googleGroups="field === 'members' ? dawghouse?.get(ver)?.google_groups : undefined" />
+                            :googleGroups="field === 'members' ? dawghouse?.get(ver)?.google_groups : undefined"
+                            :subgroupManagers="field === 'members' ? dawghouse?.get(ver)?.subgroup_managers : undefined" />
                     </tr>
                 </table>
             </div>
