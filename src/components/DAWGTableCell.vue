@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { dawgLinker } from '@/routing';
 import { DisplayMode, getFieldDisplayMode } from '@/metadata';
-import type { DAWG, ListOfText, MapOfLists, PlainText } from '@/workgroups'
+import type { DAWG, ListOfText, MapOfLists, MemberMetadataBySubgroup, PlainText } from '@/workgroups'
 
 import IconLink from './IconLink.vue';
 import AutoLinker from './AutoLinker.vue';
@@ -12,7 +12,14 @@ const props = defineProps<{
   fieldName: keyof DAWG,
   googleGroups?: MapOfLists,
   subgroupManagers?: MapOfLists,
+  memberMetadata?: MemberMetadataBySubgroup,
 }>()
+
+const githubLoginFor = (subgroupID: string, item: string): string | undefined => {
+  if (!item.startsWith('user:')) return undefined
+  const email = item.slice('user:'.length)
+  return props.memberMetadata?.[subgroupID]?.[email]?.github_login ?? undefined
+}
 
 const display = getFieldDisplayMode(props.fieldName)
 
@@ -134,6 +141,9 @@ const copyTerraform = async (id: string, key: string) => {
             <ul v-if="visibleMembers(list).length > 0">
               <li v-for="item, i in visibleMembers(list)" :key="i">
                 <AutoLinker :text="item" :forceExpanded="expandedSubgroups.has(key as string)" />
+                <a v-if="githubLoginFor(key as string, item)" class="github-handle"
+                  :href="`https://github.com/${githubLoginFor(key as string, item)}`"
+                  target="_blank" rel="noopener noreferrer">@{{ githubLoginFor(key as string, item) }}</a>
               </li>
             </ul>
             <span v-else>(no members)</span>
@@ -380,5 +390,21 @@ td dd:has(> ul) {
 td dt:has(+ dd > span),
 td dd:has(> span) {
   display: block;
+}
+
+.github-handle {
+  margin-left: 0.4rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.github-handle:hover {
+  color: var(--dawg-blue);
+  text-decoration: underline;
+}
+
+.dark .github-handle {
+  color: #9ca3af;
 }
 </style>
