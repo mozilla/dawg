@@ -25,7 +25,8 @@ const visibleFields = (row: DAWG): Array<[string, CellContents]> =>
             <tbody>
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     v-for="(row, rowIndex) in props.rows" :key="rowIndex">
-                    <DAWGTableCell v-for="[key, value] in visibleFields(row)" :key="key" :field-name="(key as keyof DAWG)" :contents="value" />
+                    <DAWGTableCell v-for="[key, value] in visibleFields(row)" :key="key" :field-name="(key as keyof DAWG)" :contents="value"
+                        :memberMetadata="key === 'members' ? row.member_metadata : undefined" />
                 </tr>
             </tbody>
         </table>
