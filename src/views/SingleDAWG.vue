@@ -15,7 +15,7 @@ import { ErrorCode, serializeErrorDetails } from '@/errors';
 
 const router = useRouter();
 const route = useRoute();
-const details = Array<keyof DAWG>('sponsor', 'managers', 'members')
+const details = ['sponsor', 'managers', 'members'] as const
 const datamap = inject(datamapinjection)
 
 const dawghouse: Ref<DAWGHouse | undefined> = ref()

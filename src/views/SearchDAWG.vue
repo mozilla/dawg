@@ -79,7 +79,7 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
 
             if (typeof contents == 'object') {
                 return Object.entries(contents as MapOfLists).some((tuple) => {
-                    return filterFunc.value(tuple[0]) || tuple[1].some(filterFunc.value)
+                    return filterFunc.value(tuple[0]) || (Array.isArray(tuple[1]) && tuple[1].some(filterFunc.value))
                 })
             }
 
@@ -103,7 +103,7 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
 })
 
 // Takes a null-ish workgroup and dumps the keys for the table headers
-const hiddenFields = ['kind', 'google_groups', 'subgroup_managers']
+const hiddenFields = ['kind', 'google_groups', 'subgroup_managers', 'member_metadata']
 const headers = Object.keys(NullWorkGroup).filter(k => !hiddenFields.includes(k))
 
 const stats = computed(() => {

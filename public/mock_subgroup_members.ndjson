@@ -1,0 +1,15 @@
+{"github_login":"admin1","github_node_id":"MDQ6VXNlcjAwMDE=","member_type":"user","resolved_email":null,"subgroup":"admins","value":"admin1@mozilla.com","workgroup":"madeup-workgroup"}
+{"github_login":"admin2","github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"admins","value":"admin2@mozilla.com","workgroup":"madeup-workgroup"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"developers","value":"dev1@mozilla.com","workgroup":"madeup-workgroup"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"developers","value":"dev2@mozilla.com","workgroup":"madeup-workgroup"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"developers","value":"dev3@mozilla.com","workgroup":"madeup-workgroup"}
+{"github_login":null,"github_node_id":null,"member_type":"service_account","resolved_email":"task-madeup@madeup-project.iam.gserviceaccount.com","subgroup":"developers","value":"task-madeup@madeup-project.iam.gserviceaccount.com","workgroup":"madeup-workgroup"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"viewers","value":"viewer1@mozilla.com","workgroup":"madeup-workgroup"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"viewers","value":"viewer2@mozilla.com","workgroup":"madeup-workgroup"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"admins","value":"admin1@mozilla.com","workgroup":"madeup-workgroup-two"}
+{"github_login":"dev1","github_node_id":"MDQ6VXNlcjAwMDI=","member_type":"user","resolved_email":null,"subgroup":"developers","value":"dev1@mozilla.com","workgroup":"madeup-workgroup-two"}
+{"github_login":null,"github_node_id":null,"member_type":"workgroup","resolved_email":null,"subgroup":"developers","value":"madeup-workgroup/developers","workgroup":"madeup-workgroup-two"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"viewers","value":"viewer1@mozilla.com","workgroup":"madeup-workgroup-two"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"viewers","value":"viewer2@mozilla.com","workgroup":"madeup-workgroup-two"}
+{"github_login":null,"github_node_id":null,"member_type":"user","resolved_email":null,"subgroup":"viewers","value":"viewer3@mozilla.com","workgroup":"madeup-workgroup-two"}
+{"github_login":null,"github_node_id":null,"member_type":"service_account","resolved_email":"bigquery-madeup-two-viewer@mozdata.iam.gserviceaccount.com","subgroup":"viewers","value":"bigquery-madeup-two-viewer@mozdata.iam.gserviceaccount.com","workgroup":"madeup-workgroup-two"}
