@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import type { DAWG } from '@/workgroups';
+import type { DAWG, ListOfText, MapOfLists, PlainText } from '@/workgroups';
 import DAWGTableCell from '@/components/DAWGTableCell.vue'
+
+type CellContents = undefined | PlainText | ListOfText | MapOfLists
 
 const props = defineProps<{
     headers: string[],
     rows: DAWG[],
 }>()
 
-const visibleFields = (row: DAWG) =>
-    Object.entries(row).filter(([key]) => props.headers.includes(key))
+const visibleFields = (row: DAWG): Array<[string, CellContents]> =>
+    Object.entries(row).filter(([key]) => props.headers.includes(key)) as Array<[string, CellContents]>
 
 </script>
 

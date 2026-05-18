@@ -1,4 +1,3 @@
-import { Source } from './config'
 import type { DAWG } from './workgroups'
 
 export enum DisplayMode {
@@ -33,13 +32,3 @@ export const longVersions = ['Workgroup', 'mockdata'] as const
 
 export type ShortVersion = (typeof shortVersions)[number]
 export type LongVersion = (typeof longVersions)[number]
-
-export const sourceShortVersions = new Map<Source, ShortVersion>([
-  [Source.v2, 'v2'],
-  [Source.mock, 'm1']
-])
-
-export const versionShortToLong = new Map<ShortVersion, LongVersion>([
-  ['v2', 'Workgroup'],
-  ['m1', 'mockdata']
-])

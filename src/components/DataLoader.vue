@@ -4,14 +4,21 @@ import { useRouter } from 'vue-router';
 
 import type { DAWG, DAWGMap, DAWGSet, } from '@/workgroups'
 import { newWorkGroup, formatDAWGID } from '@/workgroups'
-import { sourceShortVersions, versionShortToLong, type ShortVersion } from '@/metadata'
+import type { ShortVersion } from '@/metadata'
 import { ErrorCode, serializeErrorDetails } from '@/errors';
-import { Source } from '@/config';
+import type { SourceBundle } from '@/config';
 import { routebase } from '@/routing';
+import {
+  parseNdjson,
+  groupMemberRowsByWorkgroup,
+  buildWorkgroupInput,
+  type WorkgroupRow,
+  type SubgroupMemberRow,
+} from '@/ndjson';
 
 const router = useRouter();
 const props = defineProps<{
-  sources: Source[],
+  sources: SourceBundle[],
 }>()
 
 const emit = defineEmits<{
@@ -30,38 +37,39 @@ enum Status {
 const status = ref(Status.Loading)
 const message = ref("Loading...");
 
+const fetchText = async (path: string): Promise<string> => {
+  const res = await fetch(`//${window.location.host}${routebase}${path}`)
+  if (!res.ok) throw new Error(`fetch ${path} failed: ${res.status} ${res.statusText}`)
+  return res.text()
+}
+
 onBeforeMount(() => {
-  let response: Response;
   Promise
-    .all(props.sources && props.sources.map(async (src) => {
-      return fetch(`//${window.location.host}${routebase}${src}`).then(async (res) => {
-        if (!src) return // make typescript happy
+    .all(props.sources.map(async (bundle) => {
+      const [wgText, memberText] = await Promise.all([
+        fetchText(bundle.workgroups),
+        fetchText(bundle.members),
+      ])
 
-        const ver = sourceShortVersions.get(src)
-        if (!ver) throw new Error(`couldn't map source to a DAWG version: ${src} = ${ver}`)
+      const wgRows = parseNdjson<WorkgroupRow>(wgText)
+      const memberRows = parseNdjson<SubgroupMemberRow>(memberText)
+      const memberRowsByWg = groupMemberRowsByWorkgroup(memberRows)
 
-        const longVer = versionShortToLong.get(ver)
-        if (!longVer) throw new Error(`couldn't map DAWG version to a DAWG kind: ${ver} = ${longVer}`)
-
-        const tmp = await res.json()
-        for (const groupname in tmp) {
-          const dawg = newWorkGroup(groupname, longVer, tmp[groupname])
-          const id = formatDAWGID(groupname)
-          //  If we run into intermitent missing data it's probably here
-          // this operation isn't fully thread safe due to lack of mutexes
-          if (!wgMap.has(id)) wgMap.set(id, new Map<ShortVersion, DAWG>())
-
-          wgMap.get(id)?.set(ver, dawg)
-
-          // Push all DAWGs blindly into the set
-          wgSet.push(dawg)
-        }
-      })
+      for (const wgRow of wgRows) {
+        const groupname = wgRow.workgroup
+        const input = buildWorkgroupInput(wgRow, memberRowsByWg.get(groupname))
+        const dawg = newWorkGroup(groupname, bundle.kind, input)
+        const id = formatDAWGID(groupname)
+        if (!wgMap.has(id)) wgMap.set(id, new Map<ShortVersion, DAWG>())
+        wgMap.get(id)?.set(bundle.ver, dawg)
+        wgSet.push(dawg)
+      }
     }))
     .catch((err: Error) => {
-      console.warn(err, response)
+      console.warn(err)
+      status.value = Status.Errored
+      message.value = `Failed to load data: ${err.message}`
       router.push({ path: '/error', query: { err: ErrorCode.Application, detail: serializeErrorDetails(err) } })
-
     })
     .then(() => {
       emit('done', wgMap, wgSet)

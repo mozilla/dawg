@@ -30,7 +30,8 @@ npm run dev
 > Do not commit these files
 
 ```sh
-gsutil cp gs://protosaur-stage-iap-static-website/dawg/static/gcpv2_merged.json public/
+gsutil cp gs://protosaur-stage-iap-static-website/dawg/static/workgroups.ndjson public/
+gsutil cp gs://protosaur-stage-iap-static-website/dawg/static/subgroup_members.ndjson public/
 VITE_USE_PROD_DATA=true npm run dev
 ```
 

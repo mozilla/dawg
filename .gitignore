@@ -33,4 +33,10 @@ test-results/
 playwright-report/
 
 public/*.json
-!public/mockdata.json
+
+# Prod data pulls, fetched via update.sh, not tracked. Mock fixtures live
+# under public/mock_*.ndjson and are tracked.
+/workgroups.ndjson
+/subgroup_members.ndjson
+public/workgroups.ndjson
+public/subgroup_members.ndjson
