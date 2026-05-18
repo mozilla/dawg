@@ -135,7 +135,8 @@ const stats = computed(() => {
                         <td>{{ field }} <span v-if="fieldHelp(field)" class="help-wrapper"><span class="help-icon">?</span><span class="help-tooltip">{{ fieldHelp(field) }}</span></span></td>
                         <DAWGTableCell :fieldName="field" :contents="(dawghouse?.get(ver) || {})[field]"
                             :googleGroups="field === 'members' ? dawghouse?.get(ver)?.google_groups : undefined"
-                            :subgroupManagers="field === 'members' ? dawghouse?.get(ver)?.subgroup_managers : undefined" />
+                            :subgroupManagers="field === 'members' ? dawghouse?.get(ver)?.subgroup_managers : undefined"
+                            :memberMetadata="field === 'members' ? dawghouse?.get(ver)?.member_metadata : undefined" />
                     </tr>
                 </table>
             </div>

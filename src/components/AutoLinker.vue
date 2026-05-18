@@ -55,6 +55,50 @@ const resolvedMembers = computed<string[]>(() => {
     return raw
 })
 
+// Email → github_login for whatever subgroup/workgroup is currently expanded.
+// Same lookup paths as resolvedMembers so the keys line up.
+const resolvedLogins = computed<{ [email: string]: string }>(() => {
+    if (!expanded.value || !datamap?.value) return {}
+
+    const text = props.text
+    const subMatch = SubGroupIDRegex.exec(text)
+    const wgMatch = WorkGroupIDRegex.exec(text)
+    const out: { [email: string]: string } = {}
+
+    if (subMatch) {
+        const wgId = formatDAWGID(subMatch[1])
+        const subgroup = subMatch[2]
+        const house = datamap.value.get(wgId)
+        if (!house) return {}
+        for (const dawg of house.values()) {
+            const key = Object.keys(dawg.member_metadata).find(k => k.endsWith(`/${subgroup}`))
+            if (key && dawg.member_metadata[key]) {
+                for (const [email, meta] of Object.entries(dawg.member_metadata[key])) {
+                    if (meta.github_login) out[email] = meta.github_login
+                }
+                break
+            }
+        }
+    } else if (wgMatch) {
+        const wgId = formatDAWGID(wgMatch[1])
+        const house = datamap.value.get(wgId)
+        if (!house) return {}
+        for (const dawg of house.values()) {
+            for (const sub of Object.values(dawg.member_metadata)) {
+                for (const [email, meta] of Object.entries(sub)) {
+                    if (meta.github_login) out[email] = meta.github_login
+                }
+            }
+        }
+    }
+    return out
+})
+
+const ghLoginFor = (item: string): string | undefined => {
+    if (!item.startsWith('user:')) return undefined
+    return resolvedLogins.value[item.slice('user:'.length)]
+}
+
 const toggle = () => { localToggled.value = !expanded.value }
 
 const githubSearchUrl = (id: string) => {
@@ -103,6 +147,9 @@ const copyTerraform = async (id: string, variant: string) => {
         <ul v-if="expanded && resolvedMembers.length > 0" class="expanded-members">
             <li v-for="member in resolvedMembers" :key="member">
                 <AutoLinker :text="member" :forceExpanded="props.forceExpanded" :depth="props.depth + 1" :expandable="props.depth < 10" />
+                <a v-if="ghLoginFor(member)" class="github-handle"
+                    :href="`https://github.com/${ghLoginFor(member)}`"
+                    target="_blank" rel="noopener noreferrer">@{{ ghLoginFor(member) }}</a>
             </li>
         </ul>
         <span v-if="expanded && resolvedMembers.length === 0" class="expanded-empty">(no members found)</span>
