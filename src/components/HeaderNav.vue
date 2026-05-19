@@ -54,13 +54,8 @@ onMounted(() => {
                             class="z-10 hidden font-normal divide-y rounded-lg shadow w-44 bg-gray-700 divide-gray-600">
                             <ul class="py-2 text-sm text-gray-400" aria-labelledby="dropdownLargeButton">
                                 <li>
-                                    <a href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/27924789/Data+Access+Workgroups"
-                                        class="block px-4 py-2 hover:bg-gray-600 hover:text-white">Data Access
-                                        Workgroups</a>
-                                </li>
-                                <li>
-                                    <a href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/27919274/Using+workgroups"
-                                        class="block px-4 py-2 hover:bg-gray-600 hover:text-white">GCPv2 Workgroups</a>
+                                    <a href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/2492956683/Workgroups"
+                                        class="block px-4 py-2 hover:bg-gray-600 hover:text-white">Workgroups</a>
                                 </li>
                                 <li>
                                     <a href="https://wiki.mozilla.org/Security/Data_Classification"
