@@ -20,12 +20,7 @@ const props = defineProps<{
 
 const display = getFieldDisplayMode(props.fieldName)
 
-const isSA = (m: string) => m.startsWith('serviceAccount:') || m.includes('.iam.gserviceaccount.com')
-const isWGRef = (m: string) => m.startsWith('workgroup:')
-const visibleMembers = (list: string[]) => {
-  const hasWGRefs = list.some(isWGRef)
-  return hasWGRefs ? list.filter(m => !isSA(m)) : list
-}
+const visibleMembers = (list: string[]) => list
 
 const githubSearchUrl = (subgroupId: string) => {
   const encoded = encodeURIComponent(`"${subgroupId}"`)
