@@ -55,5 +55,14 @@ describe('ndjson → DAWG pipeline against mock fixtures', () => {
   it('carries member_metadata through to subgroup-prefixed keys', () => {
     const dawg = build('madeup-workgroup-two')
     expect(dawg.member_metadata['workgroup:madeup-workgroup-two/developers']['dev1@mozilla.com'].github_login).toBe('dev1')
+    expect(dawg.member_metadata['workgroup:madeup-workgroup-two/developers']['dev1@mozilla.com'].github_orgs).toEqual(['mozilla'])
+  })
+
+  it('exposes github_teams members on the DAWG', () => {
+    const dawg = build('madeup-workgroup')
+    const mozTeam = dawg.github_teams.find((t) => t.org === 'mozilla')
+    const testTeam = dawg.github_teams.find((t) => t.org === 'allizom-test')
+    expect(mozTeam?.members).toEqual(['admin1', 'dev1', 'dev2'])
+    expect(testTeam?.members).toEqual([])
   })
 })

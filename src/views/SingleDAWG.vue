@@ -130,13 +130,34 @@ const stats = computed(() => {
                     <IconLink v-for="link, key in (dawghouse.get(ver)?.links as ListOfLinks)" v-bind:key :href="link"
                         :autoText="true" />
                 </nav>
+                <div class="github-teams">
+                    <span class="meta-label">GitHub teams:</span>
+                    <template v-if="dawghouse.get(ver)?.github_teams?.length">
+                        <a v-for="team in dawghouse.get(ver)?.github_teams" :key="`${team.org}/${team.team_slug}`"
+                            class="team-chip"
+                            :class="{ 'team-chip-empty': (team.members?.length ?? 0) === 0 }"
+                            :href="`https://github.com/orgs/${team.org}/teams/${team.team_slug}`"
+                            target="_blank" rel="noopener noreferrer">
+                            <span class="team-org">{{ team.org }}</span>
+                            <span class="team-slug">{{ team.team_slug }}</span>
+                            <span v-if="team.members?.length" class="team-count">{{ team.members.length }}</span>
+                            <span class="copy-tooltip">{{ team.org }}/{{ team.team_slug }} ({{ (team.members?.length ?? 0) === 0 ? 'no members' : `${team.members?.length} member${team.members?.length === 1 ? '' : 's'}` }})</span>
+                        </a>
+                    </template>
+                    <a v-else class="no-teams-note"
+                        href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/2492956683/Workgroups#Standard-Subgroups"
+                        target="_blank" rel="noopener noreferrer">
+                        none, only workgroups with standard subgroups get GitHub teams
+                    </a>
+                </div>
                 <table>
                     <tr v-for="(field, i) in details" :key="i">
                         <td>{{ field }} <span v-if="fieldHelp(field)" class="help-wrapper"><span class="help-icon">?</span><span class="help-tooltip">{{ fieldHelp(field) }}</span></span></td>
                         <DAWGTableCell :fieldName="field" :contents="(dawghouse?.get(ver) || {})[field]"
                             :googleGroups="field === 'members' ? dawghouse?.get(ver)?.google_groups : undefined"
                             :subgroupManagers="field === 'members' ? dawghouse?.get(ver)?.subgroup_managers : undefined"
-                            :memberMetadata="field === 'members' ? dawghouse?.get(ver)?.member_metadata : undefined" />
+                            :memberMetadata="field === 'members' ? dawghouse?.get(ver)?.member_metadata : undefined"
+                            :githubTeams="field === 'members' ? dawghouse?.get(ver)?.github_teams : undefined" />
                     </tr>
                 </table>
             </div>
@@ -277,5 +298,139 @@ ul {
         display: inline-block;
         margin: auto 1rem;
     }
+}
+
+.github-teams {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.75rem 0 1rem;
+    font-size: 0.85rem;
+}
+</style>
+
+<style>
+/* Non-scoped so `.dark .team-chip` actually wins over scoped base rules. */
+.team-chip .meta-label {
+    color: #6b7280;
+    font-style: italic;
+}
+
+.team-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.75rem;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    position: relative;
+}
+
+.team-chip:hover > .copy-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.team-chip > .copy-tooltip {
+    left: 50%;
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 0.3rem;
+    transform: translateX(-50%);
+}
+
+.no-teams-note {
+    color: #6b7280;
+    font-style: italic;
+    text-decoration: none;
+    border-bottom: 1px dotted #9ca3af;
+}
+
+.no-teams-note:hover {
+    color: var(--dawg-blue);
+    border-bottom-color: var(--dawg-blue);
+    text-decoration: none;
+}
+
+.dark .no-teams-note {
+    color: #9ca3af;
+    border-bottom-color: #4b5563;
+}
+
+.dark .no-teams-note:hover {
+    color: #93c5fd;
+    border-bottom-color: #93c5fd;
+}
+
+.team-chip:hover {
+    background: #e5e7eb;
+    color: #111827;
+    border-color: var(--dawg-blue);
+    text-decoration: none;
+}
+
+.team-org {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.team-chip:hover .team-org {
+    color: inherit;
+    opacity: 0.85;
+}
+
+.team-slug {
+    font-family: monospace;
+}
+
+.dark .team-chip {
+    background: rgba(63, 131, 248, 0.15);
+    color: #e5e7eb;
+    border-color: rgba(63, 131, 248, 0.4);
+}
+
+.dark .team-chip:hover {
+    background: rgba(63, 131, 248, 0.28);
+    color: #ffffff;
+    border-color: var(--dawg-blue);
+}
+
+.dark .team-org {
+    color: #9ca3af;
+}
+
+.dark .team-slug {
+    color: #93c5fd;
+}
+
+.dark .team-chip:hover .team-slug {
+    color: #ffffff;
+}
+
+.team-chip-empty {
+    opacity: 0.45;
+}
+
+.team-chip-empty:hover {
+    opacity: 1;
+}
+
+.team-count {
+    margin-left: 0.15rem;
+    padding: 0 0.35rem;
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.08);
+    color: inherit;
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.dark .team-count {
+    background: rgba(255, 255, 255, 0.1);
 }
 </style>

@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { dawgLinker } from '@/routing';
 import { DisplayMode, getFieldDisplayMode } from '@/metadata';
 import type { DAWG, ListOfText, MapOfLists, MemberMetadataBySubgroup, PlainText } from '@/workgroups'
+import type { GithubTeam } from '@/ndjson'
 
 import IconLink from './IconLink.vue';
 import AutoLinker from './AutoLinker.vue';
@@ -13,13 +14,9 @@ const props = defineProps<{
   googleGroups?: MapOfLists,
   subgroupManagers?: MapOfLists,
   memberMetadata?: MemberMetadataBySubgroup,
+  githubTeams?: GithubTeam[],
+  hideGithubBadges?: boolean,
 }>()
-
-const githubLoginFor = (subgroupID: string, item: string): string | undefined => {
-  if (!item.startsWith('user:')) return undefined
-  const email = item.slice('user:'.length)
-  return props.memberMetadata?.[subgroupID]?.[email]?.github_login ?? undefined
-}
 
 const display = getFieldDisplayMode(props.fieldName)
 
@@ -84,18 +81,18 @@ const copyTerraform = async (id: string, key: string) => {
       </RouterLink>
     </template>
     <template v-if="display === DisplayMode.PlainText">
-      <AutoLinker :text="(props.contents as string)" />
+      <AutoLinker :text="(props.contents as string)" :githubTeams="props.githubTeams" :hideGithub="props.hideGithubBadges" />
     </template>
     <template v-if="display === DisplayMode.ListOfLinks">
       <IconLink v-for="(link, i) in (props.contents as ListOfText)" :key="i" :href="link" :auto-text="false" />
     </template>
     <ul v-else-if="display === DisplayMode.ListOfText && props.contents && (props.contents as string[]).length > 1">
       <li v-for="(line, index) in props.contents" :key="index">
-        <AutoLinker :text="(line as PlainText)" />
+        <AutoLinker :text="(line as PlainText)" :githubTeams="props.githubTeams" :hideGithub="props.hideGithubBadges" />
       </li>
     </ul>
     <span v-else-if="display === DisplayMode.ListOfText && props.contents && (props.contents as string[]).length == 1">
-      <AutoLinker :text="props.contents && (props.contents as ListOfText)[0]" />
+      <AutoLinker :text="props.contents && (props.contents as ListOfText)[0]" :githubTeams="props.githubTeams" :hideGithub="props.hideGithubBadges" />
     </span>
     <dl v-else-if="display === DisplayMode.MapOfLists">
 
@@ -133,17 +130,14 @@ const copyTerraform = async (id: string, key: string) => {
             </ul>
             <ul v-if="props.subgroupManagers?.[key as string]?.length" class="subgroup-managers">
               <li v-for="mgr in props.subgroupManagers[key as string]" :key="mgr">
-                <span class="meta-label">manager<span class="help-wrapper"><span class="help-icon">?</span><span class="help-tooltip">This user is responsible for approving changes to members of this workgroup.</span></span>:</span> <AutoLinker :text="mgr" :expandable="false" />
+                <span class="meta-label">manager<span class="help-wrapper"><span class="help-icon">?</span><span class="help-tooltip">This user is responsible for approving changes to members of this workgroup.</span></span>:</span> <AutoLinker :text="mgr" :expandable="false" :githubTeams="props.githubTeams" />
               </li>
             </ul>
           </dt>
           <dd>
             <ul v-if="visibleMembers(list).length > 0">
               <li v-for="item, i in visibleMembers(list)" :key="i">
-                <AutoLinker :text="item" :forceExpanded="expandedSubgroups.has(key as string)" />
-                <a v-if="githubLoginFor(key as string, item)" class="github-handle"
-                  :href="`https://github.com/${githubLoginFor(key as string, item)}`"
-                  target="_blank" rel="noopener noreferrer">@{{ githubLoginFor(key as string, item) }}</a>
+                <AutoLinker :text="item" :forceExpanded="expandedSubgroups.has(key as string)" :githubTeams="props.githubTeams" />
               </li>
             </ul>
             <span v-else>(no members)</span>
@@ -348,6 +342,7 @@ td dt:first-child {
   opacity: 0;
   transition: opacity 0.2s;
   z-index: 10;
+  pointer-events: none;
 }
 
 .dark .copy-tooltip {
@@ -367,7 +362,8 @@ td dd {
 .expand-all-toggle {
   cursor: pointer;
   margin-right: 0.3rem;
-  font-size: 0.75rem;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.85rem;
   opacity: 0.5;
   user-select: none;
   position: relative;
@@ -406,5 +402,104 @@ td dd:has(> span) {
 
 .dark .github-handle {
   color: #9ca3af;
+}
+
+.org-badge {
+  display: inline-block;
+  margin-left: 0.25rem;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 0.4rem;
+  background: #e5e7eb;
+  color: #4b5563;
+  cursor: help;
+  vertical-align: middle;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+
+.org-badge:hover > .copy-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+a.org-badge {
+  cursor: pointer;
+}
+
+a.org-badge:hover {
+  background: var(--dawg-blue);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.dark .org-badge {
+  background: rgba(63, 131, 248, 0.15);
+  color: #93c5fd;
+}
+
+.dark a.org-badge:hover {
+  background: var(--dawg-blue);
+  color: #ffffff;
+}
+
+/* Badge for an org the user belongs to but where the workgroup has no team.
+   Subtler styling to indicate the absence; still clickable, links to the
+   Standard Subgroups doc. */
+.org-badge-missing {
+  background: transparent;
+  color: #9ca3af;
+  border: 1px dashed #d1d5db;
+  padding: 0.05rem 0.3rem;
+}
+
+.dark .org-badge-missing {
+  background: transparent;
+  color: #6b7280;
+  border-color: #4b5563;
+}
+
+.org-badge-missing:hover {
+  background: transparent;
+  color: var(--dawg-blue);
+  border-color: var(--dawg-blue);
+}
+
+.dark .org-badge-missing:hover {
+  background: transparent;
+  color: #93c5fd;
+  border-color: #93c5fd;
+}
+
+.mozilla-org-warning {
+  display: inline-block;
+  margin-left: 0.3rem;
+  font-size: 0.85rem;
+  color: #b91c1c;
+  cursor: help;
+  text-decoration: none;
+  vertical-align: middle;
+  position: relative;
+}
+
+.mozilla-org-warning:hover > .copy-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.mozilla-org-warning:hover {
+  color: #7f1d1d;
+  text-decoration: none;
+}
+
+.dark .mozilla-org-warning {
+  color: #fca5a5;
+}
+
+.dark .mozilla-org-warning:hover {
+  color: #fecaca;
 }
 </style>

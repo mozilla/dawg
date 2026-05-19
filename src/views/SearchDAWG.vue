@@ -74,7 +74,13 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
         return Object.values(row).some(contents => {
 
             if (contents instanceof Array) {
-                return contents.some(filterFunc.value)
+                return contents.some(c => {
+                    if (typeof c === 'string') return filterFunc.value(c)
+                    if (c && typeof c === 'object') {
+                        return Object.values(c).some(v => typeof v === 'string' && filterFunc.value(v))
+                    }
+                    return false
+                })
             }
 
             if (typeof contents == 'object') {
@@ -103,7 +109,7 @@ const filteredSet: ComputedRef<DAWG[]> = computed(() => {
 })
 
 // Takes a null-ish workgroup and dumps the keys for the table headers
-const hiddenFields = ['kind', 'google_groups', 'subgroup_managers', 'member_metadata']
+const hiddenFields = ['kind', 'google_groups', 'subgroup_managers', 'member_metadata', 'github_teams']
 const headers = Object.keys(NullWorkGroup).filter(k => !hiddenFields.includes(k))
 
 const stats = computed(() => {
@@ -114,6 +120,8 @@ const stats = computed(() => {
     const uniqueSAs = new Set<string>()
     const uniqueGroups = new Set<string>()
     const uniqueWGRefs = new Set<string>()
+    const seenEmails = new Set<string>()
+    let missingMozilla = 0
 
     for (const wg of data) {
         const entries = Object.entries(wg.members)
@@ -126,9 +134,19 @@ const stats = computed(() => {
                 else if (m.startsWith('workgroup:')) uniqueWGRefs.add(m)
             }
         }
+        for (const sub of Object.values(wg.member_metadata)) {
+            for (const [email, meta] of Object.entries(sub)) {
+                if (meta.member_type !== 'user') continue
+                if (seenEmails.has(email)) continue
+                seenEmails.add(email)
+                const orgs = meta.github_orgs ?? []
+                const hasIdentity = !!meta.github_login || orgs.length > 0
+                if (hasIdentity && !orgs.includes('mozilla')) missingMozilla++
+            }
+        }
     }
 
-    return { workgroups, subgroups, users: uniqueUsers.size, serviceAccounts: uniqueSAs.size, groups: uniqueGroups.size, workgroupRefs: uniqueWGRefs.size }
+    return { workgroups, subgroups, users: uniqueUsers.size, serviceAccounts: uniqueSAs.size, groups: uniqueGroups.size, workgroupRefs: uniqueWGRefs.size, missingMozilla }
 })
 
 </script>
@@ -144,6 +162,9 @@ const stats = computed(() => {
             <RouterLink to="/members/service-accounts" class="stat-link"><strong>{{ stats.serviceAccounts }}</strong> service accounts</RouterLink>
             <RouterLink to="/members/groups" class="stat-link"><strong>{{ stats.groups }}</strong> groups</RouterLink>
             <RouterLink to="/members/workgroup-refs" class="stat-link"><strong>{{ stats.workgroupRefs }}</strong> workgroup refs</RouterLink>
+            <RouterLink to="/github" class="stat-link">
+                <span v-if="stats.missingMozilla > 0" class="warning-icon">⚠</span><strong>{{ stats.missingMozilla }}</strong> not in mozilla github org
+            </RouterLink>
         </div>
     </header>
     <div class="search-wrapper">
@@ -194,5 +215,9 @@ const stats = computed(() => {
 .stat-link:hover {
     text-decoration: underline;
     color: var(--dawg-blue);
+}
+
+.warning-icon {
+    margin-right: 0.15rem;
 }
 </style>
