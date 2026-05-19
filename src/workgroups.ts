@@ -1,5 +1,5 @@
 import type { LongVersion, ShortVersion } from './metadata'
-import type { MemberMetadata } from './ndjson'
+import type { GithubTeam, MemberMetadata } from './ndjson'
 
 export const WorkGroupIDRegex = /^(?:workgroup:)([a-z0-9-]+)/
 export const SubGroupIDRegex = /^(?:workgroup:)([a-z0-9-]+)\/([a-z0-9-]+)/
@@ -14,6 +14,7 @@ export type DAWG = {
   subgroup_managers: MapOfLists
   members: MapOfLists
   member_metadata: MemberMetadataBySubgroup
+  github_teams: GithubTeam[]
 }
 
 export type MapOfLists = { [key: string]: string[] }
@@ -38,7 +39,8 @@ export const NullWorkGroup: DAWG = {
   google_groups: {},
   subgroup_managers: {},
   members: { none: [] },
-  member_metadata: {}
+  member_metadata: {},
+  github_teams: []
 } as const
 
 const copy = (o: any) => JSON.parse(JSON.stringify(o))
@@ -107,6 +109,9 @@ export const newWorkGroup = (groupname: string, kind: LongVersion, data: any): D
       Object.entries(data.member_metadata as { [k: string]: unknown })
         .map(([key, value]) => [transformSubGroupIDs(wg.id, key), value])
     )
+
+  if (Array.isArray(data?.github_teams) && data.github_teams.length > 0)
+    wg.github_teams = data.github_teams
 
   return wg
 }

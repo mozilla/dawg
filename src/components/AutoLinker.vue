@@ -2,25 +2,71 @@
 import { computed, inject, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { formatHref, testLinkText, LinkType, type LinkInfo } from './AutoLinker';
-import { datamapinjection } from '@/injections';
+import { datamapinjection, githublookupinjection } from '@/injections';
 import { WorkGroupIDRegex, SubGroupIDRegex, formatDAWGID } from '@/workgroups';
+import type { GithubTeam } from '@/ndjson';
 
-const props = withDefaults(defineProps<{ text: string, expandable?: boolean, forceExpanded?: boolean, depth?: number }>(), {
+import { getLatestRef, terraformSnippet } from '@/terraform'
+
+const props = withDefaults(defineProps<{
+    text: string,
+    expandable?: boolean,
+    forceExpanded?: boolean,
+    depth?: number,
+    githubTeams?: GithubTeam[],
+    hideGithub?: boolean,
+}>(), {
     expandable: true,
     forceExpanded: false,
-    depth: 0
+    depth: 0,
+    hideGithub: false,
 })
 
 const linkInfo = computed<LinkInfo>(() => testLinkText(props.text))
 const href = computed<string>(() => formatHref(linkInfo.value))
 
 const datamap = inject(datamapinjection)
+const githubLookup = inject(githublookupinjection)
+
 const localToggled = ref<boolean | null>(null)
 const expanded = computed(() => localToggled.value !== null ? localToggled.value : props.forceExpanded)
 
 const isExpandable = computed(() =>
     props.expandable && (linkInfo.value.type === LinkType.WorkGroup || linkInfo.value.type === LinkType.SubGroup)
 )
+
+// Pull an email out of the rendered text. Covers both `user:foo@…` (member
+// rows) and bare `foo@…` (sponsor / manager). Tolerates `firefox.gcp.mozilla.com`
+// and any other domain — the PhoneBook regex is too narrow to use here.
+const emailFromText = computed<string | null>(() => {
+    const text = props.text
+    if (text.startsWith('user:')) {
+        const e = text.slice('user:'.length)
+        return e.includes('@') ? e : null
+    }
+    if (/^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+$/.test(text)) return text
+    return null
+})
+
+const githubForEmail = computed(() => {
+    const email = emailFromText.value
+    if (!email) return null
+    const found = githubLookup?.value.get(email)
+    if (!found) return null
+    return {
+        login: found.github_login ?? null,
+        orgs: found.github_orgs ?? [],
+    }
+})
+
+const orgInitials = (org: string): string =>
+    org.split('-').map((s) => s[0]?.toUpperCase() ?? '').join('')
+
+const ghTeamUrlForOrg = (org: string): string | undefined => {
+    const team = props.githubTeams?.find((t) => t.org === org)
+    if (!team) return undefined
+    return `https://github.com/orgs/${org}/teams/${team.team_slug}`
+}
 
 const resolvedMembers = computed<string[]>(() => {
     if (!expanded.value || !datamap?.value) return []
@@ -55,49 +101,22 @@ const resolvedMembers = computed<string[]>(() => {
     return raw
 })
 
-// Email → github_login for whatever subgroup/workgroup is currently expanded.
-// Same lookup paths as resolvedMembers so the keys line up.
-const resolvedLogins = computed<{ [email: string]: string }>(() => {
-    if (!expanded.value || !datamap?.value) return {}
-
+// github_teams of the workgroup currently being expanded, passed down to
+// nested AutoLinkers so their badges link to the right (org, team) page.
+const nestedTeams = computed<GithubTeam[]>(() => {
+    if (!expanded.value || !datamap?.value) return []
     const text = props.text
     const subMatch = SubGroupIDRegex.exec(text)
     const wgMatch = WorkGroupIDRegex.exec(text)
-    const out: { [email: string]: string } = {}
-
-    if (subMatch) {
-        const wgId = formatDAWGID(subMatch[1])
-        const subgroup = subMatch[2]
-        const house = datamap.value.get(wgId)
-        if (!house) return {}
-        for (const dawg of house.values()) {
-            const key = Object.keys(dawg.member_metadata).find(k => k.endsWith(`/${subgroup}`))
-            if (key && dawg.member_metadata[key]) {
-                for (const [email, meta] of Object.entries(dawg.member_metadata[key])) {
-                    if (meta.github_login) out[email] = meta.github_login
-                }
-                break
-            }
-        }
-    } else if (wgMatch) {
-        const wgId = formatDAWGID(wgMatch[1])
-        const house = datamap.value.get(wgId)
-        if (!house) return {}
-        for (const dawg of house.values()) {
-            for (const sub of Object.values(dawg.member_metadata)) {
-                for (const [email, meta] of Object.entries(sub)) {
-                    if (meta.github_login) out[email] = meta.github_login
-                }
-            }
-        }
+    const wgName = subMatch ? subMatch[1] : wgMatch ? wgMatch[1] : null
+    if (!wgName) return []
+    const house = datamap.value.get(formatDAWGID(wgName))
+    if (!house) return []
+    for (const dawg of house.values()) {
+        if (dawg.github_teams?.length) return dawg.github_teams
     }
-    return out
+    return []
 })
-
-const ghLoginFor = (item: string): string | undefined => {
-    if (!item.startsWith('user:')) return undefined
-    return resolvedLogins.value[item.slice('user:'.length)]
-}
 
 const toggle = () => { localToggled.value = !expanded.value }
 
@@ -112,8 +131,6 @@ const dawgUrl = (id: string) => {
     return `https://protosaur.dev/dawg/workgroup/${encodeURIComponent(base)}${id.includes('/') ? '#' + id.split('/')[1] : ''}`
 }
 const markdownLink = (id: string) => `[${id}](${dawgUrl(id)})`
-
-import { getLatestRef, terraformSnippet } from '@/terraform'
 
 const copiedVariant = ref<string | null>(null)
 const copyVariant = (text: string, variant: string) => {
@@ -146,16 +163,31 @@ const copyTerraform = async (id: string, variant: string) => {
         </span>
         <ul v-if="expanded && resolvedMembers.length > 0" class="expanded-members">
             <li v-for="member in resolvedMembers" :key="member">
-                <AutoLinker :text="member" :forceExpanded="props.forceExpanded" :depth="props.depth + 1" :expandable="props.depth < 10" />
-                <a v-if="ghLoginFor(member)" class="github-handle"
-                    :href="`https://github.com/${ghLoginFor(member)}`"
-                    target="_blank" rel="noopener noreferrer">@{{ ghLoginFor(member) }}</a>
+                <AutoLinker :text="member" :forceExpanded="props.forceExpanded" :depth="props.depth + 1" :expandable="props.depth < 10" :githubTeams="nestedTeams" />
             </li>
         </ul>
         <span v-if="expanded && resolvedMembers.length === 0" class="expanded-empty">(no members found)</span>
     </span>
-    <span v-else-if="linkInfo.type == LinkType.None">{{ props.text }}</span>
-    <a v-else :href="href" target="_blank" rel="noopener noreferrer">{{ props.text }}</a>
+    <template v-else>
+        <a v-if="linkInfo.type !== LinkType.None" :href="href" target="_blank" rel="noopener noreferrer">{{ props.text }}</a>
+        <span v-else>{{ props.text }}</span>
+        <template v-if="githubForEmail && !props.hideGithub">
+            <a v-if="githubForEmail.login" class="github-handle"
+                :href="`https://github.com/${githubForEmail.login}`"
+                target="_blank" rel="noopener noreferrer">@{{ githubForEmail.login }}</a>
+            <a v-if="!(githubForEmail.orgs ?? []).includes('mozilla')"
+                class="mozilla-org-warning"
+                href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/1768030278/MozCloud+Onboarding"
+                target="_blank" rel="noopener noreferrer">⚠<span class="copy-tooltip">user isn't part of the mozilla github organization, click for onboarding docs</span></a>
+            <template v-for="org in githubForEmail.orgs ?? []" :key="org">
+                <a v-if="ghTeamUrlForOrg(org)" class="org-badge"
+                    :href="ghTeamUrlForOrg(org)" target="_blank" rel="noopener noreferrer">{{ orgInitials(org) }}<span class="copy-tooltip">{{ org }}</span></a>
+                <a v-else class="org-badge org-badge-missing"
+                    href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/2492956683/Workgroups#Standard-Subgroups"
+                    target="_blank" rel="noopener noreferrer">{{ orgInitials(org) }}<span class="copy-tooltip">no {{ org }} team for this workgroup, only standard subgroups get teams, click for more info</span></a>
+            </template>
+        </template>
+    </template>
 </template>
 
 <style>
@@ -166,7 +198,8 @@ const copyTerraform = async (id: string, variant: string) => {
 .expand-toggle {
     cursor: pointer;
     margin-left: 0.3rem;
-    font-size: 0.75rem;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.85rem;
     opacity: 0.5;
     user-select: none;
     position: relative;
