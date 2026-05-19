@@ -62,10 +62,26 @@ const githubForEmail = computed(() => {
 const orgInitials = (org: string): string =>
     org.split('-').map((s) => s[0]?.toUpperCase() ?? '').join('')
 
-const ghTeamUrlForOrg = (org: string): string | undefined => {
-    const team = props.githubTeams?.find((t) => t.org === org)
-    if (!team) return undefined
-    return `https://github.com/orgs/${org}/teams/${team.team_slug}`
+// Where to point an org-badge for a given org. With workgroup context we link
+// to the team page (or the docs page if no team exists in that org); without
+// it (e.g. /members/users), we link to the org's people search filtered by the
+// user's github_login.
+type Badge = { href: string; tooltip: string; missing: boolean }
+const ghBadgeFor = (org: string): Badge => {
+    if (props.githubTeams && props.githubTeams.length > 0) {
+        const team = props.githubTeams.find((t) => t.org === org)
+        if (team) return { href: `https://github.com/orgs/${org}/teams/${team.team_slug}`, tooltip: org, missing: false }
+        return {
+            href: 'https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/2492956683/Workgroups#Standard-Subgroups',
+            tooltip: `no ${org} team for this workgroup, only standard subgroups get teams, click for more info`,
+            missing: true,
+        }
+    }
+    const login = githubForEmail.value?.login
+    const href = login
+        ? `https://github.com/orgs/${org}/people?query=${encodeURIComponent(login)}`
+        : `https://github.com/orgs/${org}/people`
+    return { href, tooltip: login ? `view ${login} in ${org}` : org, missing: false }
 }
 
 const resolvedMembers = computed<string[]>(() => {
@@ -169,7 +185,8 @@ const copyTerraform = async (id: string, variant: string) => {
         <span v-if="expanded && resolvedMembers.length === 0" class="expanded-empty">(no members found)</span>
     </span>
     <template v-else>
-        <a v-if="linkInfo.type !== LinkType.None" :href="href" target="_blank" rel="noopener noreferrer">{{ props.text }}</a>
+        <RouterLink v-if="emailFromText" :to="`/user/${encodeURIComponent(emailFromText)}`">{{ props.text }}</RouterLink>
+        <a v-else-if="linkInfo.type !== LinkType.None" :href="href" target="_blank" rel="noopener noreferrer">{{ props.text }}</a>
         <span v-else>{{ props.text }}</span>
         <template v-if="githubForEmail && !props.hideGithub">
             <a v-if="githubForEmail.login" class="github-handle"
@@ -180,11 +197,8 @@ const copyTerraform = async (id: string, variant: string) => {
                 href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/1768030278/MozCloud+Onboarding"
                 target="_blank" rel="noopener noreferrer">⚠<span class="copy-tooltip">user isn't part of the mozilla github organization, click for onboarding docs</span></a>
             <template v-for="org in githubForEmail.orgs ?? []" :key="org">
-                <a v-if="ghTeamUrlForOrg(org)" class="org-badge"
-                    :href="ghTeamUrlForOrg(org)" target="_blank" rel="noopener noreferrer">{{ orgInitials(org) }}<span class="copy-tooltip">{{ org }}</span></a>
-                <a v-else class="org-badge org-badge-missing"
-                    href="https://mozilla-hub.atlassian.net/wiki/spaces/SRE/pages/2492956683/Workgroups#Standard-Subgroups"
-                    target="_blank" rel="noopener noreferrer">{{ orgInitials(org) }}<span class="copy-tooltip">no {{ org }} team for this workgroup, only standard subgroups get teams, click for more info</span></a>
+                <a class="org-badge" :class="{ 'org-badge-missing': ghBadgeFor(org).missing }"
+                    :href="ghBadgeFor(org).href" target="_blank" rel="noopener noreferrer">{{ orgInitials(org) }}<span class="copy-tooltip">{{ ghBadgeFor(org).tooltip }}</span></a>
             </template>
         </template>
     </template>

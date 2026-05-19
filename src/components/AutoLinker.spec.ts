@@ -1,8 +1,17 @@
 import { it, expect, describe } from 'vitest'
 
 import { mount } from '@vue/test-utils'
+import { createRouter, createMemoryHistory } from 'vue-router'
 import { formatHref, LinkType, testLinkText, type LinkInfo } from './AutoLinker'
 import AutoLinker from './AutoLinker.vue'
+
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    { path: '/user/:email', component: { template: '<div/>' } },
+    { path: '/workgroup/:id', component: { template: '<div/>' } },
+  ],
+})
 
 describe('should identify link types correctly', () => {
   const testCases: Map<LinkType, string[]> = new Map([
@@ -51,15 +60,13 @@ describe('should format links correctly', () => {
 })
 
 describe('renders hrefs properly', () => {
-  const testCases: Map<string, string> = new Map([
-    ['https://people.mozilla.org/s?who=staff&query=whd%40mozilla.com', 'whd@mozilla.com']
-  ])
-
-  testCases.forEach((input, expected) => {
-    it(`${input} should have an href of ${expected}`, () => {
-      const wrapper = mount(AutoLinker, { props: { text: input } })
-      const link = wrapper.find('[href]').attributes()['href']
-      expect(link).toBe(expected)
+  it('renders an email as an internal /user/:email link', async () => {
+    const wrapper = mount(AutoLinker, {
+      props: { text: 'whd@mozilla.com' },
+      global: { plugins: [router] },
     })
+    await router.isReady()
+    const link = wrapper.find('a').attributes()['href']
+    expect(link).toContain('/user/whd%40mozilla.com')
   })
 })
