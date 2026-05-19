@@ -1,16 +1,19 @@
+export type GithubTeam = {
+  org: string
+  team_id: string
+  team_name: string
+  team_node_id: string
+  team_slug: string
+  members?: string[]
+}
+
 export type WorkgroupRow = {
   workgroup: string
   sponsor: string
   managers?: string[]
   owners?: string[]
   tickets?: string[]
-  github_teams?: Array<{
-    org: string
-    team_id: string
-    team_name: string
-    team_node_id: string
-    team_slug: string
-  }>
+  github_teams?: GithubTeam[]
   subgroups?: Array<{
     name: string
     members?: string[]
@@ -29,6 +32,7 @@ export type SubgroupMemberRow = {
   github_login?: string | null
   github_node_id?: string | null
   resolved_email?: string | null
+  github_orgs?: string[]
 }
 
 export type MemberMetadata = {
@@ -36,6 +40,7 @@ export type MemberMetadata = {
   github_login?: string | null
   github_node_id?: string | null
   resolved_email?: string | null
+  github_orgs?: string[]
 }
 
 export type MemberRowsByWorkgroup = Map<string, SubgroupMemberRow[]>
@@ -47,6 +52,7 @@ export type MergedWorkgroupInput = {
   subgroup_managers?: { [subgroup: string]: string[] }
   members?: { [subgroup: string]: string[] }
   member_metadata?: { [subgroup: string]: { [value: string]: MemberMetadata } }
+  github_teams?: GithubTeam[]
 }
 
 export const parseNdjson = <T>(text: string): T[] => {
@@ -167,6 +173,7 @@ export const buildWorkgroupInput = (
         github_login: r.github_login,
         github_node_id: r.github_node_id,
         resolved_email: r.resolved_email,
+        github_orgs: r.github_orgs,
       }
     }
 
@@ -201,5 +208,6 @@ export const buildWorkgroupInput = (
     subgroup_managers,
     members,
     member_metadata,
+    github_teams: wgRow.github_teams,
   }
 }

@@ -8,7 +8,7 @@ import type { DAWGMap, DAWGSet } from '@/workgroups';
 
 import DataLoader from '@/components/DataLoader.vue'
 import HeaderNav from '@/components/HeaderNav.vue'
-import { datamapinjection, datasetinjection } from '@/injections';
+import { datamapinjection, datasetinjection, githublookupinjection, type GithubLookup } from '@/injections';
 
 const router = useRouter();
 
@@ -16,9 +16,11 @@ const hasLoaded = ref(false)
 
 const datamap = shallowRef(new Map() as DAWGMap)
 const dataset = shallowRef([] as DAWGSet)
+const githubLookup = shallowRef(new Map() as GithubLookup)
 
 provide(datamapinjection, datamap)
 provide(datasetinjection, dataset)
+provide(githublookupinjection, githubLookup)
 
 const onSlash = (e: KeyboardEvent) => {
   if (e.key !== '/') return
@@ -41,6 +43,21 @@ const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
   console.log('recieved data')
   datamap.value = recievedMap
   dataset.value = recievedSet
+  // Build a global email -> {github_login, github_orgs} lookup so any
+  // email-rendering site (sponsor, manager, member, nested expansion) can
+  // surface the same github identity without needing subgroup context.
+  const lookup: GithubLookup = new Map()
+  for (const dawg of recievedSet) {
+    for (const sub of Object.values(dawg.member_metadata)) {
+      for (const [email, meta] of Object.entries(sub)) {
+        if (!meta.github_login && !(meta.github_orgs?.length)) continue
+        if (!lookup.has(email)) {
+          lookup.set(email, { github_login: meta.github_login, github_orgs: meta.github_orgs })
+        }
+      }
+    }
+  }
+  githubLookup.value = lookup
   hasLoaded.value = true
 }
 

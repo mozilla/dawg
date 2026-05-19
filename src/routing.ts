@@ -4,6 +4,7 @@ import SadDAWG from './views/SadDAWG.vue'
 import BadDAWG from './views/BadDAWG.vue'
 import FAWG from './views/FAWG.vue'
 import MemberList from './views/MemberList.vue'
+import GithubStats from './views/GithubStats.vue'
 import { routebase } from './config'
 
 export { routebase }
@@ -14,6 +15,7 @@ export const routes = [
   { path: '/', component: SearchDAWG, name: 'SearchPage' },
   { path: '/guide', component: FAWG, name: 'GuidePage' },
   { path: '/members/:type', component: MemberList, name: 'MemberList' },
+  { path: '/github', component: GithubStats, name: 'GithubStats' },
   { path: '/error', component: BadDAWG, name: 'ErrorPage' },
   { path: wgroute(':id'), component: SingleDAWG, name: 'ViewDAWG' },
   { path: '/hot', component: SadDAWG, name: 'SadDAWG' }
