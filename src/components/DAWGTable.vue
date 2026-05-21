@@ -28,6 +28,7 @@ const visibleFields = (row: DAWG): Array<[string, CellContents]> =>
                     <DAWGTableCell v-for="[key, value] in visibleFields(row)" :key="key" :field-name="(key as keyof DAWG)" :contents="value"
                         :memberMetadata="key === 'members' ? row.member_metadata : undefined"
                         :githubTeams="key === 'members' ? row.github_teams : undefined"
+                        :iamMembers="key === 'members' ? row.iam_members : undefined"
                         :hideGithubBadges="key !== 'members'" />
                 </tr>
             </tbody>
