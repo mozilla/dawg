@@ -16,11 +16,16 @@ export type WorkgroupRow = {
   github_teams?: GithubTeam[]
   subgroups?: Array<{
     name: string
+    // Bare emails (YAML `users:` list).
+    users?: string[]
+    // IAM-resolved view (mixed `group:`/`serviceAccount:`/etc.). Surfaced
+    // separately in the dashboard, not used for the user list.
     members?: string[]
     managers?: string[]
     workgroups?: string[]
     service_accounts?: string[]
     google_groups?: string[]
+    workgroup_id?: string
   }>
 }
 
@@ -178,9 +183,11 @@ export const buildWorkgroupInput = (
     }
 
     // Fall back to workgroups.ndjson subgroup data if subgroup_members.ndjson
-    // had no rows for this subgroup (rare; the two should agree).
+    // had no rows for this subgroup. `users` is bare emails; `members` is the
+    // IAM-resolved mix (`group:`/`serviceAccount:`/etc.) and will get its own
+    // dedicated rendering when the dashboard surfaces it.
     if (rows.length === 0 && sg) {
-      for (const m of sg.members ?? []) add(`user:${m}`)
+      for (const m of sg.users ?? []) add(`user:${m}`)
       for (const w of sg.workgroups ?? []) add(`workgroup:${w}`)
       for (const sa of sg.service_accounts ?? []) {
         if (sa.includes('@')) add(`serviceAccount:${sa}`)

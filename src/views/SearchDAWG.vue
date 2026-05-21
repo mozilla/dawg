@@ -163,7 +163,7 @@ const stats = computed(() => {
             <RouterLink to="/members/groups" class="stat-link"><strong>{{ stats.groups }}</strong> groups</RouterLink>
             <RouterLink to="/members/workgroup-refs" class="stat-link"><strong>{{ stats.workgroupRefs }}</strong> workgroup refs</RouterLink>
             <RouterLink to="/github" class="stat-link">
-                <span v-if="stats.missingMozilla > 0" class="warning-icon">⚠</span><strong>{{ stats.missingMozilla }}</strong> not in mozilla github org
+                <span v-if="stats.missingMozilla > 0" class="warning-icon">⚠</span><strong>{{ stats.missingMozilla }}</strong> not in mozilla github org (or renamed)
             </RouterLink>
         </div>
     </header>
