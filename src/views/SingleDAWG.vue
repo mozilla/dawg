@@ -157,7 +157,8 @@ const stats = computed(() => {
                             :googleGroups="field === 'members' ? dawghouse?.get(ver)?.google_groups : undefined"
                             :subgroupManagers="field === 'members' ? dawghouse?.get(ver)?.subgroup_managers : undefined"
                             :memberMetadata="field === 'members' ? dawghouse?.get(ver)?.member_metadata : undefined"
-                            :githubTeams="field === 'members' ? dawghouse?.get(ver)?.github_teams : undefined" />
+                            :githubTeams="field === 'members' ? dawghouse?.get(ver)?.github_teams : undefined"
+                            :iamMembers="field === 'members' ? dawghouse?.get(ver)?.iam_members : undefined" />
                     </tr>
                 </table>
             </div>

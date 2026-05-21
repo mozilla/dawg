@@ -58,6 +58,9 @@ export type MergedWorkgroupInput = {
   members?: { [subgroup: string]: string[] }
   member_metadata?: { [subgroup: string]: { [value: string]: MemberMetadata } }
   github_teams?: GithubTeam[]
+  // Raw IAM-binding member list per subgroup (verbatim
+  // `group:`/`user:`/`serviceAccount:` strings from workgroups.ndjson).
+  iam_members?: { [subgroup: string]: string[] }
 }
 
 export const parseNdjson = <T>(text: string): T[] => {
@@ -105,6 +108,7 @@ export const buildWorkgroupInput = (
   const members: { [s: string]: string[] } = {}
   const google_groups: { [s: string]: string[] } = {}
   const member_metadata: { [s: string]: { [v: string]: MemberMetadata } } = {}
+  const iam_members: { [s: string]: string[] } = {}
 
   const sgIndex = new Map<string, NonNullable<WorkgroupRow['subgroups']>[number]>()
   for (const sg of wgRow.subgroups ?? []) sgIndex.set(sg.name, sg)
@@ -148,6 +152,10 @@ export const buildWorkgroupInput = (
 
     if (sg?.google_groups && sg.google_groups.length > 0) {
       extra_google_groups[sgName] = [...sg.google_groups]
+    }
+
+    if (sg?.members && sg.members.length > 0) {
+      iam_members[sgName] = [...sg.members]
     }
 
     const enriched: string[] = []
@@ -216,5 +224,6 @@ export const buildWorkgroupInput = (
     members,
     member_metadata,
     github_teams: wgRow.github_teams,
+    iam_members,
   }
 }

@@ -15,6 +15,7 @@ export type DAWG = {
   members: MapOfLists
   member_metadata: MemberMetadataBySubgroup
   github_teams: GithubTeam[]
+  iam_members: MapOfLists
 }
 
 export type MapOfLists = { [key: string]: string[] }
@@ -40,7 +41,8 @@ export const NullWorkGroup: DAWG = {
   subgroup_managers: {},
   members: { none: [] },
   member_metadata: {},
-  github_teams: []
+  github_teams: [],
+  iam_members: {}
 } as const
 
 const copy = (o: any) => JSON.parse(JSON.stringify(o))
@@ -112,6 +114,12 @@ export const newWorkGroup = (groupname: string, kind: LongVersion, data: any): D
 
   if (Array.isArray(data?.github_teams) && data.github_teams.length > 0)
     wg.github_teams = data.github_teams
+
+  if (data?.iam_members && Object.keys(data.iam_members).length > 0)
+    wg.iam_members = Object.fromEntries(
+      Object.entries(data.iam_members as { [k: string]: string[] })
+        .map(([key, value]) => [transformSubGroupIDs(wg.id, key), value])
+    )
 
   return wg
 }
