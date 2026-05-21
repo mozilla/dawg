@@ -2,19 +2,42 @@
 import { computed, inject } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 
-import { datasetinjection, githublookupinjection } from '@/injections'
+import { datasetinjection, githublookupinjection, loginaliasesinjection } from '@/injections'
 
 const route = useRoute()
 const dataset = inject(datasetinjection)
 const githubLookup = inject(githublookupinjection)
+const loginAliases = inject(loginaliasesinjection)
 
 const email = computed(() => decodeURIComponent(route.params.email as string))
 
-const phonebookUrl = computed(
-    () => `https://people.mozilla.org/s?who=staff&query=${encodeURIComponent(email.value)}`,
-)
-
 const githubInfo = computed(() => githubLookup?.value.get(email.value) ?? null)
+
+// All emails that share this user's github_login (the visited email plus any
+// aliases). Falls back to just the visited email when there's no github
+// identity to consolidate by.
+const aliasEmails = computed<string[]>(() => {
+    const login = githubInfo.value?.github_login
+    if (!login) return [email.value]
+    const aliases = loginAliases?.value.get(login)
+    if (!aliases || aliases.length === 0) return [email.value]
+    return aliases
+})
+
+const otherAliases = computed(() => aliasEmails.value.filter((e) => e !== email.value))
+
+// people.mozilla.org keys off @mozilla.com / @mozillafoundation.org / @thunderbird.net,
+// not @firefox.gcp.mozilla.com aliases. Pick a preferred alias if available.
+const phonebookEmail = computed(() => {
+    const preferred = aliasEmails.value.find(
+        (e) => e.endsWith('@mozilla.com') || e.endsWith('@mozillafoundation.org') || e.endsWith('@thunderbird.net'),
+    )
+    return preferred ?? email.value
+})
+
+const phonebookUrl = computed(
+    () => `https://people.mozilla.org/s?who=staff&query=${encodeURIComponent(phonebookEmail.value)}`,
+)
 
 const inMozillaOrg = computed(() =>
     (githubInfo.value?.github_orgs ?? []).includes('mozilla'),
@@ -32,13 +55,15 @@ type Membership = {
 const memberships = computed<Membership[]>(() => {
     if (!dataset?.value) return []
     const out: Membership[] = []
+    // Scope strictly to the visited email — aliases are linked above but their
+    // memberships render on their own user page.
+    const e = email.value
     for (const wg of dataset.value) {
         const wgName = wg.id.replace('workgroup:', '')
-        const isSponsor = wg.sponsor === email.value
-        const isManager = wg.managers.includes(email.value)
-        // Direct subgroup memberships keyed by subgroupID -> {email: meta}.
+        const isSponsor = wg.sponsor === e
+        const isManager = wg.managers.includes(e)
         for (const [subgroupID, members] of Object.entries(wg.member_metadata)) {
-            if (members[email.value]) {
+            if (members[e]) {
                 out.push({
                     workgroup: wgName,
                     subgroup: subgroupID.split('/').pop() ?? '',
@@ -49,8 +74,6 @@ const memberships = computed<Membership[]>(() => {
                 })
             }
         }
-        // Sponsor/manager roles without a direct subgroup membership still
-        // surface here (as workgroup-level rows, no subgroup).
         if ((isSponsor || isManager) && !out.some((m) => m.workgroup === wgName)) {
             out.push({
                 workgroup: wgName,
@@ -73,8 +96,13 @@ const managerOf = computed(() => memberships.value.filter((m) => m.isManager).ma
 <template>
     <div class="container">
         <h1 class="monospace">{{ email }}</h1>
+        <p v-if="otherAliases.length > 0" class="aliases">
+            <span class="alias-label">also:</span>
+            <RouterLink v-for="a in otherAliases" :key="a"
+                :to="`/user/${encodeURIComponent(a)}`" class="alias-link monospace">{{ a }}</RouterLink>
+        </p>
         <p class="phonebook-link">
-            <a :href="phonebookUrl" target="_blank" rel="noopener noreferrer">View in people.mozilla.org</a>
+            <a :href="phonebookUrl" target="_blank" rel="noopener noreferrer">View {{ phonebookEmail }} in people.mozilla.org</a>
         </p>
 
         <section v-if="githubInfo">
@@ -167,6 +195,27 @@ h1 {
 
 .phonebook-link a {
     color: var(--dawg-blue);
+}
+
+.aliases {
+    margin: 0.25rem 0 0.5rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.alias-label {
+    font-style: italic;
+    margin-right: 0.4rem;
+}
+
+.alias-link {
+    color: var(--dawg-blue);
+    text-decoration: none;
+    margin-right: 0.5rem;
+}
+
+.alias-link:hover {
+    text-decoration: underline;
 }
 
 section {
@@ -266,7 +315,8 @@ li a:hover {
 
 <style>
 /* dark mode overrides (non-scoped per project convention) */
-.dark .container dt {
+.dark .container dt,
+.dark .container .aliases {
     color: #9ca3af;
 }
 
