@@ -122,6 +122,10 @@ const usersInMozilla = computed(() => allUsers.value.filter((u) => u.orgs.includ
                 Users missing from the <code>mozilla</code> org
                 <span class="count">{{ usersMissingMozilla.length }}</span>
             </h2>
+            <p class="note">
+                Note: a user can appear here either because they really aren't in the <code>mozilla</code> GitHub org, or because they renamed their GitHub handle and the workgroup data hasn't caught up.
+                See <a href="https://mozilla-hub.atlassian.net/browse/MZCLD-3067" target="_blank" rel="noopener noreferrer">MZCLD-3067</a> for the rename detection follow-up.
+            </p>
             <p v-if="usersMissingMozilla.length === 0" class="empty">Everyone with a resolved GitHub identity is in the <code>mozilla</code> org.</p>
             <table v-else class="stat-table">
                 <thead>
@@ -264,6 +268,20 @@ code {
 .footnote a {
     color: var(--dawg-blue);
 }
+
+.note {
+    margin: 0 0 1rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    color: #4b5563;
+    background: #f3f4f6;
+    border-left: 3px solid #d1d5db;
+    border-radius: 0.25rem;
+}
+
+.note a {
+    color: var(--dawg-blue);
+}
 </style>
 
 <style>
@@ -290,5 +308,11 @@ code {
 
 .dark .container .empty {
     color: #6b7280;
+}
+
+.dark .container .note {
+    background: #1f2937;
+    color: #cbd5e1;
+    border-left-color: #4b5563;
 }
 </style>
