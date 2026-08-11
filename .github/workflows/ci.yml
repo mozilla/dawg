@@ -1,0 +1,50 @@
+# Lint, type, unit and e2e checks. Deploys live in workflows-quick.deploy.yml.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # One job for all four: they run in seconds, so four separate `npm ci`s would
+  # cost more than they save.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:types
+      - run: npm run test:unit
+      # Build what ships, so a deploy isn't the first thing to fail.
+      - run: npm run build:quick
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: test-results/unit-results.xml
+          if-no-files-found: ignore
+
+  # Separate job: this one installs a browser, which the checks above don't need.
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps firefox
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: test-results/
+          if-no-files-found: ignore

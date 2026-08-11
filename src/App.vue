@@ -6,6 +6,8 @@ import { useRouter } from 'vue-router';
 import { sources } from './config';
 import type { DAWGMap, DAWGSet } from '@/workgroups';
 
+import type { LoadMeta } from '@/datasources';
+import { loadAll } from '@/loader';
 import DataLoader from '@/components/DataLoader.vue'
 import HeaderNav from '@/components/HeaderNav.vue'
 import { datamapinjection, datasetinjection, githublookupinjection, loginaliasesinjection, type GithubLookup, type LoginAliases } from '@/injections';
@@ -41,10 +43,9 @@ const onSlash = (e: KeyboardEvent) => {
 onMounted(() => document.addEventListener('keydown', onSlash))
 onUnmounted(() => document.removeEventListener('keydown', onSlash))
 
-const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
-  console.log('recieved data')
-  datamap.value = recievedMap
-  dataset.value = recievedSet
+const applyData = (receivedMap: DAWGMap, receivedSet: DAWGSet) => {
+  datamap.value = receivedMap
+  dataset.value = receivedSet
   // Build a global email -> {github_login, github_orgs} lookup so any
   // email-rendering site (sponsor, manager, member, nested expansion) can
   // surface the same github identity without needing subgroup context. Also
@@ -52,7 +53,7 @@ const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
   // aliases for the same human.
   const lookup: GithubLookup = new Map()
   const aliasBuilder = new Map<string, Set<string>>()
-  for (const dawg of recievedSet) {
+  for (const dawg of receivedSet) {
     for (const sub of Object.values(dawg.member_metadata)) {
       for (const [email, meta] of Object.entries(sub)) {
         if (!meta.github_login && !(meta.github_orgs?.length)) continue
@@ -74,7 +75,32 @@ const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
   loginAliases.value = new Map(
     [...aliasBuilder.entries()].map(([login, emails]) => [login, [...emails].sort()]),
   )
+}
+
+/**
+ * Re-query the backend behind the rendered page and swap the result in.
+ *
+ * Cached rows are shown immediately so the app paints at once, then this
+ * replaces them with fresh ones — usually within a second or two, before anyone
+ * has read much. It stays deliberately silent: no spinner, no status line, and
+ * on failure the cached data simply stays up, because a background refresh
+ * failing is not something the reader can act on.
+ */
+const revalidate = async () => {
+  try {
+    const { map, set } = await loadAll(sources, { force: true })
+    applyData(map, set)
+  } catch (err) {
+    console.warn('background refresh failed, keeping cached data', err)
+  }
+}
+
+const receiveData = (receivedMap: DAWGMap, receivedSet: DAWGSet, loadMeta: LoadMeta) => {
+  applyData(receivedMap, receivedSet)
   hasLoaded.value = true
+  // Only worth doing when what we just painted came out of the cache; a fresh
+  // load is already current.
+  if (loadMeta.fromCache && loadMeta.refreshable) revalidate()
 }
 
 </script>
@@ -82,7 +108,7 @@ const recieveData = (recievedMap: DAWGMap, recievedSet: DAWGSet) => {
 <template>
   <HeaderNav />
   <main>
-    <DataLoader v-if="!hasLoaded" :sources="sources" @done="recieveData" />
+    <DataLoader v-if="!hasLoaded" :sources="sources" @done="receiveData" />
     <RouterView v-else />
   </main>
 </template>

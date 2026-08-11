@@ -11,6 +11,8 @@
     "test:e2e": "playwright test",
     "test:types": "vue-tsc --build --force",
     "build": "vite build",
+    "build:quick": "vite build && rm -f dist/workgroups.ndjson dist/subgroup_members.ndjson dist/gcpv2_*.json && cp dist/index.html dist/404.html",
+    "refresh-data": "./scripts/refresh-data.sh",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore --fix",
     "format": "prettier --check src/",

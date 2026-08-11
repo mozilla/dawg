@@ -8,7 +8,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.CI ? '/dawg/' : '/',
+  base: process.env.BASE_PATH || '/',
   test: {
     globals: true,
     environment: 'happy-dom',

@@ -24,16 +24,61 @@ npm install
 npm run dev
 ```
 
-### Use Production Assets in Dev Testing (`workgroup:mozilla-confidential` metadata)
+## Data Sources
+
+Workgroup data lives in two BigQuery views:
+
+- `mozdata.mozcloud.workgroups`
+- `mozdata.mozcloud.workgroup_subgroup_members`
+
+When deployed to [Quick](https://quick.mozilla.cloud), the app queries these
+directly through `quick.query`.
+
+The source is picked at runtime, in this order:
+
+| Condition | Source |
+| --- | --- |
+| `VITE_DATA_SOURCE=bigquery\|prod-ndjson\|mock` | as set — explicit override |
+| Quick SDK present (served from Quick) | BigQuery |
+| Production build, or `VITE_USE_PROD_DATA=true` | `public/workgroups.ndjson` |
+| otherwise | `public/mock_*.ndjson` |
+
+`npm run dev` gets mock fixtures, because `/quick.js` only resolves on a Quick
+host.
+
+### Use Production Data in Dev Testing (`workgroup:mozilla-confidential` metadata)
 
 > [!WARNING]
 > Do not commit these files
 
 ```sh
-gcloud storage cp gs://protosaur-stage-iap-static-website/dawg/workgroups.ndjson public/
-gcloud storage cp gs://protosaur-stage-iap-static-website/dawg/subgroup_members.ndjson public/
+./scripts/refresh-data.sh          # pulls both views from BigQuery into public/
 VITE_USE_PROD_DATA=true npm run dev
 ```
+
+### Deploy to Quick
+
+Merging to `main` deploys to <https://dawg.quick.mozilla.cloud/> via
+`.github/workflows/workflows-quick.deploy.yml` (OIDC, no secrets).
+
+**Don't run `quick deploy` locally against the real site.** It deploys under
+your identity and overwrites the workflow's ownership marker. To try a build
+out, use a scratch name on stage:
+
+```sh
+npm run build:quick
+QUICK_ENV=stage quick deploy dist <your-username>-dawg
+```
+
+Use `build:quick`, not plain `build`. It differs from `build` in two ways:
+
+1. It strips the `workgroup:mozilla-confidential` NDJSON that `vite build`
+   copies out of `public/` if `refresh-data.sh` has been run. The deployed app
+   reads BigQuery and never needs those files, so shipping a stale confidential
+   snapshot would be pure downside.
+2. It copies `index.html` to `404.html`. The app uses HTML5 history routing, so
+   a deep link like `/workgroup/foo` must fall back to the SPA shell rather than
+   returning a static 404.
 
 ### Lint with [ESLint](https://eslint.org/)
 
