@@ -2,10 +2,8 @@ import { test, expect } from '@playwright/test'
 
 // Tests the configuration of the vite+playwright system itself, if this fails ignore other test failures
 test('meta', async ({ page }) => {
-  // eslint-disable-next-line playwright/no-conditional-in-test
-  const ideal = process.env.CI ? 'http://localhost:5173/dawg/' : 'http://localhost:5173/'
   await page.goto('./')
-  await expect(page.url()).toBe(ideal)
+  await expect(page.url()).toBe('http://localhost:5173/')
 })
 
 // See here how to get started:

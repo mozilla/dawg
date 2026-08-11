@@ -2,19 +2,10 @@
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import type { DAWG, DAWGMap, DAWGSet, } from '@/workgroups'
-import { newWorkGroup, formatDAWGID } from '@/workgroups'
-import type { ShortVersion } from '@/metadata'
+import type { DAWGMap, DAWGSet, } from '@/workgroups'
 import { ErrorCode, serializeErrorDetails } from '@/errors';
-import type { SourceBundle } from '@/config';
-import { routebase } from '@/routing';
-import {
-  parseNdjson,
-  groupMemberRowsByWorkgroup,
-  buildWorkgroupInput,
-  type WorkgroupRow,
-  type SubgroupMemberRow,
-} from '@/ndjson';
+import type { SourceBundle, LoadMeta } from '@/datasources';
+import { loadAll } from '@/loader';
 
 const router = useRouter();
 const props = defineProps<{
@@ -22,11 +13,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  done: [DAWGMap, DAWGSet]
+  done: [DAWGMap, DAWGSet, LoadMeta]
 }>()
-
-const wgMap: DAWGMap = new Map();
-const wgSet: DAWGSet = [];
 
 enum Status {
   Loading,
@@ -37,47 +25,21 @@ enum Status {
 const status = ref(Status.Loading)
 const message = ref("Loading...");
 
-const fetchText = async (path: string): Promise<string> => {
-  const res = await fetch(`//${window.location.host}${routebase}${path}`)
-  if (!res.ok) throw new Error(`fetch ${path} failed: ${res.status} ${res.statusText}`)
-  return res.text()
-}
-
 onBeforeMount(() => {
-  Promise
-    .all(props.sources.map(async (bundle) => {
-      const [wgText, memberText] = await Promise.all([
-        fetchText(bundle.workgroups),
-        fetchText(bundle.members),
-      ])
-
-      const wgRows = parseNdjson<WorkgroupRow>(wgText)
-      const memberRows = parseNdjson<SubgroupMemberRow>(memberText)
-      const memberRowsByWg = groupMemberRowsByWorkgroup(memberRows)
-
-      for (const wgRow of wgRows) {
-        const groupname = wgRow.workgroup
-        const input = buildWorkgroupInput(wgRow, memberRowsByWg.get(groupname))
-        const dawg = newWorkGroup(groupname, bundle.kind, input)
-        const id = formatDAWGID(groupname)
-        if (!wgMap.has(id)) wgMap.set(id, new Map<ShortVersion, DAWG>())
-        wgMap.get(id)?.set(bundle.ver, dawg)
-        wgSet.push(dawg)
-      }
-    }))
+  loadAll(props.sources)
+    .then(({ map, set, meta }) => {
+      emit('done', map, set, meta)
+    })
     .catch((err: Error) => {
       console.warn(err)
       status.value = Status.Errored
       message.value = `Failed to load data: ${err.message}`
       router.push({ path: '/error', query: { err: ErrorCode.Application, detail: serializeErrorDetails(err) } })
-    })
-    .then(() => {
-      emit('done', wgMap, wgSet)
+      emit('done', new Map(), [], {
+        origin: '', fetchedAt: Date.now(), fromCache: false, refreshable: false,
+      })
     })
 })
-
-
-
 </script>
 
 <template>
@@ -93,7 +55,7 @@ onBeforeMount(() => {
         fill="currentFill" />
     </svg>
     <img class="loading-icon" v-if="status == Status.Errored"
-      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAACB0lEQVR4nO2Yz0sCQRiG59LMJQiiQzf7aWVZYkHXDnkpLIKKICSCCPppJVgRUUIQBEFEaBAEQRCBdAw6hLMd/Au6BHbrGv4BCV+4ymim7uzq2kjzwAtz/F5m99mPRUgikUgkEhMASlxA8buaCBlG1QREUT1Q8gkKgXTiEKltQNUCUBzKGj4dHETVALxgGyjk63cBkgBaY0eiAxQ/5Rk+FYqfkcgAxWMFh8+UcCMRgVeEgZI3zQIKjsEjIkg0gGKf9vDsFraQ4NoEjYilVcirTc1HSQytFtLmutsJnqFBNRvjThBWq1BAm74JByvgn3SIqVUoos3d6T5WYG+mVzytgoY2D2btrEDAYxdPq6ChzaO5HlbgeL5bLK0ChzZPFmyswOlil1haBQ5tni11sgLnKx3iaBUKb5s/ElyzsgKXXivPtyFREa0W3TazcrXZzgpc+9r4Pm7UZK1ybZvp3PhbWYHbnRa+AoqJWuXfNlO522tmBe73m/gLKCZpVde2qRAIH1pYgYeARUcBUn6tGtg2S028rFo1tm2WGhysqDZz8xGug5DXqio0eTZQIlEWrfJqMzfbU5llLnk2dAu0RK3q0WZulkcGWIHk2fCjRA1qVa82cxO9aITV0X41yXMJ70LMkFb1atPUUANaVX/K/vXgSuYW/mMB4lKfPwGGh2r7PS+RSCQSVCm+AQ0vLbmgWFIkAAAAAElFTkSuQmCC">
+      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAACB0lEQVR4nO2Yz0sCQRiG59LMJQiiQzf7aWVZYkHXDnkpLIKKICSCCPppJVgRUUIQBEFEaBAEQRCBdAw6hLMd/Au6BHbrGv4BCV+4ymim7uzq2kjzwAtz/F5m99mPRUgikUgkEhMASlxA8buaCBlG1QREUT1Q8gkKgXTiEKltQNUCUBzKGj4dHETVALxgGyjk63cBkgBaY0eiAxQ/5Rk+FYqfkcgAxWMFh8+UcCMRgVeEgZI3zQIKjsEjIkg0gGKf9vDsFraQ4NoEjYilVcirTc1HSQytFtLmutsJnqFBNRvjThBWq1BAm74JByvgn3SIqVUoos3d6T5WYG+mVzytgoY2D2btrEDAYxdPq6ChzaO5HlbgeL5bLK0ChzZPFmyswOlil1haBQ5tni11sgLnKx3iaBUKb5s/ElyzsgKXXivPtyFREa0W3TazcrXZzgpc+9r4Pm7UZK1ybZvp3PhbWYHbnRa+AoqJWuXfNlO522tmBe73m/gLKCZpVde2qRAIH1pYgYeARUcBUn6tGtg2S008rFo1tm2WGhysqDZz8xGug5DXqio0eTZQIlEWrfJqMzfbU5llLnk2dAu0RK3q0WZulkcGWIHk2fCjRA1qVa82cxO9aITV0X41yXMJ70LMkFb1atPUUANaVX/K/vXgSuYW/mMB4lKfPwGGh2r7PS+RSCQSVCm+AQ0vLbmgWFIkAAAAAElFTkSuQmCC">
     <h2>{{ message }}</h2>
   </div>
 </template>
