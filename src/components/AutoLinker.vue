@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router';
 import { formatHref, testLinkText, LinkType, type LinkInfo } from './AutoLinker';
 import { datamapinjection, githublookupinjection } from '@/injections';
 import { WorkGroupIDRegex, SubGroupIDRegex, formatDAWGID } from '@/workgroups';
+import { markdownLink, githubSearchUrl } from '@/routing';
 import type { GithubTeam } from '@/ndjson';
 
 import { getLatestRef, terraformSnippet } from '@/terraform'
@@ -136,17 +137,6 @@ const nestedTeams = computed<GithubTeam[]>(() => {
 
 const toggle = () => { localToggled.value = !expanded.value }
 
-const githubSearchUrl = (id: string) => {
-    const encoded = encodeURIComponent(`"${id}"`)
-    return `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+${encoded}&type=code`
-}
-
-const dawgUrl = (id: string) => {
-    const name = id.replace('workgroup:', '')
-    const base = id.includes('/') ? id.split('/')[0].replace('workgroup:', '') : name
-    return `https://protosaur.dev/dawg/workgroup/${encodeURIComponent(base)}${id.includes('/') ? '#' + id.split('/')[1] : ''}`
-}
-const markdownLink = (id: string) => `[${id}](${dawgUrl(id)})`
 
 const copiedVariant = ref<string | null>(null)
 const copyVariant = (text: string, variant: string) => {

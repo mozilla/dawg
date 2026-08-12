@@ -6,6 +6,7 @@ import { useRouter, useRoute } from 'vue-router';
 
 import { type DAWG, type DAWGHouse, type ListOfLinks, formatDAWGID } from '@/workgroups';
 import { shortVersions } from '@/metadata'
+import { sourceUrl } from '@/routing'
 
 import IconLink from '@/components/IconLink.vue';
 import DAWGTableCell from '@/components/DAWGTableCell.vue';
@@ -114,6 +115,13 @@ const stats = computed(() => {
     <div class="container">
         <h1 class="monospace">
             <RouterLink :to="`/workgroup/${encodeURIComponent(route.params.id as string)}`">{{ id }}</RouterLink>
+            <a class="view-source" :href="sourceUrl(id)" target="_blank" rel="noopener noreferrer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m8 18-6-6 6-6M16 6l6 6-6 6" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                view source
+            </a>
         </h1>
         <div v-if="stats" class="stats">
             <span><strong>{{ stats.subgroups }}</strong> subgroups</span>
@@ -177,6 +185,41 @@ h1 {
     font-size: 2.5rem;
     margin: 2rem 0;
     color: var(--dawg-blue);
+}
+
+/* Sized against the 2.5rem heading rather than beside it: this is a secondary
+   affordance, so it reads as an annotation on the title, not a second title. */
+.view-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    vertical-align: middle;
+    margin-left: 1rem;
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.2rem 0.55rem;
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.view-source:hover {
+    color: #1f2937;
+    border-color: #9ca3af;
+    text-decoration: none;
+}
+
+:global(.dark) .view-source {
+    color: #9ca3af;
+    border-color: #374151;
+}
+
+:global(.dark) .view-source:hover {
+    color: #e5e7eb;
+    border-color: #6b7280;
 }
 
 .stats {
