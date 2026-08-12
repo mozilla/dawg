@@ -29,6 +29,12 @@ const githubSearchUrl = (subgroupId: string) => {
   return `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+${encoded}&type=code`
 }
 
+// workgroup:datasre/admins -> .../catalog/workgroups/Group/datasre-admins
+const backstageUrl = (subgroupId: string) => {
+  const slug = subgroupId.replace(/^workgroup:/, '').replace('/', '-')
+  return `https://backstage.mozilla.cloud/catalog/workgroups/Group/${encodeURIComponent(slug)}`
+}
+
 const expandedSubgroups = ref<Set<string>>(new Set())
 const toggleSubgroupExpand = (key: string) => {
   if (expandedSubgroups.value.has(key)) {
@@ -125,6 +131,14 @@ const copyTerraform = async (id: string, key: string) => {
                   fill="currentColor" />
               </svg>
               <span class="copy-tooltip">search on GitHub</span>
+            </a>
+            <a class="subgroup-gh-link" :href="backstageUrl(key as string)" target="_blank" rel="noopener noreferrer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2 2 7l10 5 10-5-10-5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                <path d="m2 17 10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="copy-tooltip">view in Backstage</span>
             </a>
             <ul v-if="props.googleGroups?.[key as string]?.length" class="google-groups">
               <li v-for="group in props.googleGroups[key as string]" :key="group">
