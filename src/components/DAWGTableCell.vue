@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { dawgLinker } from '@/routing';
+import { dawgLinker, markdownLink, githubSearchUrl, backstageUrl } from '@/routing';
 import { DisplayMode, getFieldDisplayMode } from '@/metadata';
 import type { DAWG, ListOfText, MapOfLists, MemberMetadataBySubgroup, PlainText } from '@/workgroups'
 import type { GithubTeam } from '@/ndjson'
@@ -24,16 +24,6 @@ const display = getFieldDisplayMode(props.fieldName)
 
 const visibleMembers = (list: string[]) => list
 
-const githubSearchUrl = (subgroupId: string) => {
-  const encoded = encodeURIComponent(`"${subgroupId}"`)
-  return `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+${encoded}&type=code`
-}
-
-// workgroup:datasre/admins -> .../catalog/workgroups/Group/datasre-admins
-const backstageUrl = (subgroupId: string) => {
-  const slug = subgroupId.replace(/^workgroup:/, '').replace('/', '-')
-  return `https://backstage.mozilla.cloud/catalog/workgroups/Group/${encodeURIComponent(slug)}`
-}
 
 const expandedSubgroups = ref<Set<string>>(new Set())
 const toggleSubgroupExpand = (key: string) => {
@@ -57,13 +47,6 @@ const copyToClipboard = (text: string) => {
   setTimeout(() => copiedGroup.value = null, 1500)
 }
 
-const dawgUrl = (id: string) => {
-  const name = id.replace('workgroup:', '')
-  const base = id.includes('/') ? id.split('/')[0].replace('workgroup:', '') : name
-  return `https://protosaur.dev/dawg/workgroup/${encodeURIComponent(base)}${id.includes('/') ? '#' + id.split('/')[1] : ''}`
-}
-
-const markdownLink = (id: string) => `[${id}](${dawgUrl(id)})`
 
 import { getLatestRef, terraformSnippet } from '@/terraform'
 

@@ -13,6 +13,32 @@ export { routebase }
 export const wgroute = (s: string): string => `/workgroup/${s}`
 export const userroute = (email: string): string => `/user/${encodeURIComponent(email)}`
 
+/** Absolute link to a workgroup, or to a subgroup anchor within one. */
+export const dawgUrl = (id: string): string => {
+  const name = id.replace('workgroup:', '')
+  const base = id.includes('/') ? id.split('/')[0].replace('workgroup:', '') : name
+  return `${window.location.origin}${wgroute(encodeURIComponent(base))}${id.includes('/') ? '#' + id.split('/')[1] : ''}`
+}
+
+export const markdownLink = (id: string): string => `[${id}](${dawgUrl(id)})`
+
+export const githubSearchUrl = (id: string): string => {
+  const encoded = encodeURIComponent(`"${id}"`)
+  return `https://github.com/search?q=%28org%3Amozilla+OR+org%3Amozilla-services+OR+org%3Amozilla-it%29+${encoded}&type=code`
+}
+
+// workgroup:datasre -> the YAML terraform builds the workgroup from.
+export const sourceUrl = (id: string): string => {
+  const name = id.replace(/^workgroup:/, '').split('/')[0]
+  return 'https://github.com/mozilla/global-platform-admin/blob/main' +
+    `/google-workspace-management/tf/workgroups/${encodeURIComponent(name)}.yaml`
+}
+
+export const backstageUrl = (subgroupId: string): string => {
+  const slug = subgroupId.replace(/^workgroup:/, '').replace('/', '-')
+  return `https://backstage.mozilla.cloud/catalog/workgroups/Group/${encodeURIComponent(slug)}`
+}
+
 export const routes = [
   { path: '/', component: SearchDAWG, name: 'SearchPage' },
   { path: '/guide', component: FAWG, name: 'GuidePage' },
